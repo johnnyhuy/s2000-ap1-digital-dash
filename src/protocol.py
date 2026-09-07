@@ -3,6 +3,11 @@
 Wire format: one JSON object per newline (UTF-8).
 Required fields match exactly: rpm, speed_kmh, fuel_pct, ect_c, batt_v, odo_km.
 Optional: lamps — dict of boolean indicator flags.
+
+Phase 1 emits this from mock_telemetry (bench / wall power).
+Phase 2 will emit the same objects over UART after high-Z taps.
+The OEM cluster stays plugged (overlay path) so the legal odometer
+keeps counting on the factory ECU/cluster, not this display.
 """
 from __future__ import annotations
 
@@ -61,6 +66,11 @@ class Telemetry:
     odo_km: float = 0.0
     lamps: dict[str, bool] = field(default_factory=dict)
 
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> Telemetry:
+        """Build from a raw mapping after validate()."""
+        return cls(**validate(data))
+
     def to_dict(self) -> dict[str, Any]:
         d: dict[str, Any] = {
             "rpm": int(self.rpm),
@@ -86,6 +96,8 @@ def validate(data: Mapping[str, Any]) -> dict[str, Any]:
     """Validate a parsed mapping; raise ProtocolError on failure.
 
     Returns a normalized dict suitable for Telemetry construction.
+    Out-of-range fuel is clamped; other numerics are accepted as-is so the
+    UI can show a warning rather than dropping the frame.
     """
     if not isinstance(data, Mapping):
         raise ProtocolError("payload must be a JSON object")
@@ -136,8 +148,7 @@ def parse_line(line: str) -> Telemetry:
         data = json.loads(text)
     except json.JSONDecodeError as e:
         raise ProtocolError(f"invalid JSON: {e}") from e
-    norm = validate(data)
-    return Telemetry(**norm)
+    return Telemetry.from_dict(data)
 
 
 def try_parse_line(line: str) -> Optional[Telemetry]:

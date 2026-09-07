@@ -1,1 +1,2 @@
 pygame>=2.5.0
+# pyserial>=3.5  # Phase 2 UART only — not required for the mock | UI pipe
