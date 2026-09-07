@@ -151,7 +151,7 @@ def draw_arc_sweep(
     r_outer: int,
     r_inner: int,
     frac: float,
-    start_deg: float = 210.0,
+    start_deg: float = 150.0,
     span_deg: float = 240.0,
 ) -> None:
     """Filled RPM sweep: amber through the midrange, red into the limiter."""
@@ -185,8 +185,8 @@ def draw_rpm_gauge(pygame, fonts, surf, cx: int, cy: int, rpm: int) -> None:
     vmax = float(RPM_REDLINE)
     draw_arc_sweep(pygame, surf, cx, cy, r_outer, r_inner, rpm / vmax)
 
-    # Ticks 0–9 ×1000
-    start_deg, span_deg = 210.0, 240.0
+    # Ticks 0–9 ×1000 (150° → 390°: lower-left to lower-right, clockwise)
+    start_deg, span_deg = 150.0, 240.0
     for i in range(10):
         t = i / 9
         a = math.radians(start_deg + span_deg * t)
@@ -259,6 +259,9 @@ def draw_bar(
     fw = int(inner.w * max(0.0, min(1.0, frac)))
     if fw > 0:
         pygame.draw.rect(surf, colour, (inner.x, inner.y, fw, inner.h), border_radius=5)
+    if label == "FUEL":
+        mark_x = inner.x + int(inner.w * (FUEL_LOW_PCT / 100.0))
+        pygame.draw.line(surf, RED, (mark_x, track.y - 4), (mark_x, track.bottom + 4), 2)
 
 
 def draw_lamp(
@@ -279,8 +282,15 @@ def draw_lamp(
         pygame.draw.polygon(surf, col, [(cx + 22, cy), (cx - 14, cy - 16), (cx - 14, cy + 16)])
     else:
         pygame.draw.rect(surf, col, pygame.Rect(cx - 28, cy - 16, 56, 32), border_radius=6)
-    text_col = BG if on else MUTED
-    blit_text(surf, fonts["lamp"], label, text_col if shape == "rect" else (col if on else MUTED), (cx, cy), "center")
+    text_col = WHITE if on else MUTED
+    blit_text(
+        surf,
+        fonts["lamp"],
+        label,
+        text_col if shape == "rect" else (col if on else MUTED),
+        (cx, cy),
+        "center",
+    )
 
 
 def draw_cluster(pygame, fonts, surf, telem: Telemetry) -> None:
