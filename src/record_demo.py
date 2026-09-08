@@ -35,7 +35,7 @@ def _maybe_mp4(gif: Path) -> None:
         subprocess.run(cmd, check=True, capture_output=True)
     except (OSError, subprocess.CalledProcessError):
         return
-    if mp4.exists() and mp4.stat().st_size < 4_000_000:
+    if mp4.exists() and 1024 < mp4.stat().st_size < 4_000_000:
         print(mp4)
     elif mp4.exists():
         mp4.unlink()
