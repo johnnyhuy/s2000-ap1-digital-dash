@@ -19,6 +19,8 @@ from gauge_ui import (  # noqa: E402
     NOTCH_BOT_PCT,
     NOTCH_TOP_PCT,
     REDLINE_BLOCKS,
+    TEMP_SEGS,
+    tach_arch_xy,
     DisplayState,
     PHASE_READY_S,
     PHASE_REVEAL_S,
@@ -179,6 +181,18 @@ class FaceGeomTests(unittest.TestCase):
 
     def test_five_redline_blocks(self) -> None:
         self.assertEqual(REDLINE_BLOCKS, 5)
+
+    def test_six_oem_temp_bars(self) -> None:
+        self.assertEqual(TEMP_SEGS, 6)
+
+    def test_tach_arch_is_parabola_not_a_drop(self) -> None:
+        x0, y0 = tach_arch_xy(0.0)
+        x1, y1 = tach_arch_xy(0.5)
+        x2, y2 = tach_arch_xy(1.0)
+        self.assertLess(x0, x1)
+        self.assertLess(x1, x2)
+        self.assertLess(y1, y0)
+        self.assertLess(y1, y2)
 
     def test_notch_and_arch_lock(self) -> None:
         mx, my, mw, mh = FACE.module

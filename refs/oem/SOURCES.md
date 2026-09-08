@@ -1,0 +1,56 @@
+# OEM reference sources
+
+Curated Honda S2000 cluster photographs used to lock the pygame face.
+**Prefer AP1** (straight horizontal TEMP / FUEL). **AP2** (arched side
+gauges, clock / outside-temp LCD) is filed under `ap2/` and must not be
+copied into the UI.
+
+This is an unofficial DIY overlay. Photos stay in-repo for side-by-side
+compare only. Honda marks remain theirs. See the root README disclaimer.
+
+## AP1 — use these
+
+| File | What | Source | Licence |
+| --- | --- | --- | --- |
+| `lit/lit_ap1_carspy_cluster.jpg` | Lit AP1 face, straight-on-ish through the wheel. Horizontal C–H / E–F, 7-seg speed, circular −/+ and SEL / TRIP, `mph · km/h` on the bezel. | [The Car Spy](https://www.flickr.com/photos/thecarspy/2644733191/) via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Honda_S2000_-_Flickr_-_The_Car_Spy_(5).jpg) | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) — The Car Spy |
+| `lit/lit_ap1_carspy_cabin.jpg` | AP1 cabin context, RHD, same session. Straight TEMP left / FUEL right. | [The Car Spy](https://www.flickr.com/photos/thecarspy/2644732109/) via [Wikimedia](https://commons.wikimedia.org/wiki/File:Honda_S2000_-_Flickr_-_The_Car_Spy_(7).jpg) | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) — The Car Spy |
+| `../flat/ap1_cluster_flat.png` | Orthographic lock drawing (170×72.3 mm, 2.35:1). | In-repo (`refs/flat/`) | Original project artwork |
+| `icons/icon_ap1_carspy_lampstrip.jpg` | Bottom bezel + lamp crop from the Car Spy AP1 frame. | Same as `lit_ap1_carspy_cluster.jpg` | CC BY 2.0 — The Car Spy |
+| `../flat/DIMENSIONS.md` | Percent lock for the UI. | In-repo | — |
+
+## AP2 — do not copy the gauges
+
+| File | What | Source | Licence |
+| --- | --- | --- | --- |
+| `ap2/ap2_s2ki_arched_gauges.jpg` | **AP2** cluster: stacked *arched* TEMP / FUEL on the right, clock + outside temp in the LCD. Kept so we do not regress the AP1 straight bars. | [S2KI thread](https://www.digital-kaos.co.uk/forums/showthread.php/1111478-Honda-S2000-93C66-Enabling-MPH-on-a-KPH-cluster) image host `cimg6.ibsrv.net` (originally posted on S2KI) | Forum photograph; design-reference / fair-use thumbnail. Not AP1. |
+
+## Attached refs (local drop)
+
+The brief also named a curated drop at `/workspace/s2000-dash-phase1/refs/`:
+
+- `lit/lit_ap1_04_selftest_all_lamps_flickr.jpg` — AP1 self-test, every segment + lamp (188)
+- `lit/lit_ap1_07_night_idle_carsandbids.jpg` — night idle, first tach ticks lit
+- `ap1_oem_cluster_3_jdmaster_face.jpg` — unlit 3/4 face (JDMaster)
+- `icons/icon_ap1_selftest_lampstrip_tight.jpg` — lamp-strip crop
+- `flat/ap1_cluster_flat.png` — already in `refs/flat/`
+
+That folder was **not present on this agent box**. The Car Spy CC BY 2.0
+pair + the in-repo flat lock are the committed stand-ins. Drop the Flickr /
+Cars & Bids / JDMaster files into `refs/oem/lit/`, `unlit/`, and `icons/`
+when available and add a row here (URL + licence). Do not treat AP2 interiors
+(2004+ arched gauges, 2006+ self-diag LCD) as AP1.
+
+## How to attribute
+
+Car Spy frames used in `docs/assets/compare/` must keep the “The Car Spy,
+CC BY 2.0” caption. Do not strip credit from composites.
+
+## Geometry notes pulled from the AP1 photos
+
+- Tach ticks are **vertical** bars that follow the arch, not a filled circular wedge
+- Redline is **five thick orange-red blocks from 8–9**
+- Speed is a **3-digit 7-segment** LCD; unused digits ghost as 188
+- Odo is **6 integer digits**; trip is **xxx.x**; label **TRIP A**
+- TEMP is **6** coarse bars (C–H, left). FUEL is a finer E–F ladder (right)
+- Bezel buttons are **round** − / + and SEL / TRIP, plus `PUSH CANCEL` and `mph · km/h`
+- Lit colour is warm amber with bloom; unlit LCD segments stay as dim ghosts

@@ -29,14 +29,14 @@ Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
 
 | Item | Placement |
 | --- | --- |
-| Speed centre | **(50%, 40%)** — units (`km/h`, `mph`) to the **right** of the digits |
-| ODO / TRIP | directly under the speed (~50% y): `ODO 0000000 TRIP 000.0` |
-| TEMP bar | horizontal C–H at **(7.5%, 72.0%)**, **w = 18%**, **h = 3.0%** |
+| Speed centre | **(50%, 40%)** — **3-digit 7-seg** (ghost `188`); units (`km/h`, `mph`) to the **right** of the digits |
+| ODO / TRIP | directly under the speed (~50% y): 6-digit odo + `TRIP A` `xxx.x` (ghost `888888` / `888.8`) |
+| TEMP bar | horizontal C–H at **(7.5%, 72.0%)**, **w = 18%**, **h = 3.0%** — **6** OEM coolant bars |
 | FUEL bar | horizontal E–F at **(74.5%, 72.0%)**, same w / h as TEMP |
 | TEMP icon | thermometer above **C** |
 | FUEL icon | pump above **F** |
 | Lamp / hardware strip | y ≈ **80.5%** |
-| Tach 0–9 | follows the arch; numerals inside the ticks |
+| Tach 0–9 | **vertical** ticks on the parabola (not a circular fill); numerals inside the ticks |
 | Redline | thick blocks **8–9** (five blocks) |
 
 Hardware strip, left → right:
