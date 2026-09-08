@@ -33,8 +33,8 @@ export default function Home() {
           Not a product, not car-ready, not a replacement for the factory cluster.
         </p>
         <p>
-          <a href="https://github.com/johnnyhuy/s2000-ap1-digital-dash">
-            johnnyhuy/s2000-ap1-digital-dash
+          <a href="https://github.com/johnnyhuy/s2000-digital-dash">
+            johnnyhuy/s2000-digital-dash
           </a>
           {" · "}
           <a href="/harness">/harness</a>
