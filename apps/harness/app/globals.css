@@ -167,7 +167,11 @@ body {
 }
 
 .seg-lit {
-  filter: drop-shadow(0 0 3px rgba(236, 168, 36, 0.55));
+  filter: drop-shadow(0 0 4px rgba(236, 152, 32, 0.72));
+}
+
+.cluster .speed-well {
+  color: #ffb02e;
 }
 
 .bezel {
@@ -178,30 +182,24 @@ body {
   padding: 0 2% 0.2rem;
 }
 
-.rocker {
+.round-pair {
   display: flex;
-  width: 88px;
+  gap: 0.45rem;
+}
+
+.round-btn {
+  display: grid;
+  place-items: center;
+  width: 28px;
   height: 28px;
-  border-radius: 999px;
+  border-radius: 50%;
   background: #767674;
-  overflow: hidden;
-  color: #111;
+  color: #f4f0e8;
   font-weight: 700;
 }
 
-.rocker span {
-  flex: 1;
-  display: grid;
-  place-items: center;
-}
-
-.rocker .minus {
+.round-btn.minus {
   color: #b01818;
-  border-right: 1px solid #555;
-}
-
-.rocker .plus {
-  color: #f4f0e8;
 }
 
 .cancel {

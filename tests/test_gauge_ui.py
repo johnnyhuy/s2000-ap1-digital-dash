@@ -60,6 +60,10 @@ class FlagTests(unittest.TestCase):
         self.assertEqual(args.screenshot, "shots")
         self.assertEqual(args.serial, "/dev/ttyUSB0")
 
+    def test_style_defaults_to_ap1(self) -> None:
+        self.assertEqual(parse_args([]).style, "ap1")
+        self.assertEqual(parse_args(["--style", "ap2"]).style, "ap2")
+
 
 class IntroTests(unittest.TestCase):
     def test_phase_order(self) -> None:

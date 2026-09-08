@@ -6,7 +6,7 @@ export default function Home() {
       <p className="disclaimer" role="note">
         <strong>Unofficial DIY — no affiliation.</strong> This is an enthusiast
         bench demo and is <strong>not affiliated with, endorsed by, or associated
-        with Honda Motor Co., Ltd.</strong> Honda, S2000, AP1 and related marks
+        with Honda Motor Co., Ltd.</strong> Honda, S2000, AP1, AP2 and related marks
         are trademarks of their respective owners. The on-screen odometer is
         display-only; keep the OEM cluster plugged for the legal odometer.
       </p>
@@ -18,8 +18,8 @@ export default function Home() {
           alt="Unofficial geometric H mark — not Honda trademark artwork"
         />
         <div>
-          <h1>S2000 AP1 digital dash</h1>
-          <p>Web cluster harness · frozen JSON protocol · no Pi required</p>
+          <h1>S2000 Digital Dash</h1>
+          <p>Web cluster harness · AP1 / AP2 face styles · frozen JSON protocol</p>
         </div>
       </header>
 
@@ -29,7 +29,7 @@ export default function Home() {
 
       <footer className="colophon">
         <p>
-          Approximate amber OEM-geometry face (arched tach, TEMP/FUEL, telltales).
+          Selectable AP1 (straight TEMP/FUEL) or AP2 (arched side gauges) face.
           Not a product, not car-ready, not a replacement for the factory cluster.
         </p>
         <p>

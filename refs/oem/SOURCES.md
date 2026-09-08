@@ -1,9 +1,10 @@
 # OEM reference sources
 
 Curated Honda S2000 cluster photographs used to lock the pygame face.
-**Prefer AP1** (straight horizontal TEMP / FUEL). **AP2** (arched side
-gauges, clock / outside-temp LCD) is filed under `ap2/` and must not be
-copied into the UI.
+**AP1** (straight horizontal TEMP / FUEL) is the default face lock.
+**AP2** (arched side gauges, clock / outside-temp LCD) is filed under
+`ap2/` as a **style reference** — the AP2 UI is interpretive, not a
+pixel-perfect plate. Do not treat AP2 photos as AP1.
 
 This is an unofficial DIY overlay. Photos stay in-repo for side-by-side
 compare only. Honda marks remain theirs. See the root README disclaimer.
@@ -22,7 +23,7 @@ compare only. Honda marks remain theirs. See the root README disclaimer.
 
 | File | What | Source | Licence |
 | --- | --- | --- | --- |
-| `ap2/ap2_s2ki_arched_gauges.jpg` | **AP2** cluster: stacked *arched* TEMP / FUEL on the right, clock + outside temp in the LCD. Kept so we do not regress the AP1 straight bars. | [S2KI thread](https://www.digital-kaos.co.uk/forums/showthread.php/1111478-Honda-S2000-93C66-Enabling-MPH-on-a-KPH-cluster) image host `cimg6.ibsrv.net` (originally posted on S2KI) | Forum photograph; design-reference / fair-use thumbnail. Not AP1. |
+| `ap2/ap2_s2ki_arched_gauges.jpg` | **AP2** cluster: stacked *arched* TEMP / FUEL on the right, clock + outside temp in the LCD. Reference for the AP2 face style — not a measured plate. | [S2KI thread](https://www.digital-kaos.co.uk/forums/showthread.php/1111478-Honda-S2000-93C66-Enabling-MPH-on-a-KPH-cluster) image host `cimg6.ibsrv.net` (originally posted on S2KI) | Forum photograph; design-reference / fair-use thumbnail. Not AP1. |
 
 ## Attached refs (local drop)
 

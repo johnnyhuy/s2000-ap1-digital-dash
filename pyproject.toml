@@ -1,7 +1,7 @@
 [project]
 name = "s2000-ap1-digital-dash"
 version = "0.1.0"
-description = "AP1 S2000 digital dash — Phase 1 bench mock (pygame gauges, frozen JSON protocol)"
+description = "S2000 digital dash — Phase 1 bench mock (AP1/AP2 face styles, pygame gauges, frozen JSON protocol)"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

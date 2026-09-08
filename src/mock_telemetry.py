@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Emit fake AP1-style driving telemetry as newline JSON on stdout @ 20 Hz.
+"""Emit fake driving telemetry as newline JSON on stdout @ 20 Hz.
 
 Pipe into the gauge UI:
   python mock_telemetry.py | python gauge_ui.py

@@ -25,8 +25,10 @@ os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
 
 def _init():
+    from face_style import FaceStyle
     from gauge_ui import (
         DisplayState,
+        apply_face_style,
         build_fonts,
         cruise_telem,
         draw_frame,
@@ -37,7 +39,17 @@ def _init():
 
     pygame, _screen = init_pygame(windowed=True, headless=True)
     fonts = build_fonts(pygame)
-    return pygame, fonts, DisplayState, draw_frame, sample_telem, cruise_telem, selftest_telem
+    return (
+        pygame,
+        fonts,
+        DisplayState,
+        draw_frame,
+        sample_telem,
+        cruise_telem,
+        selftest_telem,
+        apply_face_style,
+        FaceStyle,
+    )
 
 
 def _render(pygame, fonts, draw_frame, DisplayState, telem, phase: str, local_t: float):
@@ -106,13 +118,19 @@ def main() -> int:
         sample_telem,
         cruise_telem,
         selftest_telem,
+        apply_face_style,
+        FaceStyle,
     ) = _init()
     DEST.mkdir(parents=True, exist_ok=True)
 
+    apply_face_style(FaceStyle.AP1)
     live = _render(pygame, fonts, draw_frame, DisplayState, sample_telem(), "live", 1.0)
     cruise = _render(pygame, fonts, draw_frame, DisplayState, cruise_telem(), "live", 1.0)
     selftest = _render(pygame, fonts, draw_frame, DisplayState, selftest_telem(), "live", 1.0)
     sweep = _render(pygame, fonts, draw_frame, DisplayState, sample_telem(), "sweep", 0.55)
+    apply_face_style(FaceStyle.AP2)
+    live_ap2 = _render(pygame, fonts, draw_frame, DisplayState, sample_telem(), "live", 1.0)
+    apply_face_style(FaceStyle.AP1)
 
     pairs = [
         (
@@ -146,9 +164,9 @@ def main() -> int:
         (
             "compare_ap2_caution.png",
             OEM / "ap2" / "ap2_s2ki_arched_gauges.jpg",
-            live,
-            "AP2 (arched TEMP/FUEL) — do not copy",
-            "UI keeps AP1 straight bars",
+            live_ap2,
+            "AP2 OEM (arched TEMP/FUEL) — reference, not a plate",
+            "UI AP2 style (interpretive side gauges)",
         ),
     ]
 

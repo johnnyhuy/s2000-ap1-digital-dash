@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""Phase 1 OEM-geometry AP1 cluster — amber LCD in a hooded cowl.
+"""S2000 digital cluster — amber LCD in a hooded cowl.
 
 Reads Telemetry JSON lines from stdin (or --serial in Phase 2).
 
   python mock_telemetry.py | python gauge_ui.py
+  python gauge_ui.py --style ap2 --windowed
   python -m mocks.esp32_uart --count 40 --immediate | python gauge_ui.py --smoke
-  python gauge_ui.py --windowed --intro
   python gauge_ui.py --smoke --screenshot shots
 
-Esc or Q quits. Space skips the boot intro.
+Esc or Q quits. Space skips the boot intro. 1 / 2 switches AP1 / AP2 faces.
 
-Face proportions are locked in `refs/flat/DIMENSIONS.md` (percent of the
-module bounding box). Protocol JSON field names are unchanged.
+AP1 proportions are locked in `refs/flat/DIMENSIONS.md`. AP2 is an
+interpretive side-gauge layout (see refs/oem/ap2/). Protocol JSON field
+names are unchanged.
 """
 from __future__ import annotations
 
@@ -24,6 +25,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from face_style import DEFAULT_FACE_STYLE, FaceStyle, parse_face_style
 from lcd_digits import blit_digits, lcd_window
 from oem_icons import (
     LAMP_GHOST,
@@ -85,9 +87,19 @@ LCD_BOTTOM_PCT = 0.76       # just under TEMP / FUEL
 ARCH_N = 2.0                # parabola (u²)
 TEMP_X_PCT, TEMP_Y_PCT, TEMP_W_PCT = 0.075, 0.72, 0.180
 FUEL_X_PCT, FUEL_Y_PCT, FUEL_W_PCT = 0.745, 0.72, 0.180
-BAR_H_PCT = 0.030
+BAR_H_PCT = 0.014           # OEM AP1 ticks are thin horizontal dashes
 SPEED_X_PCT, SPEED_Y_PCT = 0.50, 0.40
 ODO_Y_PCT = 0.50            # directly under the speed (OEM lock)
+# AP2 interpretive side-gauges (not a measured plate)
+AP2_SPEED_X_PCT = 0.42
+AP2_ODO_Y_PCT = 0.54
+AP2_TEMP_X_PCT = 0.62
+AP2_TEMP_Y_PCT = 0.30
+AP2_FUEL_Y_PCT = 0.50
+AP2_SIDE_W_PCT = 0.28
+AP2_SIDE_H_PCT = 0.155
+AP2_TEMP_SEGS = 8
+AP2_FUEL_SEGS = 10
 TACH_END_Y_PCT = 0.64
 TACH_PEAK_Y_PCT = 0.12
 TACH_INSET_X_PCT = 0.090
@@ -109,6 +121,7 @@ PHASE_REVEAL_S = 1.55
 class FaceGeom:
     """Pixel geometry derived from the locked OEM percentages."""
 
+    style: str
     module: tuple[int, int, int, int]
     lcd: tuple[int, int, int, int]
     bezel: tuple[int, int, int, int]
@@ -123,6 +136,7 @@ class FaceGeom:
     fuel: tuple[int, int, int, int]
     speed_c: tuple[int, int]
     odo_c: tuple[int, int]
+    clock_c: tuple[int, int]
     tach_cx: int
     tach_cy: int
     tach_r_outer: int
@@ -132,6 +146,8 @@ class FaceGeom:
     tach_span_deg: float
     arch_n: float
     rocker: tuple[int, int, int, int]
+    minus_btn: tuple[int, int, int, int]
+    plus_btn: tuple[int, int, int, int]
     lamp_band: tuple[int, int, int, int]
     trip: tuple[int, int, int, int]
     trip_blank: tuple[int, int, int, int]
@@ -141,8 +157,14 @@ def _pct(v: float) -> int:
     return int(round(v))
 
 
-def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
-    """Build the flat AP1 face. Percentages match refs/flat/DIMENSIONS.md."""
+def build_face_geom(
+    w: int = W,
+    h: int = H,
+    style: FaceStyle | str = DEFAULT_FACE_STYLE,
+) -> FaceGeom:
+    """Build a face. AP1 percentages match refs/flat/DIMENSIONS.md."""
+    parsed = parse_face_style(style)
+    ap2 = parsed is FaceStyle.AP2
     mx = _pct(w * MODULE_X_PCT)
     mw = _pct(w * MODULE_W_PCT)
     mh = _pct(mw / MODULE_ASPECT)
@@ -162,22 +184,39 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
     lcd_h = lcd_bottom - lcd_peak
     lcd_spring = spring - _pct(mh * 0.02)
 
-    bar_h = max(10, _pct(mh * BAR_H_PCT))
-    temp = (
-        mx + _pct(mw * TEMP_X_PCT),
-        my + _pct(mh * TEMP_Y_PCT),
-        _pct(mw * TEMP_W_PCT),
-        bar_h,
-    )
-    fuel = (
-        mx + _pct(mw * FUEL_X_PCT),
-        my + _pct(mh * FUEL_Y_PCT),
-        _pct(mw * FUEL_W_PCT),
-        bar_h,
-    )
+    bar_h = max(6, _pct(mh * BAR_H_PCT))
+    if ap2:
+        temp = (
+            mx + _pct(mw * AP2_TEMP_X_PCT),
+            my + _pct(mh * AP2_TEMP_Y_PCT),
+            _pct(mw * AP2_SIDE_W_PCT),
+            max(bar_h, _pct(mh * AP2_SIDE_H_PCT)),
+        )
+        fuel = (
+            mx + _pct(mw * AP2_TEMP_X_PCT),
+            my + _pct(mh * AP2_FUEL_Y_PCT),
+            _pct(mw * AP2_SIDE_W_PCT),
+            max(bar_h, _pct(mh * AP2_SIDE_H_PCT)),
+        )
+        speed_x_pct = AP2_SPEED_X_PCT
+        odo_y_pct = AP2_ODO_Y_PCT
+    else:
+        temp = (
+            mx + _pct(mw * TEMP_X_PCT),
+            my + _pct(mh * TEMP_Y_PCT),
+            _pct(mw * TEMP_W_PCT),
+            bar_h,
+        )
+        fuel = (
+            mx + _pct(mw * FUEL_X_PCT),
+            my + _pct(mh * FUEL_Y_PCT),
+            _pct(mw * FUEL_W_PCT),
+            bar_h,
+        )
+        speed_x_pct = SPEED_X_PCT
+        odo_y_pct = ODO_Y_PCT
 
-    cx = mx + _pct(mw * SPEED_X_PCT)
-    # Circular tach through lower-left, peak, lower-right of the LCD
+    cx = mx + _pct(mw * speed_x_pct)
     end_y = my + _pct(mh * TACH_END_Y_PCT)
     peak_y = my + _pct(mh * TACH_PEAK_Y_PCT)
     end_inset = _pct(lcd_w * TACH_INSET_X_PCT)
@@ -185,7 +224,6 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
     x1 = lcd_x + lcd_w - end_inset
     half = (x1 - x0) / 2.0
     drop = float(end_y - peak_y)
-    # R from (half, drop) chord: R = (half² + drop²) / (2 drop)
     tach_r = (half * half + drop * drop) / (2.0 * drop) if drop > 1 else half
     tach_cy = peak_y + tach_r
     start_deg = math.degrees(math.atan2(end_y - tach_cy, x0 - cx))
@@ -197,25 +235,27 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
     tach_r_inner = tach_r_outer - 52
     tach_r_num = tach_r_inner - 12
 
-    # Hardware strip: rocker left, dense lamp band centre, TRIP pair right
     pad = _pct(mw * 0.018)
-    btn_h = _pct(bezel_h * 0.48)
-    btn_y = bezel_y + (bezel_h - btn_h) // 2
-    rocker_w = _pct(mw * 0.092)
-    rocker = (mx + pad, btn_y, rocker_w, btn_h)
+    btn_d = max(28, _pct(bezel_h * 0.42))
+    btn_y = bezel_y + (bezel_h - btn_d) // 2
+    btn_gap = 12
+    minus_btn = (mx + pad, btn_y, btn_d, btn_d)
+    plus_btn = (mx + pad + btn_d + btn_gap, btn_y, btn_d, btn_d)
+    rocker = (minus_btn[0], btn_y, plus_btn[0] + btn_d - minus_btn[0], btn_d)
     trip_w = _pct(mw * 0.062)
-    trip = (mx + mw - pad - trip_w, btn_y, trip_w, btn_h)
-    trip_blank = (trip[0] - trip_w - 10, btn_y, trip_w, btn_h)
+    trip = (mx + mw - pad - trip_w, btn_y, trip_w, btn_d)
+    trip_blank = (trip[0] - trip_w - 14, btn_y, trip_w, btn_d)
     band_h = _pct(bezel_h * 0.58)
     band_y = bezel_y + (bezel_h - band_h) // 2
-    # Hug the OEM telltale strip (variable pitch: BRAKE / MAINT are wider)
     pack_w = lamp_strip_inner_width() + 28
-    gap_l = rocker[0] + rocker_w + _pct(mw * 0.118)
+    gap_l = rocker[0] + rocker[2] + _pct(mw * 0.08)
     gap_r = trip_blank[0] - 16
     mid = (gap_l + gap_r) // 2
     lamp_band = (mid - pack_w // 2, band_y, pack_w, band_h)
+    odo_c = (cx, my + _pct(mh * odo_y_pct))
 
     return FaceGeom(
+        style=parsed.value,
         module=(mx, my, mw, mh),
         lcd=(lcd_x, lcd_y, lcd_w, lcd_h),
         bezel=(mx, bezel_y, mw, bezel_h),
@@ -229,7 +269,8 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
         temp=temp,
         fuel=fuel,
         speed_c=(cx, my + _pct(mh * SPEED_Y_PCT)),
-        odo_c=(cx, my + _pct(mh * ODO_Y_PCT)),
+        odo_c=odo_c,
+        clock_c=(cx, odo_c[1] - (36 if ap2 else 0)),
         tach_cx=cx,
         tach_cy=int(round(tach_cy)),
         tach_r_outer=tach_r_outer,
@@ -239,6 +280,8 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
         tach_span_deg=span,
         arch_n=ARCH_N,
         rocker=rocker,
+        minus_btn=minus_btn,
+        plus_btn=plus_btn,
         lamp_band=lamp_band,
         trip=trip,
         trip_blank=trip_blank,
@@ -254,8 +297,26 @@ TACH_START_DEG = FACE.tach_start_deg
 TACH_SPAN_DEG = FACE.tach_span_deg
 
 
+def apply_face_style(style: FaceStyle | str) -> FaceGeom:
+    """Rebuild the active face. Defaults bind at call time, not import time."""
+    global FACE, TACH_CX, TACH_CY, TACH_R_NUM, TACH_R_OUTER, TACH_R_INNER
+    global TACH_START_DEG, TACH_SPAN_DEG
+    FACE = build_face_geom(style=style)
+    TACH_CX, TACH_CY = FACE.tach_cx, FACE.tach_cy
+    TACH_R_NUM = FACE.tach_r_num
+    TACH_R_OUTER = FACE.tach_r_outer
+    TACH_R_INNER = FACE.tach_r_inner
+    TACH_START_DEG = FACE.tach_start_deg
+    TACH_SPAN_DEG = FACE.tach_span_deg
+    return FACE
+
+
+def _geom(g: FaceGeom | None) -> FaceGeom:
+    return FACE if g is None else g
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="S2000 AP1 OEM-geometry digital cluster")
+    p = argparse.ArgumentParser(description="S2000 digital cluster (AP1 / AP2 face styles)")
     p.add_argument("--windowed", action="store_true", help="1920×1080 window instead of fullscreen")
     p.add_argument(
         "--smoke",
@@ -289,6 +350,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         const="/dev/ttyUSB0",
         default=None,
         help="Phase 2: read JSON from UART (default port /dev/ttyUSB0)",
+    )
+    p.add_argument(
+        "--style",
+        choices=("ap1", "ap2"),
+        default=DEFAULT_FACE_STYLE.value,
+        help="Face layout: ap1 (straight TEMP/FUEL, default) or ap2 (arched side gauges)",
     )
     args = p.parse_args(argv)
     if args.intro is None:
@@ -336,11 +403,12 @@ def tach_point(r: float, frac: float) -> tuple[int, int]:
     )
 
 
-def tach_arch_xy(frac: float, g: FaceGeom = FACE) -> tuple[float, float]:
+def tach_arch_xy(frac: float, g: FaceGeom | None = None) -> tuple[float, float]:
     """Place a tach tick on the OEM parabola (not a circular wedge).
 
     frac 0 → 0×1000 at the lower left; frac 1 → 9×1000 at the lower right.
     """
+    g = _geom(g)
     lx, _, lw, _ = g.lcd
     inset = lw * 0.055
     x0 = lx + inset
@@ -350,6 +418,50 @@ def tach_arch_xy(frac: float, g: FaceGeom = FACE) -> tuple[float, float]:
     rise = (g.lcd_spring_y - g.lcd_peak_y) * 0.92
     y = g.lcd_peak_y + 14 + rise * (u * u)
     return x, y
+
+
+def tach_arch_tangent(frac: float, g: FaceGeom | None = None) -> tuple[float, float]:
+    """Unit tangent along the parabola, left → right."""
+    g = _geom(g)
+    lx, _, lw, _ = g.lcd
+    inset = lw * 0.055
+    span_x = (lx + lw - inset) - (lx + inset)
+    rise = (g.lcd_spring_y - g.lcd_peak_y) * 0.92
+    u = 2.0 * clamp(frac, 0.0, 1.0) - 1.0
+    dx, dy = span_x, 4.0 * rise * u
+    n = math.hypot(dx, dy) or 1.0
+    return dx / n, dy / n
+
+
+def tach_arch_normal(frac: float, g: FaceGeom | None = None) -> tuple[float, float]:
+    """Unit normal pointing into the LCD (generally downward)."""
+    tx, ty = tach_arch_tangent(frac, g)
+    nx, ny = ty, -tx
+    if ny < 0:
+        nx, ny = -nx, -ny
+    return nx, ny
+
+
+def tach_tick_poly(
+    frac: float,
+    width: float,
+    length: float,
+    g: FaceGeom | None = None,
+    inset: float = 2.0,
+) -> list[tuple[int, int]]:
+    """Thin rectangle whose long axis is the arch normal (OEM slant)."""
+    x, y = tach_arch_xy(frac, g)
+    nx, ny = tach_arch_normal(frac, g)
+    tx, ty = -ny, nx
+    hw = width * 0.5
+    x0 = x + nx * inset
+    y0 = y + ny * inset
+    return [
+        (int(round(x0 - tx * hw)), int(round(y0 - ty * hw))),
+        (int(round(x0 + tx * hw)), int(round(y0 + ty * hw))),
+        (int(round(x0 + tx * hw + nx * length)), int(round(y0 + ty * hw + ny * length))),
+        (int(round(x0 - tx * hw + nx * length)), int(round(y0 - ty * hw + ny * length))),
+    ]
 
 
 def ect_frac(ect_c: float) -> float:
@@ -415,11 +527,11 @@ class DisplayState:
         self.trip_km = max(0.0, self.odo_km - self.trip_origin)
 
     def follow(self, telem: Telemetry, dt: float) -> None:
-        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.07)
-        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.11)
-        self.fuel_pct = exp_smooth(self.fuel_pct, float(telem.fuel_pct), dt, 0.35)
-        self.ect_c = exp_smooth(self.ect_c, float(telem.ect_c), dt, 0.40)
-        self.batt_v = exp_smooth(self.batt_v, float(telem.batt_v), dt, 0.22)
+        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.055)
+        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.09)
+        self.fuel_pct = exp_smooth(self.fuel_pct, float(telem.fuel_pct), dt, 0.32)
+        self.ect_c = exp_smooth(self.ect_c, float(telem.ect_c), dt, 0.38)
+        self.batt_v = exp_smooth(self.batt_v, float(telem.batt_v), dt, 0.20)
         self.odo_km = float(telem.odo_km)
         self.lamps = dict(telem.lamps)
         if self.trip_origin is None:
@@ -486,7 +598,7 @@ def blit_text(surf, font, text: str, color, pos, anchor: str = "topleft") -> Non
 
 
 def _italic_shear(pygame, img, shear: float = 0.14):
-    """Lean glyphs right — AP1 tach numerals are a slightly italic gothic."""
+    """Lean glyphs right — OEM tach numerals are a slightly italic gothic."""
     w, h = img.get_size()
     extra = max(1, int(h * shear))
     out = pygame.Surface((w + extra, h), pygame.SRCALPHA)
@@ -580,8 +692,9 @@ def arch_points(
     return pts
 
 
-def hood_outer_points(g: FaceGeom = FACE) -> list[tuple[int, int]]:
+def hood_outer_points(g: FaceGeom | None = None) -> list[tuple[int, int]]:
     """Flat bottom, rectangular side notches (58–72%), parabolic crown (28% rise)."""
+    g = _geom(g)
     mx, my, mw, mh = g.module
     step = g.step
     lx = mx + step
@@ -606,7 +719,8 @@ def hood_outer_points(g: FaceGeom = FACE) -> list[tuple[int, int]]:
     return pts
 
 
-def lcd_aperture_points(g: FaceGeom = FACE) -> list[tuple[int, int]]:
+def lcd_aperture_points(g: FaceGeom | None = None) -> list[tuple[int, int]]:
+    g = _geom(g)
     lx, ly, lw, lh = g.lcd
     rx = lx + lw
     bot = ly + lh
@@ -616,7 +730,8 @@ def lcd_aperture_points(g: FaceGeom = FACE) -> list[tuple[int, int]]:
     return pts
 
 
-def hood_bottom_corners(g: FaceGeom = FACE) -> tuple[tuple[int, int], tuple[int, int]]:
+def hood_bottom_corners(g: FaceGeom | None = None) -> tuple[tuple[int, int], tuple[int, int]]:
+    g = _geom(g)
     mx, my, mw, mh = g.module
     return (mx, my + mh), (mx + mw, my + mh)
 
@@ -625,7 +740,8 @@ def draw_cabin(pygame, surf) -> None:
     surf.fill(CABIN)
 
 
-def draw_cowl(pygame, surf, sweep_t: float | None = None, g: FaceGeom = FACE) -> None:
+def draw_cowl(pygame, surf, sweep_t: float | None = None, g: FaceGeom | None = None) -> None:
+    g = _geom(g)
     outer = hood_outer_points(g)
     pygame.draw.polygon(surf, COWL, outer)
     pygame.draw.polygon(surf, COWL_EDGE, outer, width=2)
@@ -646,7 +762,7 @@ def draw_cowl(pygame, surf, sweep_t: float | None = None, g: FaceGeom = FACE) ->
     pygame.draw.polygon(surf, LCD, aperture)
     # Night-idle amber wash so unlit ghosts sit on a warm LCD, not pure black
     wash = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
-    pygame.draw.polygon(wash, (52, 34, 10, 38), aperture)
+    pygame.draw.polygon(wash, (72, 44, 12, 58), aperture)
     surf.blit(wash, (0, 0))
     pygame.draw.polygon(surf, (22, 18, 14), aperture, width=2)
 
@@ -688,64 +804,48 @@ def _blit_seg_bloom(pygame, surf, bloom, pts, color) -> None:
     pygame.draw.polygon(surf, color, pts)
 
 
-def _tick_poly(x: float, y: float, w: float, h: float) -> list[tuple[int, int]]:
-    """Vertical LCD tick hanging down from the arch."""
-    hw = w * 0.5
-    return [
-        (int(x - hw), int(y)),
-        (int(x + hw), int(y)),
-        (int(x + hw), int(y + h)),
-        (int(x - hw), int(y + h)),
-    ]
-
-
 def draw_tach_segments(
     pygame,
     surf,
     lit_frac: float,
     ghost: bool = True,
-    g: FaceGeom = FACE,
+    g: FaceGeom | None = None,
 ) -> None:
-    """OEM ticks along the parabola: majors each 1000, minors each 200, five redline blocks 8–9."""
+    """Thin ticks, slanted to stay normal to the arch. Five redline blocks 8–9."""
+    g = _geom(g)
     red_from = 8.0 / 9.0
     bloom = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
     n_minor = 9 * TACH_MINORS_PER  # 36 × 200 r/min steps across 0–9
 
-    # Faint amber wash under the scale (night-idle backlight)
     for i in range(40):
         frac = i / 39.0
-        x, y = tach_arch_xy(frac, g)
-        h = 36 if 0.08 < frac < 0.92 else 26
-        pygame.draw.rect(surf, AMBER_WASH, pygame.Rect(int(x - 5), int(y + 2), 10, h))
+        pts = tach_tick_poly(frac, 3.2, 34 if 0.08 < frac < 0.92 else 24, g, inset=1.0)
+        pygame.draw.polygon(surf, AMBER_WASH, pts)
 
     for i in range(n_minor + 1):
         frac = i / n_minor
-        x, y = tach_arch_xy(frac, g)
         major = i % TACH_MINORS_PER == 0
         in_red = frac >= red_from - 1e-6
         on = frac <= lit_frac + 1e-6
         if in_red:
             continue
-        # 0–1 shorter/thinner; 1–8 longer majors
         if frac <= 1.0 / 9.0 + 1e-6:
-            w, h = (5, 28) if major else (3, 18)
+            w, length = (3.2, 26) if major else (2.0, 16)
         else:
-            w, h = (7, 40) if major else (4, 26)
-        pts = _tick_poly(x, y + 4, w, h)
+            w, length = (3.6, 36) if major else (2.2, 22)
+        pts = tach_tick_poly(frac, w, length, g)
         if on:
             col = WHITE if major else lerp_colour(AMBER, AMBER_HOT, frac)
             _blit_seg_bloom(pygame, surf, bloom, pts, col)
         elif ghost:
             pygame.draw.polygon(surf, AMBER_GHOST if not major else (58, 48, 36), pts)
 
-    # Five thick orange-red blocks 8–9 (OEM redline)
     for i in range(REDLINE_BLOCKS):
         t0 = red_from + (1.0 - red_from) * (i / REDLINE_BLOCKS)
         t1 = red_from + (1.0 - red_from) * ((i + 1) / REDLINE_BLOCKS)
         mid = (t0 + t1) * 0.5
-        x, y = tach_arch_xy(mid, g)
         on = mid <= lit_frac + 1e-6
-        pts = _tick_poly(x, y - 2, 16, 52)
+        pts = tach_tick_poly(mid, 7.5, 46, g, inset=0.0)
         if on:
             _blit_seg_bloom(pygame, surf, bloom, pts, ORANGE if i < 4 else RED)
         else:
@@ -754,34 +854,39 @@ def draw_tach_segments(
     small = pygame.transform.smoothscale(bloom, (surf.get_width() // 3, surf.get_height() // 3))
     surf.blit(pygame.transform.smoothscale(small, surf.get_size()), (0, 0))
 
-    # Leading-edge pointer (OEM orange triangle on the live tick)
     tip_frac = clamp(lit_frac, 0.0, 1.0)
     tx, ty = tach_arch_xy(tip_frac, g)
-    tri = [(int(tx), int(ty - 2)), (int(tx - 7), int(ty - 14)), (int(tx + 7), int(ty - 14))]
+    nx, ny = tach_arch_normal(tip_frac, g)
+    px, py = -ny, nx
+    tip = (tx - nx * 10, ty - ny * 10)
+    tri = [
+        (int(tip[0]), int(tip[1])),
+        (int(tx + px * 7), int(ty + py * 7)),
+        (int(tx - px * 7), int(ty - py * 7)),
+    ]
     pygame.draw.polygon(surf, AMBER_HOT if tip_frac < red_from else RED, tri)
 
 
-def draw_tach_numbers(pygame, fonts, surf, dim: bool = False, g: FaceGeom = FACE) -> None:
+def draw_tach_numbers(pygame, fonts, surf, dim: bool = False, g: FaceGeom | None = None) -> None:
+    """Numerals sit outside the ticks, along the outward normal (OEM photo)."""
+    g = _geom(g)
     for i in range(10):
         hot = i >= 8
         col = (RED if hot else AMBER) if not dim else (RED_DIM if hot else AMBER_DIM)
         frac = i / 9.0
         x, y = tach_arch_xy(frac, g)
-        # Numerals sit just inside / below the ticks
-        pos = (int(x), int(y + (58 if i not in (0, 9) else 44)))
-        if i == 0:
-            pos = (pos[0] + 8, pos[1] + 8)
-        elif i == 9:
-            pos = (pos[0] - 6, pos[1] + 8)
+        nx, ny = tach_arch_normal(frac, g)
+        pos = (int(x - nx * 22), int(y - ny * 22))
         img = _italic_shear(pygame, fonts["tick"].render(str(i), True, col), 0.12)
         surf.blit(img, img.get_rect(center=pos))
     lx, ly = tach_arch_xy(0.03, g)
+    nx, ny = tach_arch_normal(0.03, g)
     blit_text(
         surf,
         fonts["micro"],
         "x1000r/min",
         DIM if not dim else MUTED,
-        (int(lx + 36), int(ly + 78)),
+        (int(lx - nx * 8 + 40), int(ly - ny * 8 + 18)),
         "center",
     )
 
@@ -795,13 +900,17 @@ def _seg_bar(
     warn_low: bool,
     hot_end: bool,
 ) -> None:
+    """Thin horizontal amber ticks — OEM AP1, not fat LCD blocks."""
     x, y, w, h = rect
-    pygame.draw.line(surf, AMBER_DIM, (x, y + h + 2), (x + w, y + h + 2), 2)
-    gap = 2
-    seg_w = (w - gap * (segs - 1)) / segs
+    tick_h = max(4, min(7, h))
+    gap = max(4, int(w * 0.045))
+    tick_w = max(10, int((w - gap * (segs - 1)) / segs * 0.72))
+    stride = (w - tick_w) / max(1, segs - 1)
     lit = int(round(frac * segs))
+    baseline = y + tick_h + 3
+    pygame.draw.line(surf, AMBER_DIM, (x, baseline), (x + w, baseline), 1)
     for i in range(segs):
-        sx = x + i * (seg_w + gap)
+        sx = x + i * stride
         on = i < lit
         last = i >= segs - 1
         if on and ((warn_low and i == 0) or (hot_end and last and frac > 0.92)):
@@ -812,7 +921,7 @@ def _seg_bar(
             col = RED_DIM
         else:
             col = AMBER_GHOST
-        pygame.draw.rect(surf, col, pygame.Rect(int(sx), y, max(3, int(seg_w)), h), border_radius=1)
+        pygame.draw.rect(surf, col, pygame.Rect(int(sx), y, tick_w, tick_h), border_radius=1)
 
 
 def _thermometer_icon(pygame, surf, cx: int, cy: int, col) -> None:
@@ -836,107 +945,175 @@ def _pump_icon(pygame, surf, cx: int, cy: int, col) -> None:
     pygame.draw.rect(surf, col, pygame.Rect(cx + 10, cy - 2, 4, 10), border_radius=1)
 
 
-def draw_temp_bar(pygame, fonts, surf, frac: float, hot: bool, g: FaceGeom = FACE) -> None:
-    """Horizontal TEMP C–H at the bottom-left of the LCD (OEM)."""
+def _side_arch_point(rect: tuple[int, int, int, int], frac: float) -> tuple[float, float]:
+    x, y, w, h = rect
+    t = clamp(frac, 0.0, 1.0)
+    u = 2.0 * t - 1.0
+    return x + w * t, y + h * 0.22 + h * 0.72 * u * u
+
+
+def draw_arched_side_gauge(
+    pygame,
+    fonts,
+    surf,
+    rect: tuple[int, int, int, int],
+    frac: float,
+    segs: int,
+    left: str,
+    right: str,
+    warn_low: bool,
+    hot_end: bool,
+    left_col,
+    right_col,
+) -> None:
+    """Interpretive AP2 rainbow ticks — not a measured plate."""
+    lit = int(round(frac * segs))
+    for i in range(segs):
+        t0 = (i + 0.14) / segs
+        t1 = (i + 0.86) / segs
+        ax, ay = _side_arch_point(rect, t0)
+        bx, by = _side_arch_point(rect, t1)
+        on = i < lit
+        last = i >= segs - 1
+        if on and ((warn_low and i == 0) or (hot_end and last and frac > 0.92)):
+            col = RED
+        elif on:
+            col = lerp_colour(AMBER, AMBER_HOT, i / max(1, segs - 1))
+        elif warn_low and i == 0:
+            col = RED_DIM
+        else:
+            col = AMBER_GHOST
+        nx, ny = (by - ay) * 0.18, (ax - bx) * 0.18
+        pts = [
+            (int(ax), int(ay)),
+            (int(bx), int(by)),
+            (int(bx + nx), int(by + ny)),
+            (int(ax + nx), int(ay + ny)),
+        ]
+        pygame.draw.polygon(surf, col, pts)
+    lx, ly = _side_arch_point(rect, 0.0)
+    rx, ry = _side_arch_point(rect, 1.0)
+    blit_text(surf, fonts["tiny"], left, left_col, (int(lx - 12), int(ly)), "center")
+    blit_text(surf, fonts["tiny"], right, right_col, (int(rx + 12), int(ry)), "center")
+
+
+def draw_temp_bar(pygame, fonts, surf, frac: float, hot: bool, g: FaceGeom | None = None) -> None:
+    """AP1: thin C–H ticks. AP2: arched side gauge on the right."""
+    g = _geom(g)
     x, y, w, h = g.temp
-    blit_text(surf, fonts["tiny"], "C", AMBER, (x - 14, y + h // 2), "center")
-    blit_text(surf, fonts["tiny"], "H", RED if hot else AMBER, (x + w + 14, y + h // 2), "center")
-    _thermometer_icon(pygame, surf, x + 10, y - 22, AMBER if not hot else RED)
+    if g.style == FaceStyle.AP2.value:
+        _thermometer_icon(pygame, surf, x + 16, y + 8, AMBER if not hot else RED)
+        draw_arched_side_gauge(
+            pygame, fonts, surf, g.temp, frac, AP2_TEMP_SEGS, "C", "H",
+            False, hot, AMBER, RED if hot else AMBER,
+        )
+        return
+    blit_text(surf, fonts["tiny"], "C", AMBER, (x - 16, y + h // 2), "center")
+    blit_text(surf, fonts["tiny"], "H", RED if hot else AMBER, (x + w + 16, y + h // 2), "center")
+    _thermometer_icon(pygame, surf, x + 8, y - 20, AMBER if not hot else RED)
     _seg_bar(pygame, surf, g.temp, frac, TEMP_SEGS, warn_low=False, hot_end=hot)
 
 
-def draw_fuel_bar(pygame, fonts, surf, frac: float, low: bool, g: FaceGeom = FACE) -> None:
-    """Horizontal FUEL E–F at the bottom-right of the LCD, mirrored with TEMP."""
+def draw_fuel_bar(pygame, fonts, surf, frac: float, low: bool, g: FaceGeom | None = None) -> None:
+    """AP1: thin E–F ticks. AP2: arched side gauge under TEMP."""
+    g = _geom(g)
     x, y, w, h = g.fuel
-    blit_text(surf, fonts["tiny"], "E", RED if low else AMBER, (x - 14, y + h // 2), "center")
-    blit_text(surf, fonts["tiny"], "F", AMBER, (x + w + 14, y + h // 2), "center")
-    _pump_icon(pygame, surf, x + w - 6, y - 20, AMBER if not low else ORANGE)
+    if g.style == FaceStyle.AP2.value:
+        _pump_icon(pygame, surf, x + w - 16, y + 10, AMBER if not low else ORANGE)
+        draw_arched_side_gauge(
+            pygame, fonts, surf, g.fuel, frac, AP2_FUEL_SEGS, "E", "F",
+            low, False, RED if low else AMBER, AMBER,
+        )
+        return
+    blit_text(surf, fonts["tiny"], "E", RED if low else AMBER, (x - 16, y + h // 2), "center")
+    blit_text(surf, fonts["tiny"], "F", AMBER, (x + w + 16, y + h // 2), "center")
+    _pump_icon(pygame, surf, x + w - 6, y - 18, AMBER if not low else ORANGE)
     _seg_bar(pygame, surf, g.fuel, frac, FUEL_SEGS, warn_low=low, hot_end=False)
 
 
-def draw_speed(pygame, fonts, surf, speed: float, g: FaceGeom = FACE) -> None:
-    """3-digit 7-seg speed in a rectangular LCD well. Ghost is the OEM 188."""
+def draw_speed(pygame, fonts, surf, speed: float, g: FaceGeom | None = None) -> None:
+    """3-digit 7-seg speed. Single unit label — OEM centre is not km/h+mph stacked."""
+    g = _geom(g)
     value = int(round(clamp(speed, 0.0, 399.0)))
     digits = f"{value:d}".rjust(3)
     cx, cy = g.speed_c
-    win = (cx - 210, cy - 78, 360, 150)
-    lcd_window(pygame, surf, win, (14, 9, 4), (48, 32, 12))
+    win = (cx - 168, cy - 70, 300, 132)
+    lcd_window(pygame, surf, win, (18, 11, 5), (56, 36, 14))
     box = blit_digits(
         pygame,
         surf,
         digits,
-        (cx - 24, cy),
-        digit_h=118,
+        (cx - 8, cy),
+        digit_h=108,
         color=AMBER_HOT,
         ghost=AMBER_GHOST,
         ghost_text="188",
         bloom=True,
-        italic=0.05,
+        italic=0.04,
     )
-    unit_x = box[0] + box[2] + 18
-    blit_text(surf, fonts["label"], "km/h", AMBER, (unit_x, cy - 12), "midleft")
-    blit_text(surf, fonts["micro"], "mph", DIM, (unit_x, cy + 16), "midleft")
+    unit_x = box[0] + box[2] + 14
+    blit_text(surf, fonts["label"], "km/h", AMBER, (unit_x, cy + 4), "midleft")
 
 
-def draw_odo_row(pygame, fonts, surf, face: DisplayState, batt_warn: bool, g: FaceGeom = FACE) -> None:
-    """6-digit odo + xxx.x trip in a smaller LCD well under the speed."""
+def _clock_text() -> str:
+    from datetime import datetime
+
+    return os.environ.get("DASH_CLOCK") or datetime.now().strftime("%H:%M")
+
+
+def draw_odo_row(
+    pygame,
+    fonts,
+    surf,
+    face: DisplayState,
+    batt_warn: bool,
+    g: FaceGeom | None = None,
+) -> None:
+    """ODO + TRIP A under the speed. Battery stays a quiet secondary."""
+    g = _geom(g)
     cx, y = g.odo_c
     odo = int(round(face.odo_km)) % 1_000_000
     trip = clamp(face.trip_km, 0.0, 999.9)
-    win = (cx - 230, y - 36, 460, 72)
-    lcd_window(pygame, surf, win, (12, 8, 4), (42, 28, 10))
-    blit_text(surf, fonts["micro"], "ODO", DIM, (cx - 210, y - 14), "midleft")
+    if g.style == FaceStyle.AP2.value:
+        blit_text(surf, fonts["readout"], _clock_text(), DIM, g.clock_c, "center")
+    win = (cx - 200, y - 28, 400, 56)
+    lcd_window(pygame, surf, win, (14, 9, 4), (44, 30, 12))
+    blit_text(surf, fonts["micro"], "ODO", DIM, (cx - 184, y + 2), "midleft")
     blit_digits(
         pygame,
         surf,
         f"{odo:06d}",
-        (cx - 70, y + 10),
-        digit_h=28,
+        (cx - 70, y + 4),
+        digit_h=24,
         color=AMBER,
         ghost=AMBER_GHOST,
         ghost_text="888888",
         bloom=True,
         italic=0.03,
     )
-    blit_text(surf, fonts["micro"], "TRIP A", DIM, (cx + 70, y - 14), "midleft")
+    blit_text(surf, fonts["micro"], "TRIP A", DIM, (cx + 48, y + 2), "midleft")
     blit_digits(
         pygame,
         surf,
         f"{trip:05.1f}",
-        (cx + 150, y + 10),
-        digit_h=28,
+        (cx + 148, y + 4),
+        digit_h=24,
         color=AMBER,
         ghost=AMBER_GHOST,
         ghost_text="888.8",
         bloom=True,
         italic=0.03,
     )
-    blit_text(
-        surf,
-        fonts["micro"],
-        f"{face.batt_v:.1f}V",
-        RED if batt_warn else DIM,
-        (cx + 232, y - 14),
-        "midleft",
-    )
+    if batt_warn:
+        blit_text(surf, fonts["micro"], f"{face.batt_v:.1f}V", RED, (cx + 210, y - 18), "midleft")
 
 
-def _round_btn(pygame, fonts, surf, rect, left: str, right: str | None = None) -> None:
-    """Circular OEM bezel button (or a joined −/+ pair)."""
+def _round_btn(pygame, fonts, surf, rect, label: str, label_col=WHITE) -> None:
+    """One circular OEM bezel button — never a merged −/+ pill."""
     x, y, w, h = rect
-    if right is None:
-        pygame.draw.ellipse(surf, BEZEL_BTN, pygame.Rect(x, y, w, h))
-        pygame.draw.ellipse(surf, (88, 88, 86), pygame.Rect(x, y, w, h), width=1)
-        blit_text(surf, fonts["lamp"], left, WHITE, (x + w // 2, y + h // 2), "center")
-        return
-    # Two circles sharing a rocker span
-    r = h // 2
-    pygame.draw.circle(surf, BEZEL_BTN, (x + r, y + r), r)
-    pygame.draw.circle(surf, BEZEL_BTN, (x + w - r, y + r), r)
-    pygame.draw.rect(surf, BEZEL_BTN, pygame.Rect(x + r, y, w - 2 * r, h))
-    pygame.draw.line(surf, (72, 72, 70), (x + w // 2, y + 5), (x + w // 2, y + h - 5), 2)
-    blit_text(surf, fonts["tiny"], left, RED, (x + w * 0.25, y + h // 2), "center")
-    blit_text(surf, fonts["tiny"], right, WHITE, (x + w * 0.75, y + h // 2), "center")
+    pygame.draw.ellipse(surf, BEZEL_BTN, pygame.Rect(x, y, w, h))
+    pygame.draw.ellipse(surf, (88, 88, 86), pygame.Rect(x, y, w, h), width=1)
+    blit_text(surf, fonts["lamp"], label, label_col, (x + w // 2, y + h // 2), "center")
 
 
 def _cruise_cancel_icon(pygame, surf, cx: int, cy: int, col) -> None:
@@ -960,13 +1137,15 @@ def draw_hardware_strip(
     surf,
     face: DisplayState,
     bulb_check: bool = False,
-    g: FaceGeom = FACE,
+    g: FaceGeom | None = None,
 ) -> None:
-    """Lower bezel: circular −/+, telltales on the face, SEL + TRIP, mph·km/h."""
-    _round_btn(pygame, fonts, surf, g.rocker, "−", "+")
+    """Lower bezel: separate round − and +, telltales, SEL/CLOCK + TRIP."""
+    g = _geom(g)
+    _round_btn(pygame, fonts, surf, g.minus_btn, "−", RED)
+    _round_btn(pygame, fonts, surf, g.plus_btn, "+", WHITE)
 
-    rx, ry, rw, rh = g.rocker
-    dial_x = rx + 14
+    rx, ry, rw, rh = g.minus_btn
+    dial_x = rx + 10
     dial_y = ry + rh + 16
     _cruise_cancel_icon(pygame, surf, dial_x, dial_y, WHITE)
     blit_text(surf, fonts["lamp"], "PUSH CANCEL", WHITE, (dial_x + 78, dial_y), "center")
@@ -980,35 +1159,27 @@ def draw_hardware_strip(
     total = sum(item.width for item in lamps)
     x = bx + max(8, (bw - total) // 2)
     cy = by + bh // 2
-    icon_h = max(22, bh - 10)
+    icon_h = max(20, bh - 8)
     for item in lamps:
         cx = x + item.width // 2
         col = item.color if item.lit else LAMP_GHOST
         sprite = icon_surface(pygame, item.kind, col, icon_h, max_width=item.width - 4)
         if item.lit:
-            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.38, scale=1.08)
+            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.32, scale=1.06)
         else:
             surf.blit(sprite, sprite.get_rect(center=(cx, cy)))
         x += item.width
 
-    _round_btn(pygame, fonts, surf, g.trip_blank, "SEL")
+    _round_btn(pygame, fonts, surf, g.trip_blank, "CLOCK" if g.style == FaceStyle.AP2.value else "SEL")
     _round_btn(pygame, fonts, surf, g.trip, "TRIP")
-    tx, ty, tw, th = g.trip
-    blit_text(
-        surf,
-        fonts["micro"],
-        "mph · km/h",
-        WHITE,
-        (tx + tw // 2, ty + th + 16),
-        "center",
-    )
 
 
-def draw_ready_card(fonts, surf, face: DisplayState, g: FaceGeom = FACE) -> None:
+def draw_ready_card(fonts, surf, face: DisplayState, g: FaceGeom | None = None) -> None:
     """ID.4-like pre-drive summary sitting in the LCD well."""
+    g = _geom(g)
     cx = g.speed_c[0]
     ly = g.lcd[1]
-    blit_text(surf, fonts["micro"], "HONDA  S2000  AP1", DIM, (cx, ly + 70), "center")
+    blit_text(surf, fonts["micro"], "S2000  DIGITAL  DASH", DIM, (cx, ly + 70), "center")
     blit_text(surf, fonts["ready"], "READY", AMBER, g.speed_c, "center")
     blit_text(surf, fonts["tiny"], "IGNITION ON  ·  SYSTEMS OK", DIM, (cx, g.speed_c[1] + 58), "center")
     chips = [
@@ -1017,7 +1188,7 @@ def draw_ready_card(fonts, surf, face: DisplayState, g: FaceGeom = FACE) -> None
         ("TEMP", f"{face.ect_c:.0f} °C"),
         ("ODO", f"{face.odo_km:,.0f} km"),
     ]
-    y = g.temp[1] - 8
+    y = g.odo_c[1] + 36
     x0 = cx - 270
     for i, (name, val) in enumerate(chips):
         x = x0 + i * 180
@@ -1033,35 +1204,40 @@ def draw_live_face(
     rpm_override: float | None = None,
     bulb_check: bool = False,
     fade: float = 1.0,
+    g: FaceGeom | None = None,
 ) -> None:
+    g = _geom(g)
     rpm = face.rpm if rpm_override is None else rpm_override
     layer = surf
     if fade < 0.999:
         layer = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
-    draw_tach_segments(pygame, layer, clamp(rpm / float(RPM_REDLINE), 0.0, 1.0))
-    draw_tach_numbers(pygame, fonts, layer)
-    draw_temp_bar(pygame, fonts, layer, ect_frac(face.ect_c), face.ect_c >= ECT_HOT_C)
-    draw_fuel_bar(pygame, fonts, layer, fuel_frac(face.fuel_pct), face.fuel_pct < FUEL_LOW_PCT)
-    draw_speed(pygame, fonts, layer, face.speed_kmh)
+    draw_tach_segments(pygame, layer, clamp(rpm / float(RPM_REDLINE), 0.0, 1.0), g=g)
+    draw_tach_numbers(pygame, fonts, layer, g=g)
+    draw_temp_bar(pygame, fonts, layer, ect_frac(face.ect_c), face.ect_c >= ECT_HOT_C, g=g)
+    draw_fuel_bar(pygame, fonts, layer, fuel_frac(face.fuel_pct), face.fuel_pct < FUEL_LOW_PCT, g=g)
+    draw_speed(pygame, fonts, layer, face.speed_kmh, g=g)
     draw_odo_row(
         pygame,
         fonts,
         layer,
         face,
         face.batt_v < BATT_LOW_V or face.lamps.get("batt_warn", False),
+        g=g,
     )
-    draw_hardware_strip(pygame, fonts, layer, face, bulb_check=bulb_check)
+    draw_hardware_strip(pygame, fonts, layer, face, bulb_check=bulb_check, g=g)
     if fade < 0.999:
         layer.set_alpha(int(255 * clamp(fade, 0.0, 1.0)))
         surf.blit(layer, (0, 0))
 
 
-def draw_caption(fonts, surf, g: FaceGeom = FACE) -> None:
+def draw_caption(fonts, surf, g: FaceGeom | None = None) -> None:
+    g = _geom(g)
     mx, my, mw, mh = g.module
+    label = "AP2" if g.style == FaceStyle.AP2.value else "AP1"
     blit_text(
         surf,
         fonts["micro"],
-        "OEM cluster remains powered for legal odometer  ·  Esc quit",
+        f"{label} face  ·  OEM cluster remains powered for legal odometer  ·  Esc quit",
         MUTED,
         (W // 2, my + mh + 28),
         "center",
@@ -1075,18 +1251,20 @@ def draw_frame(
     face: DisplayState,
     phase: str,
     phase_t: float,
+    g: FaceGeom | None = None,
 ) -> None:
+    g = _geom(g)
     draw_cabin(pygame, surf)
-    draw_cowl(pygame, surf, sweep_t=phase_t if phase == "sweep" else None)
+    draw_cowl(pygame, surf, sweep_t=phase_t if phase == "sweep" else None, g=g)
     if phase == "sweep":
-        draw_tach_segments(pygame, surf, 0.0, ghost=True)
-        draw_tach_numbers(pygame, fonts, surf, dim=True)
-        draw_temp_bar(pygame, fonts, surf, 0.0, False)
-        draw_fuel_bar(pygame, fonts, surf, 0.0, False)
-        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False)
+        draw_tach_segments(pygame, surf, 0.0, ghost=True, g=g)
+        draw_tach_numbers(pygame, fonts, surf, dim=True, g=g)
+        draw_temp_bar(pygame, fonts, surf, 0.0, False, g=g)
+        draw_fuel_bar(pygame, fonts, surf, 0.0, False, g=g)
+        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False, g=g)
     elif phase == "ready":
-        draw_ready_card(fonts, surf, face)
-        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False)
+        draw_ready_card(fonts, surf, face, g=g)
+        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False, g=g)
     elif phase == "reveal":
         draw_live_face(
             pygame,
@@ -1096,10 +1274,11 @@ def draw_frame(
             rpm_override=reveal_rpm(phase_t, face.rpm),
             bulb_check=phase_t < 0.55,
             fade=clamp(phase_t * 1.4, 0.0, 1.0),
+            g=g,
         )
     else:
-        draw_live_face(pygame, fonts, surf, face)
-    draw_caption(fonts, surf)
+        draw_live_face(pygame, fonts, surf, face, g=g)
+    draw_caption(fonts, surf, g=g)
 
 
 # Headless smoke walks the boot clock so CI covers sweep → ready → reveal → live
@@ -1152,7 +1331,7 @@ def init_pygame(windowed: bool, headless: bool):
     import pygame
 
     pygame.init()
-    pygame.display.set_caption("S2000 AP1 — OEM cluster")
+    pygame.display.set_caption("S2000 Digital Dash")
     flags = 0 if (windowed or headless) else pygame.FULLSCREEN
     try:
         screen = pygame.display.set_mode((W, H), flags)
@@ -1173,6 +1352,9 @@ def main(argv: list[str] | None = None) -> None:
         print("pygame is required: uv sync   (or pip install -r requirements.txt)", file=sys.stderr)
         raise SystemExit(1)
 
+    apply_face_style(args.style)
+    if args.smoke:
+        os.environ.setdefault("DASH_CLOCK", "11:03")
     pygame, screen = init_pygame(args.windowed, headless=args.smoke)
     fonts = build_fonts(pygame)
     clock = pygame.time.Clock()
@@ -1217,6 +1399,10 @@ def main(argv: list[str] | None = None) -> None:
                     running = False
                 if event.key in (pygame.K_SPACE, pygame.K_RETURN):
                     args.intro = False
+                if event.key == pygame.K_1:
+                    apply_face_style(FaceStyle.AP1)
+                if event.key == pygame.K_2:
+                    apply_face_style(FaceStyle.AP2)
 
         incoming = source.poll()
         if incoming is not None:
