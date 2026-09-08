@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: tests + headless smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11+
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: System fonts for pygame SysFont
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fonts-dejavu-core
+
+      - name: Install Python deps
+        run: python -m pip install -r requirements.txt
+
+      - name: Unit tests
+        run: python -m unittest discover tests
+
+      - name: Headless smoke
+        run: python src/gauge_ui.py --smoke
+
+      - name: Headless smoke (explicit --no-intro)
+        run: python src/gauge_ui.py --smoke --no-intro

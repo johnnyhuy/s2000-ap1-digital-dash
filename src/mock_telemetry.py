@@ -9,13 +9,14 @@ from __future__ import annotations
 import math
 import sys
 import time
+from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from protocol import MOCK_HZ, Telemetry
 
 
 def driving_loop(t: float, odo: float) -> Telemetry:
     """Synthetic drive: idle → cruise → VTEC blip → coast."""
-    # RPM: base cruise with periodic pull toward redline
     pull = 0.5 + 0.5 * math.sin(t * 0.25)
     rpm = int(1800 + 4200 * pull + 1800 * max(0.0, math.sin(t * 0.55)) ** 2)
     rpm = max(850, min(9200, rpm))
@@ -56,24 +57,20 @@ def driving_loop(t: float, odo: float) -> Telemetry:
 def main() -> None:
     dt = 1.0 / MOCK_HZ
     t0 = time.monotonic()
-    odo = 142_857.3  # cheeky starting odo
-    # Unbuffered line writes so the pipe stays live
+    odo = 142_857.3  # cheeky starting odo (display-only; OEM cluster stays legal)
     try:
         while True:
             now = time.monotonic()
             t = now - t0
-            # Integrate distance from last frame's speed (approx)
             telem = driving_loop(t, odo)
             odo += telem.speed_kmh / 3600.0 * dt
             telem.odo_km = round(odo, 1)
             sys.stdout.write(telem.to_line())
             sys.stdout.flush()
-            # Pace to ~20 Hz
             sleep_for = dt - (time.monotonic() - now)
             if sleep_for > 0:
                 time.sleep(sleep_for)
     except BrokenPipeError:
-        # Consumer quit (Esc) — exit quietly
         try:
             sys.stdout.close()
         except Exception:
