@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 425" role="img" aria-label="AP1 OEM flat cluster lock">
+  <title>AP1 cluster  2.35:1 flat lock</title>
+  <style>
+    .bg { fill: #0c0c0e; }
+    .cowl { fill: #1a1918; stroke: #8ad0e8; stroke-width: 1.2; }
+    .lcd { fill: #020203; stroke: #2a241c; }
+    .tick { fill: #e8a824; }
+    .red { fill: #e07020; }
+    .num { fill: #f0f0ea; font: 700 13px "DejaVu Sans", sans-serif; text-anchor: middle; }
+    .rn { fill: #e07020; font: 700 13px "DejaVu Sans", sans-serif; text-anchor: middle; }
+    .spd { fill: #e8a824; font: 700 42px "DejaVu Sans Mono", monospace; text-anchor: middle; }
+    .unit { fill: #e8a824; font: 12px "DejaVu Sans", sans-serif; }
+    .mph { fill: #6a6256; font: 11px "DejaVu Sans", sans-serif; }
+    .odo { fill: #e8a824; font: 700 13px "DejaVu Sans Mono", monospace; text-anchor: middle; }
+    .tiny { fill: #e8a824; font: 700 11px "DejaVu Sans", sans-serif; text-anchor: middle; }
+    .ghost { fill: #1c1408; }
+    .btn { fill: #767674; }
+    .band { fill: #101112; stroke: #2a2c2e; }
+    .dim { fill: #e6e2d6; font: 700 9px "DejaVu Sans", sans-serif; text-anchor: middle; }
+    .call { fill: #8ad0e8; font: 10px "DejaVu Sans", sans-serif; }
+    .guide { stroke: #3a6a78; stroke-width: 0.7; stroke-dasharray: 3 2; fill: none; }
+  </style>
+  <rect class="bg" width="1000" height="425"/>
+
+  <!-- Module 0100% mapped to x=20..980, y=20..364 (2.35:1) -->
+  <!-- Arch: y = 20 + 0.28*344 * u^2 ; spring y = 20+96 = 116 -->
+  <!-- Notch 5872%: y=20+200=220 to 20+248=268 ; step 4.4% of 960 = 42 -->
+  <path class="cowl" d="
+    M 20,364
+    L 980,364
+    L 980,268
+    L 938,268
+    L 938,220
+    L 938,116
+    Q 500,20 62,116
+    L 62,220
+    L 62,268
+    L 20,268
+    Z"/>
+  <path class="lcd" d="
+    M 78,276
+    L 922,276
+    L 922,124
+    Q 500,40 78,124
+    Z"/>
+
+  <g id="tach">
+    <path class="tick" d="M110,230 L128,176 L142,180 L124,234 Z"/>
+    <path class="tick" d="M170,198 L200,154 L214,160 L184,204 Z"/>
+    <path class="tick" d="M250,158 L292,122 L304,132 L262,168 Z"/>
+    <path class="tick" d="M340,118 L388,96 L396,108 L348,130 Z"/>
+    <path class="tick" d="M440,88 L490,80 L494,94 L444,102 Z"/>
+    <path class="red" d="M760,158 L782,138 L792,146 L770,166 Z"/>
+    <path class="red" d="M800,136 L820,122 L830,130 L810,144 Z"/>
+    <path class="red" d="M838,118 L856,108 L866,116 L848,126 Z"/>
+    <path class="red" d="M872,104 L888,96 L898,104 L882,112 Z"/>
+    <path class="red" d="M904,94 L918,90 L928,98 L914,102 Z"/>
+    <text class="num" x="128" y="220">0</text>
+    <text class="num" x="196" y="188">1</text>
+    <text class="num" x="276" y="154">2</text>
+    <text class="num" x="368" y="126">3</text>
+    <text class="num" x="460" y="104">4</text>
+    <text class="num" x="500" y="98">5</text>
+    <text class="num" x="540" y="104">6</text>
+    <text class="num" x="632" y="126">7</text>
+    <text class="rn" x="724" y="154">8</text>
+    <text class="rn" x="804" y="188">9</text>
+    <text class="tiny" x="168" y="248">x1000r/min</text>
+  </g>
+
+  <text class="spd" x="500" y="168">000</text>
+  <text class="unit" x="568" y="158">km/h</text>
+  <text class="mph" x="568" y="176">mph</text>
+  <text class="odo" x="500" y="198">ODO  000000  TRIP  000.0</text>
+
+  <text class="tiny" x="92" y="268">C</text>
+  <rect x="108" y="256" width="172" height="12" class="ghost"/>
+  <rect x="108" y="256" width="90" height="12" class="tick"/>
+  <text class="tiny" x="294" y="268">H</text>
+
+  <text class="tiny" x="706" y="268">E</text>
+  <rect x="720" y="256" width="172" height="12" class="ghost"/>
+  <rect x="720" y="256" width="80" height="12" class="tick"/>
+  <text class="tiny" x="906" y="268">F</text>
+
+  <rect class="btn" x="36" y="300" width="86" height="26" rx="13"/>
+  <text class="dim" x="56" y="317"></text>
+  <text class="dim" x="102" y="317">+</text>
+  <text class="dim" x="96" y="348">PUSH CANCEL</text>
+  <rect class="band" x="250" y="298" width="500" height="30" rx="3"/>
+  <text class="tiny" x="500" y="318" style="fill:#6a6256">BAT OIL CEL EPS ! ABS SRS</text>
+  <rect class="btn" x="790" y="300" width="68" height="26" rx="13"/>
+  <rect class="btn" x="870" y="300" width="68" height="26" rx="13"/>
+  <text class="dim" x="904" y="317">TRIP</text>
+
+  <line class="guide" x1="20" y1="380" x2="980" y2="380"/>
+  <text class="call" x="20" y="396">2.35:1 · 170×72.3 mm · flat bottom · notches y=5872% · arch y=28u²</text>
+  <text class="call" x="20" y="412">TEMP (7.5%, 72%) w=18% h=3% · FUEL (74.5%, 72%) · speed (50%, 40%) · lamps y=80.5%</text>
+</svg>

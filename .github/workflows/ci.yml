@@ -50,3 +50,29 @@ jobs:
 
       - name: E2E unittest module
         run: python -m unittest tests.test_e2e -v
+
+  harness:
+    name: web harness build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/harness
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/harness/package-lock.json
+
+      - name: Install and test
+        run: |
+          npm ci
+          npm test
+
+      - name: Production build
+        run: npm run build

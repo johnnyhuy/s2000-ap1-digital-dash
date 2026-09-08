@@ -118,6 +118,21 @@ pip install -r requirements.txt
 
 On the Pi, `export DISPLAY=:0` if the box boots headless to a desktop session.
 
+## Web cluster harness (no Pi)
+
+Shareable Next.js demo of the amber OEM-geometry face, driven by the same frozen JSON fields. Client-side mock loop (play/pause, idle / cruise / VTEC / warn). Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track.
+
+```bash
+cd apps/harness
+npm install
+npm run dev    # http://localhost:3000  (also /harness)
+npm run build
+```
+
+**Vercel:** create a project with **Root Directory** `apps/harness` (Next.js preset). See [`apps/harness/README.md`](apps/harness/README.md).
+
+The banner on that page is the same **unofficial DIY / not Honda Motor Co.** disclaimer as this README.
+
 ## Run
 
 ```bash
@@ -201,7 +216,8 @@ Optional: `lamps` object (`oil`, `cel`, `abs`, `turn_l`, `turn_r`, `high_beam`, 
 - `shots/` — sweep / ready / reveal / live / cruise stills
 - `docs/assets/` — unofficial mark, intro GIF, VP9 hero
 - `scripts/bake_showcase.py` — regenerate stills + hero media
-- `.github/workflows/ci.yml` — unittest + headless smoke + e2e on push/PR to `main`
+- `apps/harness/` — Next.js App Router web cluster (Vercel; Root Directory `apps/harness`)
+- `.github/workflows/ci.yml` — unittest + headless smoke + e2e + harness build on push/PR to `main`
 
 ## CAD placeholders
 
