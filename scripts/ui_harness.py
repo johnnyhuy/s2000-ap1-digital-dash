@@ -118,7 +118,7 @@ def check_hashes(got: dict[str, str], expected: dict[str, str]) -> list[str]:
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="AP1 cluster UI harness")
+    p = argparse.ArgumentParser(description="S2000 digital dash UI harness")
     p.add_argument("--check", action="store_true", help="Compare ahash against goldens")
     p.add_argument("--compare", action="store_true", help="Also write OEM side-by-sides")
     return p.parse_args(argv)

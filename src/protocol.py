@@ -1,4 +1,4 @@
-"""S2000 AP1 Phase 1 — shared JSON telemetry schema.
+"""S2000 digital dash — shared JSON telemetry schema.
 
 Wire format: one JSON object per newline (UTF-8).
 Required fields match exactly: rpm, speed_kmh, fuel_pct, ect_c, batt_v, odo_km.

@@ -1,6 +1,6 @@
 """OEM-style 7-segment LCD digits with ghost segments and amber bloom.
 
-Used for the AP1 speedo and odo/trip windows. Protocol field names are
+Used for the speedo and odo/trip windows. Protocol field names are
 unchanged — this is display-only.
 """
 from __future__ import annotations
@@ -37,8 +37,8 @@ def ghost_pattern(width: int, fill: str = "8") -> str:
 
 
 def _h_seg(x: float, y: float, w: float, t: float) -> list[tuple[float, float]]:
-    """Horizontal segment as a shallow hexagon."""
-    notch = t * 0.45
+    """Horizontal segment — rounded hex (softer OEM LCD, not square bricks)."""
+    notch = t * 0.78
     return [
         (x + notch, y),
         (x + w - notch, y),
@@ -50,8 +50,8 @@ def _h_seg(x: float, y: float, w: float, t: float) -> list[tuple[float, float]]:
 
 
 def _v_seg(x: float, y: float, h: float, t: float) -> list[tuple[float, float]]:
-    """Vertical segment as a shallow hexagon."""
-    notch = t * 0.45
+    """Vertical segment — rounded hex with the same end treatment as `_h_seg`."""
+    notch = t * 0.78
     return [
         (x + t * 0.5, y),
         (x + t, y + notch),
@@ -64,16 +64,15 @@ def _v_seg(x: float, y: float, h: float, t: float) -> list[tuple[float, float]]:
 
 def segment_polys(x: int, y: int, w: int, h: int) -> dict[str, list[tuple[int, int]]]:
     """Pixel polygons for one digit. Origin is top-left of the digit box."""
-    t = max(3.0, h * 0.13)
-    gap = max(1.2, t * 0.22)
+    t = max(3.0, h * 0.145)
+    t_g = t * 1.18  # slightly heavier middle bar (OEM 7-seg)
+    gap = max(1.4, t * 0.28)
     inner_w = w - t
     half = (h - t) / 2.0
     ax, ay = x + t * 0.35, y
-    # A top, D bot, G mid
     a = _h_seg(ax, ay, inner_w, t)
-    g = _h_seg(ax, y + half, inner_w, t)
+    g = _h_seg(ax - t * 0.04, y + half - (t_g - t) * 0.5, inner_w + t * 0.08, t_g)
     d = _h_seg(ax, y + h - t, inner_w, t)
-    # F UL, B UR, E LL, C LR
     f = _v_seg(x, y + t * 0.55, half - gap, t)
     b = _v_seg(x + w - t, y + t * 0.55, half - gap, t)
     e = _v_seg(x, y + half + t * 0.35, half - gap, t)
@@ -115,13 +114,16 @@ def draw_digit(
             continue
         if bloom is not None:
             glow = (
-                min(255, color[0] + 24),
-                min(255, color[1] + 16),
-                min(255, color[2] + 6),
-                70,
+                min(255, color[0] + 36),
+                min(255, color[1] + 22),
+                min(255, color[2] + 8),
+                92,
             )
-            pygame.draw.polygon(bloom, glow, _expand(pts, 4))
+            pygame.draw.polygon(bloom, glow, _expand(pts, 6))
         pygame.draw.polygon(dest, color, pts)
+        cap_r = max(1, int(round(h * 0.04)))
+        pygame.draw.circle(dest, color, pts[0], cap_r)
+        pygame.draw.circle(dest, color, pts[len(pts) // 2], cap_r)
 
 
 def measure_text(text: str, digit_h: int, gap: int | None = None) -> tuple[int, int]:

@@ -1,6 +1,6 @@
 <h1 align="center">
   <img src="docs/assets/honda-unofficial-mark.svg" alt="Unofficial geometric H mark" width="64" valign="middle" />
-  S2000 AP1 Digital Dash
+  S2000 Digital Dash
 </h1>
 
 <p align="center">
@@ -12,10 +12,10 @@
   <img src="https://img.shields.io/badge/Honda-unofficial%20DIY-black?style=flat" alt="Unofficial DIY — not affiliated with Honda" />
 </p>
 
-> **Unofficial enthusiast / DIY project.** This repository is **not affiliated with, endorsed by, or associated with Honda Motor Co., Ltd.** Honda, S2000, AP1, and related marks are trademarks of their respective owners. For **personal and educational use** on the bench. The on-screen odometer is **display-only** — the **OEM cluster must stay plugged** so the factory odometer remains the legal one.
+> **Unofficial enthusiast / DIY project.** This repository is **not affiliated with, endorsed by, or associated with Honda Motor Co., Ltd.** Honda, S2000, AP1, AP2, and related marks are trademarks of their respective owners. For **personal and educational use** on the bench. The on-screen odometer is **display-only** — the **OEM cluster must stay plugged** so the factory odometer remains the legal one.
 
 <p align="center">
-  <strong>Newline JSON in. Amber AP1-geometry gauges out.</strong><br/>
+  <strong>Newline JSON in. Selectable AP1 / AP2 face styles out.</strong><br/>
   Phase 1 bench mock for a Raspberry Pi 5 + Wisecoco-class 7&quot; AMOLED overlay.<br/>
   Not a product, not car-ready, not a replacement for the factory cluster.
 </p>
@@ -41,11 +41,16 @@
 <tr>
 <td width="50%" valign="middle">
 
-### OEM-locked face
+### Face styles (AP1 default, AP2 selectable)
 
-Amber-on-black LCD in a **hooded arched cowl**. Flat 2.35:1 elevation — no fake 3D skew. Proportions live in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md).
+Amber-on-black LCD in a **hooded arched cowl**. Flat 2.35:1 elevation — no fake 3D skew.
 
-Arched tach **0–9 ×1000**, five redline blocks **8–9**, digital speed, horizontal **TEMP** / **FUEL**, **ODO / TRIP / BATT**. Bottom strip uses OEM telltales: red BRAKE / battery / oil / door / seatbelt / SRS, amber ABS / CEL / MAINT / EPS, green immobilizer + turn arrows, blue high beam.
+- **AP1** (default): locked straight **TEMP** / **FUEL**, OEM telltale strip. Proportions in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md). Tach ticks are thin bars **normal to the arch**.
+- **AP2**: interpretive stacked arched TEMP / FUEL on the right, plus a clock row. Uses [`refs/oem/ap2/`](refs/oem/ap2/) as reference — **not** a pixel-perfect plate.
+
+Toggle in the [web harness](apps/harness/) or `python src/gauge_ui.py --style ap2` (keys `1` / `2` live). Protocol fields stay frozen.
+
+Arched tach **0–9 ×1000**, five redline blocks **8–9**, digital speed, **ODO / TRIP A**. Bottom strip uses OEM telltales: red BRAKE / battery / oil / door / seatbelt / SRS, amber ABS / CEL / MAINT / EPS, green immobilizer + turn arrows, blue high beam.
 
 </td>
 <td width="50%">
@@ -133,7 +138,7 @@ uv sync --extra dev
 
 ## Web cluster harness (no Pi)
 
-Shareable Next.js demo of the amber OEM-geometry face, driven by the same frozen JSON fields. Client-side mock loop (play/pause, idle / cruise / VTEC / warn). Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track.
+Shareable Next.js demo of the amber OEM-geometry face, driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn). Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track.
 
 ```bash
 cd apps/harness
@@ -165,6 +170,7 @@ Fullscreen by default. Esc or Q quits.
 | `--smoke` | Dummy SDL, draw a few frames, exit (CI / Pi check; no live pipe needed) |
 | `--screenshot DIR` | Write `01_sweep.png` … `05_cruise.png` into DIR |
 | `--serial [PORT]` | Phase 2 UART stub (needs `pyserial`; default `/dev/ttyUSB0`) |
+| `--style ap1\|ap2` | Face layout. **ap1** (default) straight TEMP/FUEL; **ap2** arched side gauges |
 
 ```bash
 # Fast health check (same commands CI runs)
@@ -223,13 +229,14 @@ Optional: `lamps` object (`oil`, `cel`, `abs`, `turn_l`, `turn_r`, `high_beam`, 
 
 - `src/protocol.py` — shared schema + parse/validate
 - `src/mock_telemetry.py` — 20 Hz fake drive loop → stdout (Pi bench pipe)
-- `src/gauge_ui.py` — pygame 1920×1080 OEM-geometry cluster + intro
-- `src/lcd_digits.py` — 7-segment speed / odo with ghost + bloom
+- `src/face_style.py` — `ap1` / `ap2` face enum (layout only)
+- `src/gauge_ui.py` — pygame 1920×1080 cluster + intro + `--style`
+- `src/lcd_digits.py` — rounded 7-segment speed / odo with ghost + bloom
 - `src/serial_reader.py` — Phase 2 UART stub + `SerialLineReader` (pyserial optional)
 - `mocks/` — mock ESP32 UART emitter + in-memory / PTY serial (no firmware)
 - `tests/` — pytest (unittest + harness ahash + e2e pipe)
 - `refs/flat/` — SVG + `DIMENSIONS.md` lock for the OEM face
-- `refs/oem/` — curated AP1 photos + labelled AP2 caution + `SOURCES.md`
+- `refs/oem/` — curated AP1 photos + labelled AP2 reference (caution: not a plate) + `SOURCES.md`
 - `assets/icons/` — OEM telltale SVG/PNG atlas (tinted at draw time)
 - `cad/` — OpenSCAD placeholders (overlay bezel + connectors + `replace_face/`). PETG/ASA notes stay here.
 - `shots/` — sweep / ready / reveal / live / cruise stills
@@ -254,7 +261,7 @@ See [`cad/README.md`](cad/README.md). Overlay 7" bezel + connector shells are di
 This is an **unofficial** enthusiast / DIY bench project.
 
 - **Not affiliated with, endorsed by, or associated with Honda Motor Co., Ltd.**
-- Honda, S2000, AP1, and related names are trademarks of their respective owners
+- Honda, S2000, AP1, AP2, and related names are trademarks of their respective owners
 - Personal / educational use only
 - The overlay odometer is **display-only**. Keep the **OEM cluster plugged** for the legal odometer
 - Phase 1 is not vehicle wiring. Do not treat placeholder CAD as production geometry
@@ -264,4 +271,17 @@ This is an **unofficial** enthusiast / DIY bench project.
 
 Bench notes and Phase 2 tap ideas belong in [Issues](https://github.com/johnnyhuy/s2000-ap1-digital-dash/issues). Keep protocol field names stable so mock, UI, and a future UART source stay interchangeable.
 
-This is a small overlay experiment, not a product landing page. If the face geometry drifts, the lock file in `refs/flat/` wins.
+This is a small overlay experiment, not a product landing page. If the **AP1** face geometry drifts, the lock file in `refs/flat/` wins. AP2 is a separate interpretive layout.
+
+## Suggested repository rename
+
+The GitHub repo is still [`johnnyhuy/s2000-ap1-digital-dash`](https://github.com/johnnyhuy/s2000-ap1-digital-dash). This PR does **not** rename it (needs Johnny on GitHub).
+
+Suggested later:
+
+| Where | Today | Suggested |
+| --- | --- | --- |
+| GitHub | `johnnyhuy/s2000-ap1-digital-dash` | `johnnyhuy/s2000-digital-dash` |
+| Vercel project | whatever is linked now | **s2000-digital-dash** — keep **Root Directory** `apps/harness`; reconnect git if the GitHub name changes |
+
+Historical AP1 paths (`refs/flat/ap1_*`, `refs/oem/lit/lit_ap1_*`, `docs/assets/compare/compare_ap1_*`) stay. They are AP1-specific and labelled as such.

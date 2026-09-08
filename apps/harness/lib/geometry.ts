@@ -1,8 +1,11 @@
 /**
- * Flat AP1 face lock — percentages from refs/flat/DIMENSIONS.md.
+ * Face geometry — AP1 lock from refs/flat/DIMENSIONS.md; AP2 is a
+ * separate layout family (arched TEMP / FUEL on the right).
  * ViewBox is the module bounding box (1000 × 425.53 ≈ 2.35:1) plus a
  * short hardware strip under the cowl.
  */
+
+import { DEFAULT_FACE_STYLE, type FaceStyle } from "./faceStyle.ts";
 
 export const MODULE_ASPECT = 2.35;
 export const VIEW_W = 1000;
@@ -30,13 +33,25 @@ export const TACH_END_Y_PCT = 0.64;
 export const TACH_PEAK_Y_PCT = 0.12;
 export const TACH_INSET_X_PCT = 0.09;
 
-export const TEMP_SEGS = 14;
+/** AP2 interpretive side-gauge lock (not a measured plate). */
+export const AP2_SPEED_X_PCT = 0.42;
+export const AP2_ODO_Y_PCT = 0.54;
+export const AP2_TEMP_X_PCT = 0.62;
+export const AP2_TEMP_Y_PCT = 0.3;
+export const AP2_FUEL_Y_PCT = 0.5;
+export const AP2_SIDE_W_PCT = 0.28;
+export const AP2_SIDE_H_PCT = 0.155;
+
+export const TEMP_SEGS = 6;
 export const FUEL_SEGS = 16;
+export const AP2_TEMP_SEGS = 8;
+export const AP2_FUEL_SEGS = 10;
 export const REDLINE_BLOCKS = 5;
 export const TACH_FILL_STEPS = 72;
 export const TACH_MAJORS = 10;
 
 export type FaceGeom = {
+  style: FaceStyle;
   module: { x: number; y: number; w: number; h: number };
   step: number;
   springY: number;
@@ -50,6 +65,7 @@ export type FaceGeom = {
   fuel: { x: number; y: number; w: number; h: number };
   speed: { x: number; y: number };
   odo: { x: number; y: number };
+  clock: { x: number; y: number };
   tachCx: number;
   tachCy: number;
   tachROuter: number;
@@ -78,7 +94,7 @@ function archPoints(
   return pts.join(" ");
 }
 
-export function buildFaceGeom(): FaceGeom {
+export function buildFaceGeom(style: FaceStyle = DEFAULT_FACE_STYLE): FaceGeom {
   const x = 0;
   const y = 0;
   const w = VIEW_W;
@@ -91,8 +107,11 @@ export function buildFaceGeom(): FaceGeom {
   const lcdBottom = y + h * LCD_BOTTOM_PCT;
   const spring = y + h * ARCH_RISE_PCT;
   const barH = Math.max(10, h * BAR_H_PCT);
+  const ap2 = style === "ap2";
 
-  const cx = x + w * SPEED_X_PCT;
+  const speedXPct = ap2 ? AP2_SPEED_X_PCT : SPEED_X_PCT;
+  const odoYPct = ap2 ? AP2_ODO_Y_PCT : ODO_Y_PCT;
+  const cx = x + w * speedXPct;
   const endY = y + h * TACH_END_Y_PCT;
   const peakY = y + h * TACH_PEAK_Y_PCT;
   const endInset = lcdW * TACH_INSET_X_PCT;
@@ -107,7 +126,18 @@ export function buildFaceGeom(): FaceGeom {
   if (endDeg < startDeg) endDeg += 360;
   const span = endDeg - startDeg;
 
+  const temp = ap2
+    ? { x: x + w * AP2_TEMP_X_PCT, y: y + h * AP2_TEMP_Y_PCT, w: w * AP2_SIDE_W_PCT, h: h * AP2_SIDE_H_PCT }
+    : { x: x + w * TEMP_X_PCT, y: y + h * TEMP_Y_PCT, w: w * TEMP_W_PCT, h: barH };
+  const fuel = ap2
+    ? { x: x + w * AP2_TEMP_X_PCT, y: y + h * AP2_FUEL_Y_PCT, w: w * AP2_SIDE_W_PCT, h: h * AP2_SIDE_H_PCT }
+    : { x: x + w * FUEL_X_PCT, y: y + h * FUEL_Y_PCT, w: w * TEMP_W_PCT, h: barH };
+
+  const speedY = y + h * SPEED_Y_PCT;
+  const odoY = y + h * odoYPct;
+
   return {
+    style,
     module: { x, y, w, h },
     step,
     springY: spring,
@@ -117,10 +147,11 @@ export function buildFaceGeom(): FaceGeom {
     notchTopY: y + h * NOTCH_TOP_PCT,
     notchBotY: y + h * NOTCH_BOT_PCT,
     lcd: { x: lcdX, y: lcdPeak, w: lcdW, h: lcdBottom - lcdPeak },
-    temp: { x: x + w * TEMP_X_PCT, y: y + h * TEMP_Y_PCT, w: w * TEMP_W_PCT, h: barH },
-    fuel: { x: x + w * FUEL_X_PCT, y: y + h * FUEL_Y_PCT, w: w * TEMP_W_PCT, h: barH },
-    speed: { x: cx, y: y + h * SPEED_Y_PCT },
-    odo: { x: cx, y: y + h * ODO_Y_PCT },
+    temp,
+    fuel,
+    speed: { x: cx, y: speedY },
+    odo: { x: cx, y: odoY },
+    clock: { x: cx, y: odoY - (ap2 ? 28 : 0) },
     tachCx: cx,
     tachCy: tachCy,
     tachROuter: tachR,
@@ -131,18 +162,28 @@ export function buildFaceGeom(): FaceGeom {
   };
 }
 
-export const FACE = buildFaceGeom();
+const GEOM: Record<FaceStyle, FaceGeom> = {
+  ap1: buildFaceGeom("ap1"),
+  ap2: buildFaceGeom("ap2"),
+};
 
-export function tachAngle(frac: number): number {
-  const t = frac < 0 ? 0 : frac > 1 ? 1 : frac;
-  return FACE.tachStart + FACE.tachSpan * t;
+export function faceGeom(style: FaceStyle = DEFAULT_FACE_STYLE): FaceGeom {
+  return GEOM[style];
 }
 
-export function tachPoint(r: number, frac: number): { x: number; y: number } {
-  const a = tachAngle(frac);
+/** Default AP1 lock — kept for existing call sites / tests. */
+export const FACE = GEOM.ap1;
+
+export function tachAngle(frac: number, geom: FaceGeom = FACE): number {
+  const t = frac < 0 ? 0 : frac > 1 ? 1 : frac;
+  return geom.tachStart + geom.tachSpan * t;
+}
+
+export function tachPoint(r: number, frac: number, geom: FaceGeom = FACE): { x: number; y: number } {
+  const a = tachAngle(frac, geom);
   return {
-    x: FACE.tachCx + r * Math.cos(a),
-    y: FACE.tachCy + r * Math.sin(a),
+    x: geom.tachCx + r * Math.cos(a),
+    y: geom.tachCy + r * Math.sin(a),
   };
 }
 
@@ -151,14 +192,15 @@ export function radialBlock(
   rOut: number,
   a0: number,
   a1: number,
+  geom: FaceGeom = FACE,
 ): string {
-  const { tachCx: cx, tachCy: cy } = FACE;
+  const { tachCx: cx, tachCy: cy } = geom;
   const p = (r: number, a: number) => `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
   return `M ${p(rIn, a0)} L ${p(rOut, a0)} L ${p(rOut, a1)} L ${p(rIn, a1)} Z`;
 }
 
-export function hoodPath(): string {
-  const { module: m, step, notchBotY, notchTopY, springY, hoodPeakY } = FACE;
+export function hoodPath(geom: FaceGeom = FACE): string {
+  const { module: m, step, notchBotY, notchTopY, springY, hoodPeakY } = geom;
   const lx = m.x + step;
   const rx = m.x + m.w - step;
   const bot = m.y + m.h;
@@ -179,8 +221,8 @@ export function hoodPath(): string {
   ].join(" ");
 }
 
-export function lcdPath(): string {
-  const { lcd, lcdSpringY, lcdPeakY } = FACE;
+export function lcdPath(geom: FaceGeom = FACE): string {
+  const { lcd, lcdSpringY, lcdPeakY } = geom;
   const rx = lcd.x + lcd.w;
   const bot = lcd.y + lcd.h;
   const arch = archPoints(rx, lcd.x, lcdPeakY, lcdSpringY);
@@ -196,4 +238,71 @@ export function lcdPath(): string {
 
 export function archPoly(x0: number, x1: number, yPeak: number, ySpring: number): string {
   return archPoints(x0, x1, yPeak, ySpring);
+}
+
+export function tachArchXY(frac: number, geom: FaceGeom = FACE): { x: number; y: number } {
+  const t = frac < 0 ? 0 : frac > 1 ? 1 : frac;
+  const inset = geom.lcd.w * 0.055;
+  const x0 = geom.lcd.x + inset;
+  const x1 = geom.lcd.x + geom.lcd.w - inset;
+  const u = 2 * t - 1;
+  const rise = (geom.lcdSpringY - geom.lcdPeakY) * 0.92;
+  return {
+    x: x0 + (x1 - x0) * t,
+    y: geom.lcdPeakY + 8 + rise * u * u,
+  };
+}
+
+export function tachArchNormal(frac: number, geom: FaceGeom = FACE): { x: number; y: number } {
+  const t = frac < 0 ? 0 : frac > 1 ? 1 : frac;
+  const inset = geom.lcd.w * 0.055;
+  const spanX = geom.lcd.w - 2 * inset;
+  const rise = (geom.lcdSpringY - geom.lcdPeakY) * 0.92;
+  const u = 2 * t - 1;
+  const dx = spanX;
+  const dy = 4 * rise * u;
+  const n = Math.hypot(dx, dy) || 1;
+  let nx = dy / n;
+  let ny = -dx / n;
+  if (ny < 0) {
+    nx = -nx;
+    ny = -ny;
+  }
+  return { x: nx, y: ny };
+}
+
+export function tachTickPath(
+  frac: number,
+  width: number,
+  length: number,
+  geom: FaceGeom = FACE,
+  inset = 1.2,
+): string {
+  const p = tachArchXY(frac, geom);
+  const nrm = tachArchNormal(frac, geom);
+  const tx = -nrm.y;
+  const ty = nrm.x;
+  const hw = width * 0.5;
+  const x0 = p.x + nrm.x * inset;
+  const y0 = p.y + nrm.y * inset;
+  const pts = [
+    [x0 - tx * hw, y0 - ty * hw],
+    [x0 + tx * hw, y0 + ty * hw],
+    [x0 + tx * hw + nrm.x * length, y0 + ty * hw + nrm.y * length],
+    [x0 - tx * hw + nrm.x * length, y0 - ty * hw + nrm.y * length],
+  ];
+  return `M ${pts.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join(" L ")} Z`;
+}
+
+/** Shallow rainbow (concave-down) along a side-gauge box — AP2 only. */
+export function sideArchPoint(
+  box: { x: number; y: number; w: number; h: number },
+  frac: number,
+): { x: number; y: number } {
+  const t = frac < 0 ? 0 : frac > 1 ? 1 : frac;
+  const u = 2 * t - 1;
+  return {
+    x: box.x + box.w * t,
+    y: box.y + box.h * 0.22 + box.h * 0.72 * u * u,
+  };
 }

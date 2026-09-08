@@ -1,9 +1,9 @@
 # AP1 face dimensions (flat / orthographic)
 
-Canonical lock for the Phase 1 cluster. Copied from the OEM flat elevation
+Canonical lock for the **AP1** face style. Copied from the OEM flat elevation
 (`ap1_cluster_flat`). Percentages are of the **module bounding box**, origin
-top-left. Future UI edits change these numbers — they do not invent a new
-layout family.
+top-left. The **AP2** style is a separate layout family (arched side gauges);
+do not copy those percentages here.
 
 Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
 
@@ -36,7 +36,7 @@ Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
 | TEMP icon | thermometer above **C** |
 | FUEL icon | pump above **F** |
 | Lamp / hardware strip | y ≈ **80.5%** |
-| Tach 0–9 | **vertical** ticks on the parabola (not a circular fill); numerals inside the ticks |
+| Tach 0–9 | thin ticks **normal to the parabola** (not upright bricks / not a circular fill); numerals outside the ticks |
 | Redline | thick blocks **8–9** (five blocks) |
 
 Hardware strip, left → right:

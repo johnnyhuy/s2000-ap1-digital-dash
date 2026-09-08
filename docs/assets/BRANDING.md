@@ -12,3 +12,7 @@ disclaimer. Do **not** scrape, download, or embed official Honda brand
 assets.
 
 Same mark is copied to `apps/harness/public/docs/assets/` for the web demo.
+
+Product name in docs and chrome is **S2000 Digital Dash** (AP1 + AP2 faces).
+The GitHub repo may still be `johnnyhuy/s2000-ap1-digital-dash` until Johnny
+renames it — suggested `johnnyhuy/s2000-digital-dash`. See the root README.

@@ -1,5 +1,5 @@
 /**
- * Frozen AP1 Phase 1 JSON telemetry — same field names as src/protocol.py.
+ * Frozen Phase 1 JSON telemetry — same field names as src/protocol.py.
  * Wire format on the Pi is one JSON object per newline. The harness speaks
  * the same object in memory.
  */

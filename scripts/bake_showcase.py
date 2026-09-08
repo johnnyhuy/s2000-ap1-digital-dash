@@ -27,7 +27,7 @@ sys.path.insert(0, str(SRC))
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Bake AP1 cluster showcase media")
+    p = argparse.ArgumentParser(description="Bake S2000 digital dash showcase media")
     p.add_argument("--shots-only", action="store_true", help="Regenerate shots/ PNGs only")
     p.add_argument("--fps", type=int, default=30, help="Intro GIF/WebM frame rate (30–60)")
     p.add_argument("--width", type=int, default=960, help="Encoded media width")

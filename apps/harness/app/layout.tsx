@@ -19,9 +19,9 @@ const shareTech = Share_Tech_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AP1 cluster harness — unofficial DIY",
+  title: "S2000 Digital Dash — unofficial DIY",
   description:
-    "Shareable web demo of the S2000 AP1 digital dash. Unofficial enthusiast project — not affiliated with Honda Motor Co., Ltd.",
+    "Shareable web demo of the S2000 digital dash (AP1 / AP2 face styles). Unofficial enthusiast project — not affiliated with Honda Motor Co., Ltd.",
   icons: { icon: "/docs/assets/honda-unofficial-mark.svg" },
 };
 
