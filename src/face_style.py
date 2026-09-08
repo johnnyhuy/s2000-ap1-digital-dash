@@ -1,6 +1,7 @@
 """Cluster face style — layout only; protocol fields stay frozen.
 
-AP1 (default): locked flat elevation — straight TEMP / FUEL, OEM telltale strip.
+AP1 (default): locked flat elevation — horizontal TEMP / FUEL flanking the
+speedo, OEM telltale strip.
 AP2: interpretive arched side-gauges (TEMP over FUEL on the right) plus a
 clock row. Geometry is *not* a pixel-perfect AP2 plate — see refs/oem/ap2/.
 
@@ -19,7 +20,7 @@ class FaceStyle(str, Enum):
 DEFAULT_FACE_STYLE = FaceStyle.AP1
 
 FACE_STYLE_LABELS: dict[FaceStyle, str] = {
-    FaceStyle.AP1: "AP1 — straight TEMP / FUEL",
+    FaceStyle.AP1: "AP1 — horizontal TEMP / FUEL flanking the speedo",
     FaceStyle.AP2: "AP2 — arched side gauges",
 }
 

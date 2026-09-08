@@ -73,15 +73,15 @@
   <text class="mph" x="568" y="176">mph</text>
   <text class="odo" x="500" y="198">ODO  000000  TRIP  000.0</text>
 
-  <text class="tiny" x="92" y="268">C</text>
-  <rect x="108" y="256" width="172" height="12" class="ghost"/>
-  <rect x="108" y="256" width="90" height="12" class="tick"/>
-  <text class="tiny" x="294" y="268">H</text>
+  <text class="tiny" x="84" y="198">C</text>
+  <rect x="97" y="194" width="154" height="5" class="ghost"/>
+  <rect x="97" y="194" width="80" height="5" class="tick"/>
+  <text class="tiny" x="264" y="198">H</text>
 
-  <text class="tiny" x="706" y="268">E</text>
-  <rect x="720" y="256" width="172" height="12" class="ghost"/>
-  <rect x="720" y="256" width="80" height="12" class="tick"/>
-  <text class="tiny" x="906" y="268">F</text>
+  <text class="tiny" x="736" y="198">E</text>
+  <rect x="750" y="194" width="154" height="5" class="ghost"/>
+  <rect x="750" y="194" width="70" height="5" class="tick"/>
+  <text class="tiny" x="918" y="198">F</text>
 
   <rect class="btn" x="36" y="300" width="86" height="26" rx="13"/>
   <text class="dim" x="56" y="317"></text>
@@ -95,5 +95,5 @@
 
   <line class="guide" x1="20" y1="380" x2="980" y2="380"/>
   <text class="call" x="20" y="396">2.35:1 · 170×72.3 mm · flat bottom · notches y=5872% · arch y=28u²</text>
-  <text class="call" x="20" y="412">TEMP (7.5%, 72%) w=18% h=3% · FUEL (74.5%, 72%) · speed (50%, 40%) · lamps y=80.5%</text>
+  <text class="call" x="20" y="412">TEMP (8.0%, 50.5%) w=16% h=1.2% left of speedo · FUEL (76.0%, 50.5%) right · speed (50%, 40%) · lamps y=80.5%</text>
 </svg>

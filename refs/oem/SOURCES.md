@@ -1,7 +1,7 @@
 # OEM reference sources
 
 Curated Honda S2000 cluster photographs used to lock the pygame face.
-**AP1** (straight horizontal TEMP / FUEL) is the default face lock.
+**AP1** (horizontal TEMP left / FUEL right flanking the speedo) is the default face lock.
 **AP2** (arched side gauges, clock / outside-temp LCD) is filed under
 `ap2/` as a **style reference** — the AP2 UI is interpretive, not a
 pixel-perfect plate. Do not treat AP2 photos as AP1.
@@ -69,6 +69,6 @@ CC BY 2.0” caption. Do not strip credit from composites.
 - Redline is **five thick orange-red blocks from 8–9**
 - Speed is a **3-digit 7-segment** LCD; unused digits ghost as 188
 - Odo is **6 integer digits**; trip is **xxx.x**; label **TRIP A**
-- TEMP is **6** coarse bars (C–H, left). FUEL is a finer E–F ladder (right)
+- TEMP is a **horizontal C–H bar left of the speedo** (6 ticks). FUEL is a **horizontal E–F bar right of the speedo**. Vertical side stacks are erroneous.
 - Bezel buttons are **round** − / + and SEL / TRIP, plus `PUSH CANCEL` and `mph · km/h`
 - Lit colour is warm amber with bloom; unlit LCD segments stay as dim ghosts
