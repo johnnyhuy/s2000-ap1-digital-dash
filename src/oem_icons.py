@@ -288,6 +288,9 @@ def draw_white_icon(pygame, kind: str, w: int = 64, h: int = 48):
     return drawer(pygame, w, h)
 
 
+_TRIM_CACHE: dict[str, object] = {}
+
+
 def _load_png(pygame, kind: str):
     path = ASSETS / f"{kind}.png"
     if not path.is_file():
@@ -296,25 +299,71 @@ def _load_png(pygame, kind: str):
     return img
 
 
-def render_icon(pygame, kind: str, color: tuple[int, int, int], height: int):
+def _load_trimmed(pygame, kind: str):
+    cached = _TRIM_CACHE.get(kind)
+    if cached is not None:
+        return cached
     png = _load_png(pygame, kind)
+    if png is None:
+        return None
+    trimmed = _trim_alpha(pygame, png)
+    _TRIM_CACHE[kind] = trimmed
+    return trimmed
+
+
+def _trim_alpha(pygame, surf, pad: int = 1):
+    """Crop transparent padding so slot scale uses the silhouette, not the plate."""
+    w, h = surf.get_size()
+    min_x, min_y, max_x, max_y = w, h, 0, 0
+    for y in range(h):
+        for x in range(w):
+            if surf.get_at((x, y)).a > 16:
+                min_x = min(min_x, x)
+                min_y = min(min_y, y)
+                max_x = max(max_x, x)
+                max_y = max(max_y, y)
+    if max_x < min_x:
+        return surf
+    min_x = max(0, min_x - pad)
+    min_y = max(0, min_y - pad)
+    max_x = min(w - 1, max_x + pad)
+    max_y = min(h - 1, max_y + pad)
+    rect = pygame.Rect(min_x, min_y, max_x - min_x + 1, max_y - min_y + 1)
+    return surf.subsurface(rect).copy()
+
+
+def _fit(pygame, surf, max_w: int, max_h: int):
+    sw, sh = surf.get_size()
+    scale = min(max_w / max(1, sw), max_h / max(1, sh))
+    size = (max(2, int(sw * scale)), max(2, int(sh * scale)))
+    return pygame.transform.smoothscale(surf, size)
+
+
+def render_icon(
+    pygame,
+    kind: str,
+    color: tuple[int, int, int],
+    height: int,
+    max_width: int | None = None,
+):
+    png = _load_trimmed(pygame, kind)
     if png is not None:
-        scale = height / max(1, png.get_height())
-        size = (max(2, int(png.get_width() * scale)), max(2, height))
-        white = pygame.transform.smoothscale(png, size)
+        white = png
     else:
         white = draw_white_icon(pygame, kind, w=max(48, int(height * 1.7)), h=height)
-        if white.get_height() != height:
-            scale = height / max(1, white.get_height())
-            white = pygame.transform.smoothscale(
-                white,
-                (max(2, int(white.get_width() * scale)), height),
-            )
+    box_w = max_width or max(height, int(height * 1.7))
+    white = _fit(pygame, white, box_w, height)
     return tint_white(pygame, white, color)
 
 
-def icon_surface(pygame, kind: str, color: tuple[int, int, int], height: int = 34):
-    return render_icon(pygame, kind, color, height)
+def icon_surface(
+    pygame,
+    kind: str,
+    color: tuple[int, int, int],
+    height: int = 34,
+    max_width: int | None = None,
+):
+    return render_icon(pygame, kind, color, height, max_width=max_width)
 
 
 def export_pngs(pygame, dest: Path | None = None, height: int = 96) -> list[Path]:

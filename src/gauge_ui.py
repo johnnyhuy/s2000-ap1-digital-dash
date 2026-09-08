@@ -984,9 +984,9 @@ def draw_hardware_strip(
     for item in lamps:
         cx = x + item.width // 2
         col = item.color if item.lit else LAMP_GHOST
-        sprite = icon_surface(pygame, item.kind, col, icon_h)
+        sprite = icon_surface(pygame, item.kind, col, icon_h, max_width=item.width - 4)
         if item.lit:
-            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.48, scale=1.18)
+            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.38, scale=1.08)
         else:
             surf.blit(sprite, sprite.get_rect(center=(cx, cy)))
         x += item.width
