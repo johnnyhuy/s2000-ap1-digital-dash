@@ -154,57 +154,78 @@ def _draw_turn(pygame, w: int, h: int, left: bool):
     s = _blank(pygame, w, h)
     cx, cy = w // 2, h // 2
     if left:
-        pts = [(cx + 11, cy - 11), (cx - 13, cy), (cx + 11, cy + 11)]
+        pts = [
+            (cx + 12, cy - 11),
+            (cx - 14, cy),
+            (cx + 12, cy + 11),
+            (cx + 12, cy + 4),
+            (cx + 18, cy + 4),
+            (cx + 18, cy - 4),
+            (cx + 12, cy - 4),
+        ]
     else:
-        pts = [(cx - 11, cy - 11), (cx + 13, cy), (cx - 11, cy + 11)]
+        pts = [
+            (cx - 12, cy - 11),
+            (cx + 14, cy),
+            (cx - 12, cy + 11),
+            (cx - 12, cy + 4),
+            (cx - 18, cy + 4),
+            (cx - 18, cy - 4),
+            (cx - 12, cy - 4),
+        ]
     pygame.draw.polygon(s, (255, 255, 255), pts)
     return s
 
 
 def _draw_high_beam(pygame, w: int, h: int):
-    """ISO 2575 high-beam: D-lamp + parallel rays (blue when lit)."""
+    """ISO 2575 high-beam: filled D-lamp + five parallel rays."""
     s = _blank(pygame, w, h)
-    cx, cy = w // 2 - 4, h // 2
-    pygame.draw.circle(s, (255, 255, 255), (cx - 2, cy), 9, 2)
-    pygame.draw.arc(s, (255, 255, 255), (cx - 12, cy - 10, 12, 20), 1.2, 5.1, 2)
-    for i, dy in enumerate((-8, -3, 3, 8)):
-        x0 = cx + 8
-        pygame.draw.line(s, (255, 255, 255), (x0, cy + dy), (x0 + 12, cy + dy - 1), 2)
+    cx, cy = w // 2 + 4, h // 2
+    pygame.draw.circle(s, (255, 255, 255), (cx, cy), 11)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 14, cy - 11, 14, 22))
+    for dy in (-10, -5, 0, 5, 10):
+        pygame.draw.line(s, (255, 255, 255), (6, cy + dy), (cx - 16, cy + dy), 2)
     return s
 
 
 def _draw_battery(pygame, w: int, h: int):
     s = _blank(pygame, w, h)
-    cx, cy = w // 2, h // 2
-    pygame.draw.rect(s, (255, 255, 255), (cx - 13, cy - 7, 26, 16), width=2, border_radius=2)
-    pygame.draw.rect(s, (255, 255, 255), (cx - 8, cy - 11, 6, 4))
-    pygame.draw.rect(s, (255, 255, 255), (cx + 2, cy - 11, 6, 4))
-    pygame.draw.line(s, (255, 255, 255), (cx - 6, cy + 1), (cx - 2, cy + 1), 2)
-    pygame.draw.line(s, (255, 255, 255), (cx + 3, cy + 1), (cx + 7, cy + 1), 2)
-    pygame.draw.line(s, (255, 255, 255), (cx + 5, cy - 1), (cx + 5, cy + 3), 2)
+    cx, cy = w // 2, h // 2 + 1
+    pygame.draw.rect(s, (255, 255, 255), (cx - 16, cy - 7, 32, 18), border_radius=1)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 10, cy - 12, 7, 5))
+    pygame.draw.rect(s, (255, 255, 255), (cx + 3, cy - 12, 7, 5))
+    pygame.draw.rect(s, (0, 0, 0, 0), (cx - 11, cy + 1, 8, 3))
+    s.fill((0, 0, 0, 0), pygame.Rect(cx - 11, cy + 1, 8, 3))
+    s.fill((0, 0, 0, 0), pygame.Rect(cx + 3, cy + 1, 8, 3))
+    s.fill((0, 0, 0, 0), pygame.Rect(cx + 6, cy - 3, 3, 10))
     return s
 
 
 def _draw_oil(pygame, w: int, h: int):
     s = _blank(pygame, w, h)
-    cx, cy = w // 2, h // 2 + 1
-    pygame.draw.rect(s, (255, 255, 255), (cx - 11, cy - 5, 18, 11), border_radius=2)
-    pygame.draw.polygon(s, (255, 255, 255), [(cx + 6, cy - 5), (cx + 14, cy - 12), (cx + 16, cy - 9), (cx + 8, cy - 2)])
-    pygame.draw.circle(s, (255, 255, 255), (cx - 10, cy + 8), 3)
-    pygame.draw.ellipse(s, (255, 255, 255), (cx - 12, cy + 9, 5, 6))
+    cx, cy = w // 2 - 2, h // 2 + 2
+    pygame.draw.rect(s, (255, 255, 255), (cx - 14, cy - 6, 22, 13), border_radius=1)
+    pygame.draw.polygon(
+        s,
+        (255, 255, 255),
+        [(cx + 6, cy - 6), (cx + 18, cy - 16), (cx + 22, cy - 12), (cx + 8, cy - 1)],
+    )
+    pygame.draw.rect(s, (255, 255, 255), (cx - 17, cy - 4, 5, 8), border_radius=1)
+    pygame.draw.circle(s, (255, 255, 255), (cx + 18, cy - 4), 4)
+    pygame.draw.ellipse(s, (255, 255, 255), (cx + 16, cy - 1, 6, 8))
     return s
 
 
 def _draw_cel(pygame, w: int, h: int):
-    """Engine block with CHECK — Honda-style CEL, not a generic chip."""
+    """Filled engine block with CHECK cut-out — Honda AP1 CEL."""
     s = _blank(pygame, w, h)
     cx, cy = w // 2, h // 2
-    pygame.draw.rect(s, (255, 255, 255), (cx - 14, cy - 6, 28, 13), width=2, border_radius=2)
-    pygame.draw.rect(s, (255, 255, 255), (cx - 6, cy - 11, 12, 5), width=2)
-    pygame.draw.line(s, (255, 255, 255), (cx - 14, cy + 1), (cx - 19, cy + 5), 2)
-    pygame.draw.line(s, (255, 255, 255), (cx + 14, cy + 1), (cx + 19, cy + 5), 2)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 16, cy - 6, 32, 14), border_radius=1)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 7, cy - 13, 14, 8))
+    pygame.draw.rect(s, (255, 255, 255), (cx - 21, cy - 2, 6, 8))
+    pygame.draw.rect(s, (255, 255, 255), (cx + 15, cy - 2, 6, 8))
     font = _font(pygame, 8)
-    img = font.render("CHECK", True, (255, 255, 255))
+    img = font.render("CHECK", True, (0, 0, 0))
     s.blit(img, img.get_rect(center=(cx, cy + 1)))
     return s
 
@@ -212,20 +233,20 @@ def _draw_cel(pygame, w: int, h: int):
 def _draw_key(pygame, w: int, h: int):
     s = _blank(pygame, w, h)
     cx, cy = w // 2 - 2, h // 2
-    pygame.draw.circle(s, (255, 255, 255), (cx - 8, cy), 8, 2)
-    pygame.draw.circle(s, (255, 255, 255), (cx - 8, cy), 3)
-    pygame.draw.rect(s, (255, 255, 255), (cx - 1, cy - 3, 16, 6), border_radius=1)
-    pygame.draw.rect(s, (255, 255, 255), (cx + 8, cy - 3, 3, 9))
-    pygame.draw.rect(s, (255, 255, 255), (cx + 12, cy - 3, 3, 7))
+    pygame.draw.circle(s, (255, 255, 255), (cx - 8, cy), 9)
+    pygame.draw.circle(s, (0, 0, 0), (cx - 8, cy), 3)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 1, cy - 3, 18, 6), border_radius=1)
+    pygame.draw.rect(s, (255, 255, 255), (cx + 8, cy + 2, 3, 7))
+    pygame.draw.rect(s, (255, 255, 255), (cx + 13, cy + 2, 3, 9))
     return s
 
 
 def _draw_seatbelt(pygame, w: int, h: int):
     s = _blank(pygame, w, h)
     cx, cy = w // 2, h // 2 + 1
-    pygame.draw.circle(s, (255, 255, 255), (cx, cy - 10), 5, 2)
-    pygame.draw.arc(s, (255, 255, 255), (cx - 10, cy - 6, 20, 22), 3.5, 6.0, 2)
-    pygame.draw.line(s, (255, 255, 255), (cx - 8, cy + 10), (cx + 9, cy - 4), 3)
+    pygame.draw.circle(s, (255, 255, 255), (cx, cy - 11), 6)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 10, cy - 5, 20, 20), border_radius=2)
+    pygame.draw.line(s, (0, 0, 0), (cx - 7, cy - 4), (cx + 8, cy + 13), 4)
     return s
 
 
@@ -233,12 +254,10 @@ def _draw_door(pygame, w: int, h: int):
     """Top-view car with both doors ajar — AP1 door lamp."""
     s = _blank(pygame, w, h)
     cx, cy = w // 2, h // 2
-    pygame.draw.rect(s, (255, 255, 255), (cx - 7, cy - 11, 14, 22), width=2, border_radius=4)
-    pygame.draw.rect(s, (255, 255, 255), (cx - 5, cy - 14, 10, 4), width=2, border_radius=2)
-    pygame.draw.line(s, (255, 255, 255), (cx - 7, cy - 4), (cx - 15, cy - 8), 2)
-    pygame.draw.line(s, (255, 255, 255), (cx - 7, cy + 4), (cx - 15, cy + 1), 2)
-    pygame.draw.line(s, (255, 255, 255), (cx + 7, cy - 4), (cx + 15, cy - 8), 2)
-    pygame.draw.line(s, (255, 255, 255), (cx + 7, cy + 4), (cx + 15, cy + 1), 2)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 7, cy - 12, 14, 24), border_radius=4)
+    pygame.draw.rect(s, (0, 0, 0), (cx - 4, cy - 9, 8, 5))
+    pygame.draw.polygon(s, (255, 255, 255), [(cx - 7, cy - 2), (cx - 16, cy + 3), (cx - 14, cy + 7), (cx - 7, cy + 3)])
+    pygame.draw.polygon(s, (255, 255, 255), [(cx + 7, cy - 2), (cx + 16, cy + 3), (cx + 14, cy + 7), (cx + 7, cy + 3)])
     return s
 
 
@@ -299,9 +318,15 @@ def icon_surface(pygame, kind: str, color: tuple[int, int, int], height: int = 3
 
 
 def export_pngs(pygame, dest: Path | None = None, height: int = 96) -> list[Path]:
-    """Write white-on-transparent PNGs for each telltale."""
+    """Write white-on-transparent PNGs. Prefer rsvg from SVG plates."""
     dest = dest or ASSETS
     dest.mkdir(parents=True, exist_ok=True)
+    try:
+        from rasterize_icons import rasterize  # type: ignore
+
+        return [rasterize(kind, height=height) for kind in ICON_KINDS]
+    except (FileNotFoundError, OSError, ImportError):
+        pass
     written: list[Path] = []
     for kind in ICON_KINDS:
         spec = next(lamp for lamp in LAMPS if lamp.kind == kind)

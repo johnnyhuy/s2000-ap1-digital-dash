@@ -36,111 +36,142 @@ const TONE: Record<Tone, string> = {
 
 const GHOST = "#282420";
 
+function Word({
+  label,
+  size = 16,
+  y = 31,
+  x = 32,
+}: {
+  label: string;
+  size?: number;
+  y?: number;
+  x?: number;
+}) {
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor="middle"
+      fontSize={size}
+      fontWeight={700}
+      letterSpacing="0.4"
+      fill="currentColor"
+      fontFamily="DejaVu Sans, Liberation Sans, Arial Narrow, sans-serif"
+    >
+      {label}
+    </text>
+  );
+}
+
 function Icon({ kind }: { kind: string }) {
   switch (kind) {
     case "turn_l":
-      return <path d="M18 6 4 14l14 8V6z" fill="currentColor" />;
+      return <path d="M46 9 11 24l35 15v-9h12V18H46z" fill="currentColor" />;
     case "turn_r":
-      return <path d="M6 6l14 8-14 8V6z" fill="currentColor" />;
+      return <path d="M18 9v9H6v12h12v9l35-15z" fill="currentColor" />;
     case "high_beam":
       return (
         <>
-          <circle cx="10" cy="14" r="6" fill="none" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M36 11c11.5 0 18 8 18 13s-6.5 13-18 13h-5V11h5z" fill="currentColor" />
           <path
-            d="M10 8a6 6 0 0 0 0 12M17 8l7-1M17 12l7-.4M17 16l7 .4M17 20l7 1"
+            d="M8 15h22M6 20h24M6 24.5h24M6 29h24M8 34h22"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
+            strokeWidth="2.5"
+            strokeLinecap="square"
           />
         </>
       );
     case "abs":
-      return (
-        <text x="14" y="18" textAnchor="middle" fontSize="8" fontWeight="700" fill="currentColor">
-          ABS
-        </text>
-      );
+      return <Word label="ABS" />;
     case "brake":
-      return (
-        <text x="14" y="18" textAnchor="middle" fontSize="7" fontWeight="700" fill="currentColor">
-          BRAKE
-        </text>
-      );
+      return <Word label="BRAKE" size={13} />;
     case "battery":
       return (
         <>
-          <rect x="6" y="10" width="16" height="10" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
-          <rect x="9" y="7.5" width="4" height="2.5" fill="currentColor" />
-          <rect x="15" y="7.5" width="4" height="2.5" fill="currentColor" />
-          <path d="M10 15h3M15 15h3M16.5 13.5v3" stroke="currentColor" strokeWidth="1.4" />
+          <rect x="14" y="16" width="36" height="22" rx="1.2" fill="currentColor" />
+          <rect x="20" y="11" width="8" height="6" rx="0.4" fill="currentColor" />
+          <rect x="36" y="11" width="8" height="6" rx="0.4" fill="currentColor" />
+          <rect x="19" y="25.2" width="9" height="2.8" fill="#060402" />
+          <rect x="36" y="25.2" width="9" height="2.8" fill="#060402" />
+          <rect x="39.1" y="21.2" width="2.8" height="10.8" fill="#060402" />
         </>
       );
     case "oil":
       return (
         <>
-          <rect x="6" y="12" width="11" height="7" rx="1.2" fill="currentColor" />
-          <path d="M16 12l6-4 1.6 1.6-5 4z" fill="currentColor" />
-          <circle cx="8" cy="21" r="1.6" fill="currentColor" />
+          <path
+            d="M12 22h22c1.4 0 3.2-1.1 7.2-6.2L48 9.6l3.2 3.4-6.6 7.2V36H12V22z"
+            fill="currentColor"
+          />
+          <path d="M10 24c0-3.2 1.6-5.2 4.2-5.2H16v8h-4.4C10.4 26.8 10 25.6 10 24z" fill="currentColor" />
+          <path
+            d="M46.2 16.4c0 3.4 2.5 6.2 4.6 6.2s4.6-2.8 4.6-6.2c0-2.6-2-4.8-4.6-7.2-2.6 2.4-4.6 4.6-4.6 7.2z"
+            fill="currentColor"
+          />
         </>
       );
     case "cel":
       return (
         <>
-          <rect x="6" y="10" width="16" height="9" rx="1.4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M6 14.5 3 17M22 14.5 25 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <text x="14" y="17" textAnchor="middle" fontSize="5" fontWeight="700" fill="currentColor">
+          <path
+            d="M12 22h6l3.2-7h9.2l2.2 7h15.2l3.6-4.6H58v7.4h3.4v12.2H58V40H12v-5.2H7.2V25.6H12z"
+            fill="currentColor"
+          />
+          <rect x="7" y="28" width="6" height="7" fill="currentColor" />
+          <text
+            x="32"
+            y="33.4"
+            textAnchor="middle"
+            fontSize="7.2"
+            fontWeight={800}
+            letterSpacing="0.55"
+            fill="#060402"
+            fontFamily="DejaVu Sans, Liberation Sans, Arial Narrow, sans-serif"
+          >
             CHECK
           </text>
         </>
       );
     case "immobilizer":
       return (
-        <path
-          d="M10 8h8v5H10zm2 5v4l2 3 2-3v-4"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinejoin="round"
-        />
+        <>
+          <circle cx="18" cy="24" r="10" fill="currentColor" />
+          <circle cx="18" cy="24" r="4" fill="#060402" />
+          <rect x="26" y="20.8" width="26" height="6.4" fill="currentColor" />
+          <rect x="41.2" y="27" width="3.6" height="7.2" fill="currentColor" />
+          <rect x="47.2" y="27" width="3.6" height="10" fill="currentColor" />
+        </>
       );
     case "maint":
       return (
-        <text x="14" y="18" textAnchor="middle" fontSize="6.2" fontWeight="700" fill="currentColor">
-          MAINT
-        </text>
+        <>
+          <Word label="MAINT" size={11} y={22} />
+          <Word label="REQ'D" size={11} y={36} />
+        </>
       );
     case "eps":
-      return (
-        <text x="14" y="18" textAnchor="middle" fontSize="8" fontWeight="700" fill="currentColor">
-          EPS
-        </text>
-      );
+      return <Word label="EPS" />;
     case "seatbelt":
       return (
-        <path
-          d="M14 6a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-6 16 6-10 6 10"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinejoin="round"
-        />
+        <>
+          <circle cx="32" cy="11.5" r="6.4" fill="currentColor" />
+          <path d="M20 20c0-2.2 3.6-4 12-4s12 1.8 12 4v7H20z" fill="currentColor" />
+          <path d="M19 27h26v16H19z" fill="currentColor" />
+          <path d="M22 20 42 42h-8L20 26z" fill="#060402" />
+        </>
       );
     case "door":
       return (
-        <path
-          d="M8 6h10l3 4v12H8zM18 14h3"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-        />
+        <>
+          <path d="M25 7h14l6.4 7.2v25.6L39 47H25l-6.4-7.2V14.2z" fill="currentColor" />
+          <rect x="28.4" y="11" width="7.2" height="5.2" fill="#060402" />
+          <path d="M18.6 20.4 7.2 26.2l2.4 4.2 11.2-5.4z" fill="currentColor" />
+          <path d="M45.4 20.4 56.8 26.2l-2.4 4.2-11.2-5.4z" fill="currentColor" />
+        </>
       );
     case "srs":
-      return (
-        <text x="14" y="18" textAnchor="middle" fontSize="8" fontWeight="700" fill="currentColor">
-          SRS
-        </text>
-      );
+      return <Word label="SRS" />;
     default:
       return null;
   }
@@ -166,7 +197,7 @@ export function TelltaleStrip({
             title={spec.label}
             style={{ color, ["--lamp" as string]: color }}
           >
-            <svg viewBox="0 0 28 24" width="28" height="22" aria-hidden>
+            <svg viewBox="0 0 64 48" width="28" height="22" aria-hidden>
               <Icon kind={spec.kind} />
             </svg>
             <span className="sr-only">

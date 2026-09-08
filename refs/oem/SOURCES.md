@@ -40,6 +40,23 @@ Cars & Bids / JDMaster files into `refs/oem/lit/`, `unlit/`, and `icons/`
 when available and add a row here (URL + licence). Do not treat AP2 interiors
 (2004+ arched gauges, 2006+ self-diag LCD) as AP1.
 
+## Generated plates (this repo)
+
+High-res white-on-black plates used to trace / redraw `assets/icons/*.svg`.
+They are **not** Honda artwork — cleaned reconstructions from the AP1
+self-test lamp strip and the Car Spy frame.
+
+| File | What |
+| --- | --- |
+| `plates/oem_telltale_atlas_plate.png` | 14-lamp atlas (signal pair + self-test strip) |
+| `plates/oem_telltale_atlas_v2.png` | Refined atlas pass |
+| `plates/oem_pictograms_closeup.png` | Battery, oil, CEL, key, seatbelt, door, high beam |
+| `plates/oem_dash_glyphs_plate.png` | TEMP thermometer, FUEL pump, PUSH CANCEL dial, tach numerals |
+| `plates/unofficial-geometric-h.png` | Unofficial geometric H (not Honda trademark) |
+
+Pipeline: OEM refs → plates → SVG redraw under `assets/icons/` →
+`scripts/rasterize_icons.py` (rsvg) → tint at draw time.
+
 ## How to attribute
 
 Car Spy frames used in `docs/assets/compare/` must keep the “The Car Spy,

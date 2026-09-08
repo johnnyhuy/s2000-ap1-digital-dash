@@ -2,35 +2,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 72" width="980" height="72" role="img" aria-label="AP1 OEM lamp atlas">
   <title>AP1 OEM lamp atlas — self-test order</title>
   <rect width="980" height="72" fill="#0a0a0a"/>
-  <!-- signal pair + self-test strip colours -->
-  <g transform="translate(8,12)" fill="#2cc458"><polygon points="30,6 6,24 30,42"/></g>
-  <g transform="translate(48,12)" stroke="#1c56d6" fill="none" stroke-width="2.4">
-    <circle cx="16" cy="24" r="10"/><path d="M28 14l12-2M28 20l12-1M28 28l12 1M28 34l12 2"/>
+  <g transform="translate(8,16)" fill="#2cc458"><path d="M34 6 6 24l28 18v-10h10V16H34z"/></g>
+  <g transform="translate(52,16)" fill="#1c56d6">
+    <path d="M28 8c9 0 14 6.4 14 10.4S37 28.8 28 28.8h-4V8h4z"/>
+    <path d="M4 11h18M2 15.2h20M2 19.2h20M2 23.2h20M4 27.2h18" stroke="#1c56d6" stroke-width="2" fill="none"/>
   </g>
-  <text x="130" y="44" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="700" fill="#e48a1a">ABS</text>
-  <text x="210" y="44" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="700" fill="#d6221e">BRAKE</text>
-  <g transform="translate(268,16)" stroke="#d6221e" fill="none" stroke-width="2.2">
-    <rect x="4" y="10" width="28" height="16" rx="2"/><rect x="8" y="6" width="6" height="4" fill="#d6221e" stroke="none"/><rect x="20" y="6" width="6" height="4" fill="#d6221e" stroke="none"/>
+  <text x="130" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#e48a1a">ABS</text>
+  <text x="210" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#d6221e">BRAKE</text>
+  <g transform="translate(268,18)" fill="#d6221e">
+    <rect x="4" y="8" width="30" height="16" rx="1"/>
+    <rect x="8" y="4" width="6" height="5"/>
+    <rect x="22" y="4" width="6" height="5"/>
+    <rect x="8" y="14" width="7" height="2.2" fill="#0a0a0a"/>
+    <rect x="22" y="14" width="7" height="2.2" fill="#0a0a0a"/>
+    <rect x="24.4" y="11" width="2.2" height="8.2" fill="#0a0a0a"/>
   </g>
   <g transform="translate(316,16)" fill="#d6221e">
-    <rect x="4" y="12" width="18" height="11" rx="2"/><path d="M20 12l10-6 2 2-8 6z"/><circle cx="6" cy="28" r="3"/>
+    <path d="M4 12h16l8-7 2.4 2.6-6 5.4V28H4z"/>
+    <path d="M28 10c0 2.4 1.8 4.4 3.2 4.4s3.2-2 3.2-4.4c0-1.8-1.4-3.4-3.2-5-1.8 1.6-3.2 3.2-3.2 5z"/>
   </g>
-  <g transform="translate(360,14)" stroke="#e48a1a" fill="none" stroke-width="2">
-    <rect x="2" y="10" width="36" height="16" rx="2"/><rect x="12" y="4" width="16" height="7"/>
-    <text x="20" y="22" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="6" font-weight="700" fill="#e48a1a" stroke="none">CHECK</text>
+  <g transform="translate(360,14)" fill="#e48a1a">
+    <path d="M4 16h5l2.4-5.2h7l1.6 5.2h12l2.6-3.4H38v5.4h2.4v9H38V36H4v-4H1.2v-8.2H4z"/>
+    <text x="20" y="26" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6" font-weight="800" fill="#0a0a0a">CHECK</text>
   </g>
-  <g transform="translate(412,16)" fill="none" stroke="#2cc458" stroke-width="2.2">
-    <circle cx="12" cy="18" r="8"/><rect x="20" y="15" width="18" height="5" fill="#2cc458" stroke="none"/>
+  <g transform="translate(414,18)" fill="#2cc458">
+    <circle cx="10" cy="16" r="8"/>
+    <circle cx="10" cy="16" r="3.2" fill="#0a0a0a"/>
+    <rect x="16" y="13.2" width="18" height="5.4"/>
+    <rect x="27" y="18.4" width="2.8" height="6"/>
+    <rect x="31.4" y="18.4" width="2.8" height="8"/>
   </g>
-  <text x="500" y="32" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#e48a1a">MAINT</text>
-  <text x="500" y="48" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#e48a1a">REQ'D</text>
-  <text x="568" y="44" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="700" fill="#e48a1a">EPS</text>
-  <g transform="translate(600,12)" fill="none" stroke="#d6221e" stroke-width="2.2">
-    <circle cx="22" cy="10" r="5"/><path d="M12 38c2-12 6-16 10-16s8 4 10 16"/><path d="M10 36L32 14" stroke-width="3"/>
+  <text x="500" y="32" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#e48a1a">MAINT</text>
+  <text x="500" y="48" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#e48a1a">REQ'D</text>
+  <text x="568" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#e48a1a">EPS</text>
+  <g transform="translate(600,12)" fill="#d6221e">
+    <circle cx="22" cy="10" r="5.4"/>
+    <path d="M12 20c0-2 3-3.4 10-3.4s10 1.4 10 3.4v14H12z"/>
+    <path d="M15 18 32 40h-6.4L14 24z" fill="#0a0a0a"/>
   </g>
-  <g transform="translate(656,10)" fill="none" stroke="#d6221e" stroke-width="2.1">
-    <rect x="16" y="8" width="14" height="28" rx="4"/><path d="M16 18l-9-4M16 28l-9-2M30 18l9-4M30 28l9-2"/>
+  <g transform="translate(652,10)" fill="#d6221e">
+    <path d="M20 8h12l5 6v22l-5 6H20l-5-6V14z"/>
+    <path d="M15 20 6 25.2l1.8 3.2 9-4.4z"/>
+    <path d="M37 20l9 5.2-1.8 3.2-9-4.4z"/>
   </g>
-  <text x="760" y="44" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="700" fill="#d6221e">SRS</text>
-  <g transform="translate(800,12)" fill="#2cc458"><polygon points="14,6 44,24 14,42"/></g>
+  <text x="760" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#d6221e">SRS</text>
+  <g transform="translate(800,16)" fill="#2cc458"><path d="M10 6v9H0v12h10v9l28-15z"/></g>
 </svg>

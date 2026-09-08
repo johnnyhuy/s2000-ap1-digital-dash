@@ -485,6 +485,17 @@ def blit_text(surf, font, text: str, color, pos, anchor: str = "topleft") -> Non
     surf.blit(img, rect)
 
 
+def _italic_shear(pygame, img, shear: float = 0.14):
+    """Lean glyphs right — AP1 tach numerals are a slightly italic gothic."""
+    w, h = img.get_size()
+    extra = max(1, int(h * shear))
+    out = pygame.Surface((w + extra, h), pygame.SRCALPHA)
+    for y in range(h):
+        dx = int((h - 1 - y) * shear)
+        out.blit(img, (dx, y), pygame.Rect(0, y, w, 1))
+    return out
+
+
 def sample_telem() -> Telemetry:
     return Telemetry(
         rpm=6420,
@@ -762,7 +773,7 @@ def draw_tach_numbers(pygame, fonts, surf, dim: bool = False, g: FaceGeom = FACE
             pos = (pos[0] + 8, pos[1] + 8)
         elif i == 9:
             pos = (pos[0] - 6, pos[1] + 8)
-        img = fonts["tick"].render(str(i), True, col)
+        img = _italic_shear(pygame, fonts["tick"].render(str(i), True, col), 0.12)
         surf.blit(img, img.get_rect(center=pos))
     lx, ly = tach_arch_xy(0.03, g)
     blit_text(
@@ -805,17 +816,24 @@ def _seg_bar(
 
 
 def _thermometer_icon(pygame, surf, cx: int, cy: int, col) -> None:
-    pygame.draw.rect(surf, col, pygame.Rect(cx - 3, cy - 14, 6, 18), border_radius=3)
-    pygame.draw.circle(surf, col, (cx, cy + 8), 6)
-    for i, dy in enumerate((-8, -2, 4)):
-        pygame.draw.line(surf, col, (cx + 7, cy + dy), (cx + 12 + i, cy + dy), 2)
+    """AP1 TEMP pictogram: stem, bulb, right-hand ticks, three waves below."""
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 2, cy - 16, 5, 18), border_radius=2)
+    pygame.draw.circle(surf, col, (cx, cy + 6), 6)
+    for dy in (-12, -7, -2, 3):
+        pygame.draw.line(surf, col, (cx + 5, cy + dy), (cx + 11, cy + dy), 2)
+    for i, y in enumerate((cy + 14, cy + 18, cy + 22)):
+        pts = [(cx - 8 + x, y + (2 if (x // 4) % 2 else -2)) for x in range(0, 20, 4)]
+        if len(pts) >= 2:
+            pygame.draw.lines(surf, col, False, pts, 2)
 
 
 def _pump_icon(pygame, surf, cx: int, cy: int, col) -> None:
-    pygame.draw.rect(surf, col, pygame.Rect(cx - 8, cy - 8, 12, 16), border_radius=2)
-    pygame.draw.rect(surf, col, pygame.Rect(cx - 6, cy - 14, 8, 6), border_radius=1)
-    pygame.draw.line(surf, col, (cx + 4, cy - 4), (cx + 12, cy - 10), 2)
-    pygame.draw.line(surf, col, (cx + 12, cy - 10), (cx + 12, cy + 6), 2)
+    """AP1 FUEL pictogram: pump body, window, hose loop, nozzle."""
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 9, cy - 8, 11, 18), border_radius=1)
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 7, cy - 14, 7, 6), border_radius=1)
+    pygame.draw.rect(surf, (0, 0, 0), pygame.Rect(cx - 6, cy - 5, 5, 4))
+    pygame.draw.arc(surf, col, pygame.Rect(cx - 2, cy - 8, 16, 16), -0.4, 1.6, 2)
+    pygame.draw.rect(surf, col, pygame.Rect(cx + 10, cy - 2, 4, 10), border_radius=1)
 
 
 def draw_temp_bar(pygame, fonts, surf, frac: float, hot: bool, g: FaceGeom = FACE) -> None:
@@ -922,10 +940,18 @@ def _round_btn(pygame, fonts, surf, rect, left: str, right: str | None = None) -
 
 
 def _cruise_cancel_icon(pygame, surf, cx: int, cy: int, col) -> None:
-    """Speedo + arrow — OEM PUSH CANCEL (cruise) mark."""
-    pygame.draw.circle(surf, col, (cx, cy), 7, 2)
-    pygame.draw.line(surf, col, (cx, cy), (cx + 4, cy - 5), 2)
-    pygame.draw.arc(surf, col, pygame.Rect(cx - 10, cy - 10, 20, 20), 0.4, 2.5, 2)
+    """OEM PUSH CANCEL: speedo dial, needle to 2 o'clock, cancel X."""
+    pygame.draw.circle(surf, col, (cx, cy), 8, 2)
+    pygame.draw.circle(surf, col, (cx, cy), 2)
+    pygame.draw.line(surf, col, (cx, cy), (cx + 5, cy - 5), 2)
+    for ang in (3.6, 2.8, 2.2, 1.55):
+        x0 = cx + int(5.2 * math.cos(ang))
+        y0 = cy - int(5.2 * math.sin(ang))
+        x1 = cx + int(7.6 * math.cos(ang))
+        y1 = cy - int(7.6 * math.sin(ang))
+        pygame.draw.line(surf, col, (x0, y0), (x1, y1), 2)
+    pygame.draw.line(surf, col, (cx + 8, cy + 2), (cx + 14, cy + 8), 2)
+    pygame.draw.line(surf, col, (cx + 14, cy + 2), (cx + 8, cy + 8), 2)
 
 
 def draw_hardware_strip(
