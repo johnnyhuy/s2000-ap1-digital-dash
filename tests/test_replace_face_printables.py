@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import struct
 import unittest
 from pathlib import Path
@@ -23,6 +24,30 @@ PARTS = (
     "button_sel",
     "button_trip",
 )
+
+DIMS_SCAD = REPLACE / "dims.scad"
+OUTLINE_SCAD = REPLACE / "outline.scad"
+README = REPLACE / "README.md"
+BLENDER_MD = REPLACE / "BLENDER.md"
+
+# AP1 lock (#12 / refs/flat/DIMENSIONS.md) — horizontal flanking bars.
+LOCK = {
+    "face_w": 170.0,
+    "face_h": 72.3,
+    "face_aspect": 2.35,
+    "notch_top_pct": 0.58,
+    "notch_bot_pct": 0.72,
+    "arch_rise_pct": 0.28,
+    "temp_x_pct": 0.080,
+    "temp_y_pct": 0.505,
+    "fuel_x_pct": 0.760,
+    "fuel_y_pct": 0.505,
+    "bar_w_pct": 0.160,
+    "bar_h_pct": 0.012,
+    "temp_segs": 6,
+    "speed_x_pct": 0.50,
+    "speed_y_pct": 0.40,
+}
 
 # Expected bbox after a light clean — must stay on the OpenSCAD lock.
 # (min), (max), tolerance mm
@@ -53,6 +78,18 @@ def _read_binary_stl(path: Path):
                 mn[a] = min(mn[a], v[a])
                 mx[a] = max(mx[a], v[a])
     return count, tuple(mn), tuple(mx)
+
+
+def _parse_scad_assigns(path: Path) -> dict[str, float]:
+    text = path.read_text(encoding="utf-8")
+    vals: dict[str, float] = {}
+    for match in re.finditer(
+        r"^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)\s*;",
+        text,
+        flags=re.MULTILINE,
+    ):
+        vals[match.group(1)] = float(match.group(2))
+    return vals
 
 
 class ReplaceFacePrintablesTest(unittest.TestCase):
@@ -102,6 +139,46 @@ class ReplaceFacePrintablesTest(unittest.TestCase):
         data = PREVIEW.read_bytes()
         self.assertGreater(len(data), 200)
         self.assertEqual(data[:4], b"glTF")
+
+    def test_dims_match_horizontal_flanking_lock(self):
+        dims = _parse_scad_assigns(DIMS_SCAD)
+        for name, expected in LOCK.items():
+            self.assertIn(name, dims, name)
+            self.assertAlmostEqual(dims[name], expected, places=3, msg=name)
+
+        # Horizontal envelopes flank the speedo — not a bottom bar, not vertical.
+        self.assertGreater(dims["bar_w_pct"], dims["bar_h_pct"] * 6)
+        self.assertLess(dims["temp_x_pct"] + dims["bar_w_pct"], dims["speed_x_pct"])
+        self.assertGreater(dims["fuel_x_pct"], dims["speed_x_pct"])
+        self.assertEqual(dims["temp_y_pct"], dims["fuel_y_pct"])
+        self.assertAlmostEqual(dims["face_w"] / dims["face_h"], dims["face_aspect"], places=2)
+
+        text = DIMS_SCAD.read_text(encoding="utf-8")
+        self.assertNotRegex(text, r"temp_x_pct\s*=\s*0\.075")
+        self.assertNotRegex(text, r"temp_y_pct\s*=\s*0\.72")
+        self.assertNotRegex(text, r"bar_w_pct\s*=\s*0\.180")
+        self.assertNotRegex(text, r"bar_h_pct\s*=\s*0\.030")
+
+    def test_outline_keeps_horizontal_bar_windows(self):
+        text = OUTLINE_SCAD.read_text(encoding="utf-8")
+        self.assertIn("module temp_bar_2d()", text)
+        self.assertIn("module fuel_bar_2d()", text)
+        self.assertIn("temp_w, temp_h", text)
+        self.assertIn("fuel_w, fuel_h", text)
+        self.assertNotIn("temp_h, temp_w", text)
+        self.assertNotIn("fuel_h, fuel_w", text)
+        self.assertIn("never a vertical stack", text.lower())
+
+    def test_docs_cite_horizontal_lock_and_dimensions(self):
+        readme = README.read_text(encoding="utf-8")
+        blender = BLENDER_MD.read_text(encoding="utf-8")
+        for text in (readme, blender):
+            self.assertIn("DIMENSIONS.md", text)
+            self.assertIn("8.0%", text)
+            self.assertIn("76.0%", text)
+            self.assertIn("50.5%", text)
+            self.assertIn("horizontal", text.lower())
+            self.assertIn("#12", text)
 
 
 if __name__ == "__main__":
