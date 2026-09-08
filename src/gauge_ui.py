@@ -42,12 +42,16 @@ COWL_HIGH = (44, 40, 36)
 COWL_EDGE = (58, 52, 46)
 WELL = (6, 6, 7)
 LCD = (2, 2, 3)
-AMBER = (236, 168, 36)
+AMBER = (232, 148, 28)
 AMBER_DIM = (72, 48, 12)
-AMBER_GHOST = (28, 20, 8)
+AMBER_GHOST = (32, 22, 8)
 RED = (210, 36, 32)
 RED_DIM = (78, 16, 14)
-CYAN = (72, 210, 230)
+CYAN = (56, 140, 230)
+LAMP_RED = (210, 36, 32)
+LAMP_AMBER = (230, 140, 28)
+LAMP_GREEN = (40, 190, 90)
+LAMP_BLUE = (48, 120, 230)
 WHITE = (230, 226, 214)
 DIM = (92, 84, 70)
 MUTED = (42, 38, 34)
@@ -197,7 +201,7 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
     band_h = _pct(bezel_h * 0.58)
     band_y = bezel_y + (bezel_h - band_h) // 2
     # Hug the 13 OEM icons (48 px pitch) so the band is dense, not a hollow gap
-    pack_w = 14 * 48 + 28
+    pack_w = 14 * 44 + 24
     gap_l = rocker[0] + rocker_w + _pct(mw * 0.118)
     gap_r = trip_blank[0] - 16
     mid = (gap_l + gap_r) // 2
@@ -632,6 +636,11 @@ def draw_tach_segments(
         pad = 0.10
         a0 = tach_angle(t0 + (t1 - t0) * pad)
         a1 = tach_angle(t1 - (t1 - t0) * pad)
+        if on:
+            bloom = (210, 110, 20)
+            pygame.draw.polygon(
+                surf, bloom, _radial_block(TACH_R_INNER + 4, TACH_R_OUTER + 2, a0, a1)
+            )
         pygame.draw.polygon(
             surf, col, _radial_block(TACH_R_INNER + 10, TACH_R_OUTER - 6, a0, a1)
         )
@@ -799,20 +808,20 @@ def _lamp_spec(face: DisplayState, bulb_check: bool) -> list[tuple[str, bool, tu
         return bool(face.lamps.get(key, False) or extra)
 
     return [
-        ("turn_l", flag("turn_l"), GREEN),
-        ("hi", flag("high_beam"), CYAN),
-        ("oil", flag("oil"), RED),
-        ("cel", flag("cel"), ORANGE),
-        ("bat", flag("batt_warn", face.batt_v < BATT_LOW_V), RED),
-        ("eps", flag("eps"), ORANGE),
-        ("abs", flag("abs"), ORANGE),
-        ("brake", flag("brake"), RED),
-        ("airbag", flag("airbag"), RED),
-        ("seat", flag("seatbelt"), RED),
-        ("fuel", flag("fuel_low", face.fuel_pct < FUEL_LOW_PCT), ORANGE),
-        ("fog", flag("fog"), GREEN),
-        ("hot", flag("ect_hot", face.ect_c >= ECT_HOT_C), RED),
-        ("turn_r", flag("turn_r"), GREEN),
+        ("turn_l", flag("turn_l"), LAMP_GREEN),
+        ("key", flag("immo"), LAMP_GREEN),
+        ("hi", flag("high_beam"), LAMP_BLUE),
+        ("oil", flag("oil"), LAMP_RED),
+        ("bat", flag("batt_warn", face.batt_v < BATT_LOW_V), LAMP_RED),
+        ("cel", flag("cel"), LAMP_AMBER),
+        ("eps", flag("eps"), LAMP_AMBER),
+        ("abs", flag("abs"), LAMP_AMBER),
+        ("maint", flag("maint"), LAMP_AMBER),
+        ("brake", flag("brake"), LAMP_RED),
+        ("srs", flag("airbag"), LAMP_RED),
+        ("seat", flag("seatbelt"), LAMP_RED),
+        ("door", flag("door"), LAMP_RED),
+        ("turn_r", flag("turn_r"), LAMP_GREEN),
     ]
 
 
@@ -839,15 +848,32 @@ def _draw_lamp_icon(pygame, surf, kind: str, cx: int, cy: int, col) -> None:
         pygame.draw.rect(surf, col, pygame.Rect(cx - 6, cy - 9, 4, 3))
         pygame.draw.rect(surf, col, pygame.Rect(cx + 2, cy - 9, 4, 3))
     elif kind == "eps":
-        blit_text(surf, _font(pygame, 11, bold=True), "EPS", col, (cx, cy), "center")
+        pygame.draw.circle(surf, col, (cx, cy + 2), 8, 2)
+        pygame.draw.circle(surf, col, (cx, cy + 2), 3)
+        pygame.draw.line(surf, col, (cx - 10, cy + 2), (cx - 6, cy + 2), 2)
+        pygame.draw.line(surf, col, (cx + 6, cy + 2), (cx + 10, cy + 2), 2)
     elif kind == "abs":
-        blit_text(surf, _font(pygame, 11, bold=True), "ABS", col, (cx, cy), "center")
+        pygame.draw.rect(surf, col, pygame.Rect(cx - 11, cy - 7, 22, 14), width=2, border_radius=2)
+        blit_text(surf, _font(pygame, 9, bold=True), "ABS", col, (cx, cy), "center")
+    elif kind == "maint":
+        pygame.draw.line(surf, col, (cx - 8, cy + 6), (cx + 6, cy - 8), 3)
+        pygame.draw.circle(surf, col, (cx + 7, cy - 8), 4, 2)
+        pygame.draw.rect(surf, col, pygame.Rect(cx - 11, cy + 4, 8, 5))
     elif kind == "brake":
         pygame.draw.circle(surf, col, (cx, cy), 9, 2)
-        blit_text(surf, _font(pygame, 9, bold=True), "!", col, (cx, cy), "center")
-    elif kind == "airbag":
+        pygame.draw.line(surf, col, (cx, cy - 4), (cx, cy + 1), 2)
+        pygame.draw.circle(surf, col, (cx, cy + 5), 1)
+    elif kind == "srs":
         pygame.draw.circle(surf, col, (cx, cy + 2), 6, 2)
         pygame.draw.arc(surf, col, pygame.Rect(cx - 10, cy - 8, 20, 14), 0.2, 2.9, 2)
+    elif kind == "key":
+        pygame.draw.circle(surf, col, (cx - 5, cy), 5, 2)
+        pygame.draw.line(surf, col, (cx, cy), (cx + 10, cy), 2)
+        pygame.draw.line(surf, col, (cx + 7, cy), (cx + 7, cy + 4), 2)
+        pygame.draw.line(surf, col, (cx + 10, cy), (cx + 10, cy + 3), 2)
+    elif kind == "door":
+        pygame.draw.rect(surf, col, pygame.Rect(cx - 8, cy - 9, 14, 18), width=2)
+        pygame.draw.line(surf, col, (cx + 2, cy), (cx + 6, cy), 2)
     elif kind == "seat":
         pygame.draw.rect(surf, col, pygame.Rect(cx - 6, cy - 2, 12, 8), width=2)
         pygame.draw.circle(surf, col, (cx, cy - 8), 4, 2)
@@ -891,7 +917,7 @@ def draw_hardware_strip(
 
     lamps = _lamp_spec(face, bulb_check)
     n = len(lamps)
-    pitch = 48
+    pitch = 44
     total = n * pitch
     x0 = bx + max(8, (bw - total) // 2) + pitch // 2
     for i, (kind, lit, colour) in enumerate(lamps):

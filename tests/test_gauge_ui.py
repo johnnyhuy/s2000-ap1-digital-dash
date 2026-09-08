@@ -12,6 +12,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from gauge_ui import (  # noqa: E402
     ARCH_RISE_PCT,
     FACE,
+    LAMP_AMBER,
+    LAMP_BLUE,
+    LAMP_GREEN,
+    LAMP_RED,
     MODULE_ASPECT,
     NOTCH_BOT_PCT,
     NOTCH_TOP_PCT,
@@ -21,6 +25,7 @@ from gauge_ui import (  # noqa: E402
     PHASE_REVEAL_S,
     PHASE_SWEEP_S,
     RPM_REDLINE,
+    _lamp_spec,
     ect_frac,
     exp_smooth,
     fuel_frac,
@@ -167,6 +172,17 @@ class FaceGeomTests(unittest.TestCase):
 
     def test_five_redline_blocks(self) -> None:
         self.assertEqual(REDLINE_BLOCKS, 5)
+
+    def test_lamp_colours_match_lit_notes(self) -> None:
+        face = DisplayState()
+        by_kind = {k: c for k, _on, c in _lamp_spec(face, bulb_check=True)}
+        for kind in ("brake", "bat", "oil", "door", "seat", "srs"):
+            self.assertEqual(by_kind[kind], LAMP_RED, kind)
+        for kind in ("abs", "cel", "maint", "eps"):
+            self.assertEqual(by_kind[kind], LAMP_AMBER, kind)
+        for kind in ("turn_l", "turn_r", "key"):
+            self.assertEqual(by_kind[kind], LAMP_GREEN, kind)
+        self.assertEqual(by_kind["hi"], LAMP_BLUE)
 
     def test_notch_and_arch_lock(self) -> None:
         mx, my, mw, mh = FACE.module

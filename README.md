@@ -95,6 +95,9 @@ Optional: `lamps` object (`oil`, `cel`, `abs`, `turn_l`, `turn_r`, `high_beam`,
 - `src/gauge_ui.py` — pygame 1920×1080 OEM-geometry cluster + intro
 - `src/serial_reader.py` — Phase 2 UART stub (pyserial optional)
 - `refs/flat/` — SVG + `DIMENSIONS.md` lock file for the OEM face
+- `refs/lit/` — lamp colour / bloom notes
+- `assets/icons/` — 32×32 lamp pictograms
+- `src/record_demo.py` — intro→live GIF (`--gif`)
 - `cad/` — OpenSCAD placeholders (bezel + generic connector shells)
 - `shots/` — optional PNG stills from `--screenshot`
 
