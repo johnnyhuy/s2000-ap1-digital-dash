@@ -6,3 +6,5 @@ __pycache__/
 *.stl
 *.3mf
 cad/export/
+!cad/replace_face/stl/*.stl
+!cad/replace_face/print/stl/*.stl

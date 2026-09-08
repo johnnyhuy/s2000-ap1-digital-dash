@@ -1,6 +1,9 @@
 // =============================================================================
 // PLACEHOLDER — NOT a cabin-ready print
 // =============================================================================
+// Overlay-only 7" frame. For the full arched replace-face stack see
+// cad/replace_face/ — do not mix the two envelopes.
+//
 // 7" landscape AMOLED bezel / frame (Wisecoco-class panel, Phase 1 bench).
 //
 // Bay callipers are REQUIRED before any in-car / cabin print.
