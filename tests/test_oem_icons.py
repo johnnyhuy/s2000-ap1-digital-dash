@@ -88,6 +88,22 @@ class StripTests(unittest.TestCase):
         self.assertTrue(states["battery"])
         self.assertFalse(states["oil"])
 
+    def test_oem_extra_keys_light_their_slots(self) -> None:
+        flags = {
+            "brake": True,
+            "door": True,
+            "srs": True,
+            "maint": True,
+            "eps": True,
+            "seatbelt": True,
+            "immobilizer": True,
+        }
+        states = {item.kind: item.lit for item in lamp_states(flags)}
+        for kind in flags:
+            self.assertTrue(states[kind], kind)
+        self.assertFalse(states["oil"])
+        self.assertFalse(states["high_beam"])
+
     def test_strip_is_dense(self) -> None:
         self.assertGreater(lamp_strip_inner_width(), 500)
         self.assertLess(lamp_strip_inner_width(), 800)

@@ -7,7 +7,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_ROOT))
+sys.path.insert(0, str(_ROOT / "src"))
+sys.path.insert(0, str(_ROOT / "tests"))
 
 from gauge_ui import (  # noqa: E402
     ARCH_RISE_PCT,
@@ -21,6 +24,10 @@ from gauge_ui import (  # noqa: E402
     PHASE_REVEAL_S,
     PHASE_SWEEP_S,
     RPM_REDLINE,
+    SMOKE_PHASES,
+    SerialSource,
+    StdinSource,
+    draw_frame,
     ect_frac,
     exp_smooth,
     fuel_frac,
@@ -119,6 +126,12 @@ class SmokeTests(unittest.TestCase):
                 ],
             )
 
+    def test_smoke_walks_intro_phases(self) -> None:
+        self.assertEqual(
+            [name for name, _ in SMOKE_PHASES],
+            ["sweep", "ready", "reveal", "live"],
+        )
+
 
 class FaceGeomTests(unittest.TestCase):
     def test_temp_and_fuel_are_horizontal_bottom_bars(self) -> None:
@@ -178,5 +191,113 @@ class FaceGeomTests(unittest.TestCase):
         self.assertEqual(FACE.hood_peak_y, my)
 
 
+class HeadlessDrawTests(unittest.TestCase):
+    """Dummy SDL: boot intro → reveal → live, plus OEM lamp colours."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
+        os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
+        from _headless import count_warm, init_cluster, sample_near
+
+        cls.pygame, cls.screen, cls.fonts = init_cluster()
+        cls.sample_near = staticmethod(sample_near)
+        cls.count_warm = staticmethod(count_warm)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.pygame.quit()
+
+    def _draw(self, face: DisplayState, phase: str, local_t: float):
+        self.screen.fill((0, 0, 0))
+        draw_frame(self.pygame, self.fonts, self.screen, face, phase, local_t)
+        return self.screen.copy()
+
+    def test_intro_phases_paint_the_lcd(self) -> None:
+        from gauge_ui import AMBER
+
+        face = DisplayState()
+        face.snap(sample_telem())
+        blobs = []
+        for phase, local_t in SMOKE_PHASES:
+            frame = self._draw(face, phase, local_t)
+            warm = self.count_warm(frame, step=12)
+            self.assertGreater(warm, 20, f"{phase} should show amber LCD (got {warm})")
+            if phase in ("ready", "live"):
+                self.assertGreater(
+                    self.sample_near(frame, AMBER, step=12, tol=48),
+                    8,
+                    f"{phase} should hit bright amber",
+                )
+            blobs.append(self.pygame.image.tobytes(frame, "RGB"))
+        self.assertNotEqual(blobs[0], blobs[1], "sweep and ready must differ")
+        self.assertNotEqual(blobs[1], blobs[3], "ready and live must differ")
+
+    def test_lamp_strip_uses_oem_colours_not_cyan(self) -> None:
+        from oem_icons import LAMP_AMBER, LAMP_BLUE, LAMP_GREEN, LAMP_RED, NEON_CYAN
+        from _headless import region
+
+        from mocks.esp32_uart import warn_frame
+
+        face = DisplayState()
+        face.snap(warn_frame())
+        frame = self._draw(face, "live", 1.0)
+        strip = region(frame, FACE.lamp_band)
+        self.assertGreater(self.sample_near(strip, LAMP_RED, step=2, tol=40), 0)
+        self.assertGreater(self.sample_near(strip, LAMP_AMBER, step=2, tol=40), 0)
+        self.assertGreater(self.sample_near(strip, LAMP_GREEN, step=2, tol=40), 0)
+        self.assertGreater(self.sample_near(strip, LAMP_BLUE, step=2, tol=40), 0)
+        self.assertEqual(self.sample_near(strip, NEON_CYAN, step=2, tol=20), 0)
+
+    def test_reveal_bulb_check_lights_the_strip(self) -> None:
+        from gauge_ui import draw_hardware_strip
+        from oem_icons import LAMP_RED
+
+        face = DisplayState()
+        face.snap(sample_telem())
+        self.assertFalse(face.lamps.get("oil"))
+        canvas = self.pygame.Surface(self.screen.get_size())
+        canvas.fill((8, 8, 9))
+        draw_hardware_strip(self.pygame, self.fonts, canvas, face, bulb_check=True)
+        strip = canvas.subsurface(FACE.lamp_band)
+        self.assertGreater(self.sample_near(strip, LAMP_RED, step=2, tol=40), 0)
+        reveal = self._draw(face, "reveal", 0.40)
+        self.assertGreater(self.count_warm(reveal, step=12), 20)
+
+
+class SourceTests(unittest.TestCase):
+    def test_stdin_pipe_keeps_latest_frame(self) -> None:
+        r, w = os.pipe()
+        first = sample_telem()
+        first.rpm = 2000
+        second = sample_telem()
+        second.rpm = 7100
+        os.write(w, first.to_line().encode("utf-8"))
+        os.write(w, second.to_line().encode("utf-8"))
+        os.close(w)
+        prev = sys.stdin
+        sys.stdin = os.fdopen(r, "r")
+        try:
+            got = StdinSource().poll()
+        finally:
+            sys.stdin.close()
+            sys.stdin = prev
+        self.assertIsNotNone(got)
+        self.assertEqual(got.rpm, 7100)
+
+    def test_serial_source_reads_fake_uart(self) -> None:
+        from mocks.esp32_uart import warn_frame
+        from mocks.fake_serial import FakeSerial
+
+        telem = warn_frame()
+        ser = FakeSerial([telem.to_line(), "not-json\n"])
+        got = SerialSource(ser).poll()
+        self.assertIsNotNone(got)
+        self.assertEqual(got.rpm, telem.rpm)
+        self.assertTrue(got.lamp("brake"))
+        self.assertTrue(got.lamp("srs"))
+
+
 if __name__ == "__main__":
     unittest.main()
+

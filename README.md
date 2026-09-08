@@ -140,8 +140,10 @@ Fullscreen by default. Esc or Q quits.
 
 ```bash
 # Fast health check (same commands CI runs)
-python -m unittest discover tests
+pip install -r requirements-dev.txt   # pygame + optional pyserial for UART mocks
+python -m unittest discover -s tests
 SDL_VIDEODRIVER=dummy python src/gauge_ui.py --smoke
+python -m mocks.esp32_uart --count 25 --immediate | python src/gauge_ui.py --smoke
 
 # Rebuild stills
 python src/gauge_ui.py --smoke --screenshot shots
@@ -151,6 +153,31 @@ python scripts/bake_showcase.py
 ```
 
 Stdin is newline JSON. Phase 2 UART is the same schema on `--serial`.
+
+## Mocked environments (no hardware)
+
+Pi UI and a future ESP32 source can be exercised in isolation. Field names stay frozen.
+
+```bash
+# Headless Pi cluster (dummy SDL — CI / no display)
+SDL_VIDEODRIVER=dummy python src/gauge_ui.py --smoke --screenshot /tmp/shots
+
+# Existing bench pipe (mock drive loop → UI)
+python src/mock_telemetry.py | python src/gauge_ui.py --windowed
+
+# Mock ESP32 UART emitter → stdout @ 20 Hz (same newline JSON as Phase 2)
+python -m mocks.esp32_uart
+python -m mocks.esp32_uart --count 40 --immediate --scenario warn
+
+# Mock ESP32 → headless UI (no Pi, no ESP32, no car)
+python -m mocks.esp32_uart --count 40 --immediate | python src/gauge_ui.py --smoke --screenshot /tmp/e2e
+
+# Local PTY stand-in for --serial (prints PTY=/dev/pts/N)
+python -m mocks.esp32_uart --pty --count 40 --immediate
+# then, in another shell: python src/gauge_ui.py --serial /dev/pts/N
+```
+
+`mocks/esp32_uart.py` is a Python stand-in, not flashed firmware. Scenarios: `drive` (cruise loop + OEM extra lamp keys off), `warn` (low fuel / hot ECT / every telltale), `idle`.
 
 ## Protocol
 
@@ -163,16 +190,18 @@ Optional: `lamps` object (`oil`, `cel`, `abs`, `turn_l`, `turn_r`, `high_beam`, 
 ## Layout
 
 - `src/protocol.py` — shared schema + parse/validate
-- `src/mock_telemetry.py` — 20 Hz fake drive loop → stdout
+- `src/mock_telemetry.py` — 20 Hz fake drive loop → stdout (Pi bench pipe)
 - `src/gauge_ui.py` — pygame 1920×1080 OEM-geometry cluster + intro
-- `src/serial_reader.py` — Phase 2 UART stub (pyserial optional)
+- `src/serial_reader.py` — Phase 2 UART stub + `SerialLineReader` (pyserial optional)
+- `mocks/` — mock ESP32 UART emitter + in-memory / PTY serial (no firmware)
+- `tests/` — unittest + headless dummy-SDL + e2e pipe
 - `refs/flat/` — SVG + `DIMENSIONS.md` lock for the OEM face
 - `assets/icons/` — OEM telltale SVG/PNG atlas (tinted at draw time)
 - `cad/` — OpenSCAD placeholders (bezel + generic connector shells)
 - `shots/` — sweep / ready / reveal / live / cruise stills
 - `docs/assets/` — unofficial mark, intro GIF, VP9 hero
 - `scripts/bake_showcase.py` — regenerate stills + hero media
-- `.github/workflows/ci.yml` — unittest + headless smoke on push/PR to `main`
+- `.github/workflows/ci.yml` — unittest + headless smoke + e2e on push/PR to `main`
 
 ## CAD placeholders
 
