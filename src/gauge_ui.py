@@ -4,6 +4,7 @@
 Reads Telemetry JSON lines from stdin (or --serial in Phase 2).
 
   python mock_telemetry.py | python gauge_ui.py
+  python -m mocks.esp32_uart --count 40 --immediate | python gauge_ui.py --smoke
   python gauge_ui.py --windowed --intro
   python gauge_ui.py --smoke --screenshot shots
 
@@ -426,30 +427,23 @@ class StdinSource:
 
 
 class SerialSource:
-    """Non-blocking JSON lines from optional pyserial (Phase 2)."""
+    """Non-blocking JSON lines from UART or a serial-like mock."""
 
-    def __init__(self, port: str) -> None:
-        from serial_reader import SerialUnavailable, open_serial
+    def __init__(self, port: str | object) -> None:
+        from serial_reader import SerialLineReader, SerialUnavailable, open_serial
 
-        try:
-            self._ser = open_serial(port, baud=SERIAL_BAUD, timeout=0)
-        except SerialUnavailable as e:
-            print(f"serial: {e}", file=sys.stderr)
-            raise SystemExit(2) from e
-        self._buf = ""
+        if hasattr(port, "read"):
+            ser = port
+        else:
+            try:
+                ser = open_serial(str(port), baud=SERIAL_BAUD, timeout=0)
+            except SerialUnavailable as e:
+                print(f"serial: {e}", file=sys.stderr)
+                raise SystemExit(2) from e
+        self._reader = SerialLineReader(ser)
 
     def poll(self) -> Telemetry | None:
-        latest = None
-        waiting = getattr(self._ser, "in_waiting", 0) or 0
-        if waiting:
-            chunk = self._ser.read(waiting).decode("utf-8", errors="ignore")
-            self._buf += chunk
-        while "\n" in self._buf:
-            line, self._buf = self._buf.split("\n", 1)
-            parsed = try_parse_line(line)
-            if parsed is not None:
-                latest = parsed
-        return latest
+        return self._reader.poll()
 
 
 def _font(pygame, size: int, bold: bool = False, mono: bool = False):
@@ -990,6 +984,14 @@ def draw_frame(
     draw_caption(fonts, surf)
 
 
+# Headless smoke walks the boot clock so CI covers sweep → ready → reveal → live
+SMOKE_PHASES: tuple[tuple[str, float], ...] = (
+    ("sweep", 0.55),
+    ("ready", 0.55),
+    ("reveal", 0.40),
+    ("live", 1.0),
+)
+
 SCREENSHOT_SCENES: tuple[tuple[str, str, float], ...] = (
     ("01_sweep", "sweep", 0.55),
     ("02_ready", "ready", 0.55),
@@ -1063,13 +1065,15 @@ def main(argv: list[str] | None = None) -> None:
         source = StdinSource()
 
     telem = sample_telem() if args.smoke else Telemetry()
+    incoming = source.poll()
+    if incoming is not None:
+        telem = incoming
+
     face = DisplayState()
+    face.snap(telem)
     if args.smoke:
-        face.snap(telem)
         face.trip_origin = telem.odo_km - 128.4
         face.trip_km = 128.4
-    else:
-        face.snap(telem)
 
     if args.screenshot:
         paths = write_screenshots(pygame, fonts, face, Path(args.screenshot))
@@ -1077,8 +1081,8 @@ def main(argv: list[str] | None = None) -> None:
             print(path)
 
     if args.smoke:
-        for _ in range(3):
-            draw_frame(pygame, fonts, screen, face, "live", 1.0)
+        for phase, local_t in SMOKE_PHASES:
+            draw_frame(pygame, fonts, screen, face, phase, local_t)
             pygame.display.flip()
         pygame.quit()
         return

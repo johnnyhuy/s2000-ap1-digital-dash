@@ -84,6 +84,35 @@ class ProtocolTests(unittest.TestCase):
         with self.assertRaises(ProtocolError):
             parse_line(raw)
 
+    def test_oem_extra_lamps_pass_through(self) -> None:
+        raw = json.dumps(
+            {
+                "rpm": 1200,
+                "speed_kmh": 0,
+                "fuel_pct": 40,
+                "ect_c": 80,
+                "batt_v": 12.6,
+                "odo_km": 10,
+                "lamps": {
+                    "brake": True,
+                    "door": True,
+                    "srs": False,
+                    "immobilizer": True,
+                    "maint": True,
+                    "eps": False,
+                    "seatbelt": True,
+                },
+            }
+        )
+        parsed = parse_line(raw)
+        self.assertTrue(parsed.lamp("brake"))
+        self.assertTrue(parsed.lamp("door"))
+        self.assertFalse(parsed.lamp("srs"))
+        self.assertTrue(parsed.lamp("immobilizer"))
+        for key in REQUIRED_FIELDS:
+            self.assertIn(key, parsed.to_dict())
+
 
 if __name__ == "__main__":
     unittest.main()
+
