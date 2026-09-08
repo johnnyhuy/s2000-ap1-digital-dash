@@ -9,8 +9,19 @@ callipers. Every critical size in the SCAD is marked `PLACEHOLDER` or
 plastic.
 
 This folder is a **full face replace** (Option 1): a printable stack that
-follows the locked flat OEM elevation. It is **not** the overlay-only 7"
-bezel in `cad/bezel_7in_placeholder.scad`.
+follows the locked flat OEM elevation in
+[`refs/flat/DIMENSIONS.md`](../../refs/flat/DIMENSIONS.md) (PR
+[#12](https://github.com/johnnyhuy/s2000-digital-dash/pull/12)). It is
+**not** the overlay-only 7" bezel in `cad/bezel_7in_placeholder.scad`.
+
+**Face lock (do not invent):** 170 × 72.3 mm, 2.35:1, flat bottom,
+rectangular 58–72% notches, parabola `y% = 28 u²`. Speed centre
+**(50%, 40%)**; ODO/TRIP under the speed. **TEMP** is a **horizontal**
+C→H bar **left of the speedo** at **(8.0%, 50.5%)**, w = 16%, h = 1.2%,
+6 thin ticks. **FUEL** is a **horizontal** E→F bar **right of the
+speedo** at **(76.0%, 50.5%)**, same w/h. Vertical TEMP/FUEL stacks are
+**erroneous** — they are not modelled here. Callipers are still
+PLACEHOLDER; this is **not** a verified AP1 drop-in.
 
 No connector pitch, clip pattern, or “it will just click in” claim lives
 here. The generic shells in `cad/connector_*_placeholder.scad` are
@@ -139,4 +150,6 @@ connector. Measure the real plug if you ever model one.
 - Not a finished cabin part (Blender only cleaned the placeholder mesh)
 
 If the face geometry in `refs/flat/` moves, update `dims.scad` to match
-that lock file — do not invent a new silhouette family.
+that lock file — do not invent a new silhouette family. TEMP/FUEL must
+stay **horizontal bars flanking the speedo** (see #12); do not restore
+the old bottom-bar (y = 72%) or a vertical side stack.

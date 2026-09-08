@@ -78,6 +78,8 @@ module backlight_web() {
 module acrylic_face() {
     // Mask plate — through-windows only. No back rebates (cleaner remesh).
     // Production: laser acrylic. Print proxy: PETG or ASA.
+    // TEMP/FUEL are LCD-drawn horizontal bars inside lcd_window_2d()
+    // (flanking the speedo). Do not cut vertical side-stack windows.
     difference() {
         linear_extrude(face_t)
             hood_2d();
@@ -170,4 +172,9 @@ module assembly(explode = 0) {
     color([0.12, 0.12, 0.12])
         translate([0, 0, tray_h + explode * 2])
             rubber_buttons_placed();
+    // F5 lock overlay only — LCD-drawn TEMP/FUEL, not a printable cut.
+    color([0.95, 0.62, 0.12])
+        translate([0, 0, face_rebate_z + explode + face_t + 0.2])
+            linear_extrude(0.15)
+                gauge_bars_2d();
 }

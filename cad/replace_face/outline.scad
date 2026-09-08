@@ -109,14 +109,21 @@ module button_caps_2d(extra = 0) {
         stadium_2d(trip_w + 2 * extra, btn_h + 2 * extra);
 }
 
+// Horizontal flanking envelopes (LCD-drawn). w >> h — never a vertical stack.
+// Sit inside the LCD aperture, so they are not acrylic-mask through-windows.
 module temp_bar_2d() {
     translate([temp_x, temp_y])
-        rounded_rect_2d(temp_w, temp_h, 0.4);
+        rounded_rect_2d(temp_w, temp_h, min(0.4, temp_h / 2));
 }
 
 module fuel_bar_2d() {
     translate([fuel_x, fuel_y])
-        rounded_rect_2d(fuel_w, fuel_h, 0.4);
+        rounded_rect_2d(fuel_w, fuel_h, min(0.4, fuel_h / 2));
+}
+
+module gauge_bars_2d() {
+    temp_bar_2d();
+    fuel_bar_2d();
 }
 
 // Four PLACEHOLDER pins in the bottom bezel (not in the LCD). Fiction until measured.

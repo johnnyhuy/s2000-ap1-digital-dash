@@ -5,6 +5,13 @@
 truth — this pass only cleans the one-body CGAL dumps. Do not invent
 stems, clips, pin bosses, or Honda connector pitch here.
 
+Face lock follows [`refs/flat/DIMENSIONS.md`](../../refs/flat/DIMENSIONS.md)
+and PR [#12](https://github.com/johnnyhuy/s2000-digital-dash/pull/12):
+**horizontal TEMP** at **(8.0%, 50.5%)** left of the speedo, **FUEL** at
+**(76.0%, 50.5%)** right (w = 16%, h = 1.2%). Vertical TEMP/FUEL stacks
+are erroneous. Silhouette stays 170 × 72.3, 2.35:1, flat bottom,
+rectangular 58–72% notches, parabola `y% = 28 u²`.
+
 ## Run
 
 Headless (CI-friendly if Blender is on `PATH`):

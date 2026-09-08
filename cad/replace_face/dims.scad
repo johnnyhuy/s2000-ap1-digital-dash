@@ -2,6 +2,7 @@
 // PLACEHOLDER dimensions — Option 1 replace-face stack
 // =============================================================================
 // ESTIMATED millimetres from refs/flat/DIMENSIONS.md (170 × 72.3, 2.35:1).
+// Face lock (#12): horizontal TEMP left / FUEL right flanking the speedo.
 // Callipers are UNKNOWN. Every critical size is a guess until the OEM face
 // and cluster bay are measured. This is NOT a verified AP1 drop-in.
 //
@@ -25,16 +26,19 @@ arch_steps = 40;
 
 lcd_inset_x_pct = 0.010;    // extra inset inside the notch
 lcd_top_pct = 0.055;
-lcd_bottom_pct = 0.76;      // just under TEMP / FUEL
+lcd_bottom_pct = 0.76;      // LCD fills to the lamp strip (not under TEMP/FUEL)
 lcd_spring_inset_pct = 0.02;
 lcd_frame_mm = 1.0;         // PLACEHOLDER — keeps the mask one piece (see outline)
 
-temp_x_pct = 0.075;
-temp_y_pct = 0.72;
-fuel_x_pct = 0.745;
-fuel_y_pct = 0.72;
-bar_w_pct = 0.180;
-bar_h_pct = 0.030;
+// AP1 lock (#12 / refs/flat/DIMENSIONS.md): horizontal bars flanking the
+// speedo. NOT the old bottom-bar (y=72%) and NOT a vertical side stack.
+temp_x_pct = 0.080;         // C→H left of speedo
+temp_y_pct = 0.505;
+fuel_x_pct = 0.760;         // E→F right of speedo
+fuel_y_pct = 0.505;
+bar_w_pct = 0.160;
+bar_h_pct = 0.012;          // thin horizontal ticks (TEMP has 6)
+temp_segs = 6;              // OEM AP1 coolant ticks — LCD-drawn, not a mask cut
 
 speed_x_pct = 0.50;
 speed_y_pct = 0.40;
