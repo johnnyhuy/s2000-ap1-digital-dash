@@ -6,6 +6,7 @@
 <p align="center">
   <a href="https://github.com/johnnyhuy/s2000-ap1-digital-dash/actions/workflows/ci.yml"><img src="https://github.com/johnnyhuy/s2000-ap1-digital-dash/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <img src="https://img.shields.io/badge/python-3.11%2B-3776AB?style=flat" alt="Python 3.11+" />
+  <img src="https://img.shields.io/badge/pkg-uv-DE5FE9?style=flat" alt="uv" />
   <img src="https://img.shields.io/badge/phase-1%20bench%20mock-ECA824?style=flat" alt="Phase 1 bench mock" />
   <img src="https://img.shields.io/badge/protocol-frozen%20JSON-222222?style=flat" alt="Frozen JSON protocol" />
   <img src="https://img.shields.io/badge/Honda-unofficial%20DIY-black?style=flat" alt="Unofficial DIY — not affiliated with Honda" />
@@ -24,7 +25,14 @@
 </p>
 
 <p align="center">
-  <sub>Hero is a baked intro→live loop. A smaller VP9 copy lives at <a href="docs/assets/intro-live.webm"><code>docs/assets/intro-live.webm</code></a>. Stills are in <a href="shots/"><code>shots/</code></a>.</sub>
+  <sub>Hero is a baked 30 fps intro→live loop (60 fps VP9). Stills are in <a href="shots/"><code>shots/</code></a>. OEM vs UI composites live in <a href="docs/assets/compare/"><code>docs/assets/compare/</code></a>.</sub>
+</p>
+
+<p align="center">
+  <img src="docs/assets/compare/compare_ap1_lit_live.png" alt="OEM AP1 photo beside the pygame live face" width="960" />
+</p>
+<p align="center">
+  <sub>Left: OEM AP1 cluster, <a href="https://www.flickr.com/photos/thecarspy/2644733191/">The Car Spy</a> (<a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>). Right: this UI. Sources in <a href="refs/oem/SOURCES.md"><code>refs/oem/SOURCES.md</code></a>.</sub>
 </p>
 
 ## Features
@@ -107,16 +115,21 @@ OpenSCAD in [`cad/`](cad/): overlay 7" bezel + generic connector shells, and an 
 
 ## Install
 
-Python **3.11+**. pygame 2.5+ from `requirements.txt`. Dummy SDL is enough for tests and screenshots; a real display is only needed for the fullscreen Pi session.
+Python **3.11+**. Prefer **[uv](https://docs.astral.sh/uv/)** (`pyproject.toml` + `uv.lock`). Dummy SDL is enough for tests and screenshots; a real display is only needed for the fullscreen Pi session.
 
 ```bash
 git clone https://github.com/johnnyhuy/s2000-ap1-digital-dash.git
 cd s2000-ap1-digital-dash
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+uv sync
 ```
 
-On the Pi, `export DISPLAY=:0` if the box boots headless to a desktop session.
+Dev extras (pytest, pyserial for UART mocks):
+
+```bash
+uv sync --extra dev
+```
+
+`requirements.txt` / `requirements-dev.txt` stay as pip mirrors. On the Pi, `export DISPLAY=:0` if the box boots headless to a desktop session.
 
 ## Web cluster harness (no Pi)
 
@@ -137,7 +150,7 @@ The banner on that page is the same **unofficial DIY / not Honda Motor Co.** dis
 
 ```bash
 # Bench mock pipe (repo root)
-python src/mock_telemetry.py | python src/gauge_ui.py
+uv run python src/mock_telemetry.py | uv run python src/gauge_ui.py
 
 # Same thing from src/
 cd src && python mock_telemetry.py | python gauge_ui.py
@@ -155,16 +168,20 @@ Fullscreen by default. Esc or Q quits.
 
 ```bash
 # Fast health check (same commands CI runs)
-pip install -r requirements-dev.txt   # pygame + optional pyserial for UART mocks
-python -m unittest discover -s tests
-SDL_VIDEODRIVER=dummy python src/gauge_ui.py --smoke
-python -m mocks.esp32_uart --count 25 --immediate | python src/gauge_ui.py --smoke
+uv sync --extra dev
+uv run pytest
+SDL_VIDEODRIVER=dummy uv run python src/gauge_ui.py --smoke
+uv run python -m mocks.esp32_uart --count 25 --immediate | uv run python src/gauge_ui.py --smoke
+uv run python scripts/ui_harness.py --check
 
 # Rebuild stills
-python src/gauge_ui.py --smoke --screenshot shots
+uv run python src/gauge_ui.py --smoke --screenshot shots
 
-# Rebuild stills + intro GIF/WebM (needs ffmpeg)
-python scripts/bake_showcase.py
+# OEM | UI side-by-sides
+uv run python scripts/compare_oem.py
+
+# Rebuild stills + 30 fps intro GIF / 60 fps VP9 (needs ffmpeg)
+uv run python scripts/bake_showcase.py
 ```
 
 Stdin is newline JSON. Phase 2 UART is the same schema on `--serial`.
@@ -175,21 +192,21 @@ Pi UI and a future ESP32 source can be exercised in isolation. Field names stay 
 
 ```bash
 # Headless Pi cluster (dummy SDL — CI / no display)
-SDL_VIDEODRIVER=dummy python src/gauge_ui.py --smoke --screenshot /tmp/shots
+SDL_VIDEODRIVER=dummy uv run python src/gauge_ui.py --smoke --screenshot /tmp/shots
 
 # Existing bench pipe (mock drive loop → UI)
-python src/mock_telemetry.py | python src/gauge_ui.py --windowed
+uv run python src/mock_telemetry.py | uv run python src/gauge_ui.py --windowed
 
 # Mock ESP32 UART emitter → stdout @ 20 Hz (same newline JSON as Phase 2)
-python -m mocks.esp32_uart
-python -m mocks.esp32_uart --count 40 --immediate --scenario warn
+uv run python -m mocks.esp32_uart
+uv run python -m mocks.esp32_uart --count 40 --immediate --scenario warn
 
 # Mock ESP32 → headless UI (no Pi, no ESP32, no car)
-python -m mocks.esp32_uart --count 40 --immediate | python src/gauge_ui.py --smoke --screenshot /tmp/e2e
+uv run python -m mocks.esp32_uart --count 40 --immediate | uv run python src/gauge_ui.py --smoke --screenshot /tmp/e2e
 
 # Local PTY stand-in for --serial (prints PTY=/dev/pts/N)
-python -m mocks.esp32_uart --pty --count 40 --immediate
-# then, in another shell: python src/gauge_ui.py --serial /dev/pts/N
+uv run python -m mocks.esp32_uart --pty --count 40 --immediate
+# then, in another shell: uv run python src/gauge_ui.py --serial /dev/pts/N
 ```
 
 `mocks/esp32_uart.py` is a Python stand-in, not flashed firmware. Scenarios: `drive` (cruise loop + OEM extra lamp keys off), `warn` (low fuel / hot ECT / every telltale), `idle`.
@@ -207,17 +224,22 @@ Optional: `lamps` object (`oil`, `cel`, `abs`, `turn_l`, `turn_r`, `high_beam`, 
 - `src/protocol.py` — shared schema + parse/validate
 - `src/mock_telemetry.py` — 20 Hz fake drive loop → stdout (Pi bench pipe)
 - `src/gauge_ui.py` — pygame 1920×1080 OEM-geometry cluster + intro
+- `src/lcd_digits.py` — 7-segment speed / odo with ghost + bloom
 - `src/serial_reader.py` — Phase 2 UART stub + `SerialLineReader` (pyserial optional)
 - `mocks/` — mock ESP32 UART emitter + in-memory / PTY serial (no firmware)
-- `tests/` — unittest + headless dummy-SDL + e2e pipe
+- `tests/` — pytest (unittest + harness ahash + e2e pipe)
 - `refs/flat/` — SVG + `DIMENSIONS.md` lock for the OEM face
+- `refs/oem/` — curated AP1 photos + labelled AP2 caution + `SOURCES.md`
 - `assets/icons/` — OEM telltale SVG/PNG atlas (tinted at draw time)
-- `cad/` — OpenSCAD placeholders (overlay bezel + connectors + `replace_face/`)
+- `cad/` — OpenSCAD placeholders (overlay bezel + connectors + `replace_face/`). PETG/ASA notes stay here.
 - `shots/` — sweep / ready / reveal / live / cruise stills
-- `docs/assets/` — unofficial mark, intro GIF, VP9 hero
-- `scripts/bake_showcase.py` — regenerate stills + hero media
+- `docs/assets/` — unofficial geometric H, intro GIF, VP9 hero, OEM|UI compares
+- `scripts/bake_showcase.py` — regenerate stills + 30 fps hero
+- `scripts/ui_harness.py` — screenshot / ahash harness
+- `scripts/compare_oem.py` — OEM photo | UI composites
+- `pyproject.toml` + `uv.lock` — uv project
 - `apps/harness/` — Next.js App Router web cluster (Vercel; Root Directory `apps/harness`)
-- `.github/workflows/ci.yml` — unittest + headless smoke + e2e + harness build on push/PR to `main`
+- `.github/workflows/ci.yml` — uv pytest + pygame smoke/e2e + web harness build on push/PR to `main`
 
 ## CAD placeholders
 

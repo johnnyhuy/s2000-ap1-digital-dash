@@ -10,6 +10,7 @@ Does not change protocol field names or the OEM face.
 from __future__ import annotations
 
 import argparse
+import math
 import os
 import shutil
 import subprocess
@@ -28,9 +29,10 @@ sys.path.insert(0, str(SRC))
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Bake AP1 cluster showcase media")
     p.add_argument("--shots-only", action="store_true", help="Regenerate shots/ PNGs only")
-    p.add_argument("--fps", type=int, default=12, help="Intro GIF/WebM frame rate")
+    p.add_argument("--fps", type=int, default=30, help="Intro GIF/WebM frame rate (30–60)")
     p.add_argument("--width", type=int, default=960, help="Encoded media width")
-    p.add_argument("--live-s", type=float, default=1.25, help="Seconds of live after reveal")
+    p.add_argument("--live-s", type=float, default=2.0, help="Seconds of live after reveal")
+    p.add_argument("--webm-fps", type=int, default=60, help="VP9 encode frame rate")
     return p.parse_args(argv)
 
 
@@ -81,12 +83,23 @@ def bake_intro_frames(
     duration = intro_duration_s() + live_s
     n = max(1, int(round(duration * fps)))
     written: list[Path] = []
+    base_rpm = face.rpm
+    base_speed = face.speed_kmh
     for i in range(n):
-        phase, local_t = intro_phase_at(i / fps)
+        t = i / fps
+        phase, local_t = intro_phase_at(t)
+        if phase == "live":
+            # Smooth live lerp so the loop is not a static still
+            live_t = t - intro_duration_s()
+            wave = 0.5 + 0.5 * math.sin(live_t * 2.4)
+            face.rpm = base_rpm + 900.0 * (wave - 0.5)
+            face.speed_kmh = base_speed + 8.0 * (wave - 0.5)
         draw_frame(pygame, fonts, canvas, face, phase, local_t)
         path = dest / f"frame_{i:04d}.png"
         pygame.image.save(canvas, str(path))
         written.append(path)
+    face.rpm = base_rpm
+    face.speed_kmh = base_speed
     return written
 
 
@@ -95,7 +108,7 @@ def _run_ffmpeg(args: list[str]) -> None:
     subprocess.run(args, check=True)
 
 
-def encode_media(frame_dir: Path, fps: int, width: int) -> tuple[Path, Path]:
+def encode_media(frame_dir: Path, fps: int, width: int, webm_fps: int | None = None) -> tuple[Path, Path]:
     ASSETS.mkdir(parents=True, exist_ok=True)
     pattern = str(frame_dir / "frame_%04d.png")
     gif = ASSETS / "intro-live.gif"
@@ -110,12 +123,13 @@ def encode_media(frame_dir: Path, fps: int, width: int) -> tuple[Path, Path]:
             "-i",
             pattern,
             "-vf",
-            f"{scale},split[s0][s1];[s0]palettegen=max_colors=72:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3",
+            f"{scale},split[s0][s1];[s0]palettegen=max_colors=128:stats_mode=diff[p];[s1][p]paletteuse=dither=sierra2_4a",
             "-loop",
             "0",
             str(gif),
         ]
     )
+    wfps = webm_fps or max(fps, 30)
     _run_ffmpeg(
         [
             "ffmpeg",
@@ -125,13 +139,13 @@ def encode_media(frame_dir: Path, fps: int, width: int) -> tuple[Path, Path]:
             "-i",
             pattern,
             "-vf",
-            scale,
+            f"{scale},minterpolate=fps={wfps}:mi_mode=blend" if wfps > fps else scale,
             "-c:v",
             "libvpx-vp9",
             "-b:v",
             "0",
             "-crf",
-            "36",
+            "32",
             "-an",
             str(webm),
         ]
@@ -174,7 +188,7 @@ def main(argv: list[str] | None = None) -> None:
             args.live_s,
         )
         print(f"wrote {len(frames)} intro frames")
-        gif, webm = encode_media(Path(tmp), args.fps, args.width)
+        gif, webm = encode_media(Path(tmp), args.fps, args.width, args.webm_fps)
         print(gif, gif.stat().st_size)
         print(webm, webm.stat().st_size)
 

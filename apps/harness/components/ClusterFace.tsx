@@ -295,9 +295,13 @@ export function ClusterFace({ face }: { face: DisplayState }) {
         <text x={temp.x + temp.w + 12} y={temp.y + temp.h * 0.85} className="tiny" fill={hot ? RED : AMBER} textAnchor="middle">
           H
         </text>
-        <g transform={`translate(${temp.x + 8} ${temp.y - 16})`} fill={hot ? RED : AMBER}>
-          <rect x="-2" y="-8" width="4" height="11" rx="2" />
-          <circle cx="0" cy="6" r="4" />
+        <g transform={`translate(${temp.x + 8} ${temp.y - 16})`} fill={hot ? RED : AMBER} stroke={hot ? RED : AMBER}>
+          <rect x="-2" y="-10" width="4" height="12" rx="1.4" fill={hot ? RED : AMBER} stroke="none" />
+          <circle cx="0" cy="5" r="4.2" fill={hot ? RED : AMBER} stroke="none" />
+          <path d="M4 -8h5M4 -4h5M4 0h5M4 4h5" strokeWidth="1.4" fill="none" />
+          <path d="M-6 12c1.4-1.4 2.8 1.4 4.2 0s2.8 1.4 4.2 0 2.8 1.4 4.2 0" fill="none" strokeWidth="1.3" />
+          <path d="M-6 16c1.4-1.4 2.8 1.4 4.2 0s2.8 1.4 4.2 0 2.8 1.4 4.2 0" fill="none" strokeWidth="1.3" />
+          <path d="M-6 20c1.4-1.4 2.8 1.4 4.2 0s2.8 1.4 4.2 0 2.8 1.4 4.2 0" fill="none" strokeWidth="1.3" />
         </g>
         <SegBar {...temp} frac={ectFrac(face.ect_c)} segs={TEMP_SEGS} warnLow={false} hotEnd={hot} />
 
@@ -312,9 +316,11 @@ export function ClusterFace({ face }: { face: DisplayState }) {
           fill={lowFuel ? "#e68424" : AMBER}
           stroke={lowFuel ? "#e68424" : AMBER}
         >
-          <rect x="-7" y="-4" width="8" height="11" rx="1.2" />
-          <rect x="-5" y="-8" width="5" height="4" rx="0.6" />
-          <path d="M1 -2 7 -6v10" fill="none" strokeWidth="1.4" />
+          <rect x="-8" y="-4" width="9" height="13" rx="1" stroke="none" />
+          <rect x="-6" y="-9" width="5" height="5" rx="0.5" stroke="none" />
+          <rect x="-5" y="-1" width="4" height="3" fill="#060402" stroke="none" />
+          <path d="M1 -1c6-4 10 0 10 6" fill="none" strokeWidth="1.5" />
+          <rect x="9" y="0" width="3" height="7" rx="0.8" stroke="none" />
         </g>
         <SegBar {...fuel} frac={fuelFrac(face.fuel_pct)} segs={FUEL_SEGS} warnLow={lowFuel} hotEnd={false} />
       </svg>
@@ -326,7 +332,12 @@ export function ClusterFace({ face }: { face: DisplayState }) {
             <span className="plus">+</span>
           </div>
           <div className="cancel">
-            <span className="dial" />
+            <svg className="dial" viewBox="0 0 20 16" width="16" height="13" aria-hidden>
+              <circle cx="7" cy="8" r="6" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <circle cx="7" cy="8" r="1.3" fill="currentColor" />
+              <path d="M7 8 11 4" stroke="currentColor" strokeWidth="1.4" />
+              <path d="M13 10 18 15M18 10 13 15" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
             PUSH CANCEL
           </div>
         </div>

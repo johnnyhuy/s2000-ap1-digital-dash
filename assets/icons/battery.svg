@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" width="64" height="48" role="img" aria-label="Battery telltale">
   <title>Battery telltale</title>
-  <rect x="16" y="16" width="32" height="20" rx="2" fill="none" stroke="#fff" stroke-width="2.4"/>
-  <rect x="22" y="12" width="8" height="5" fill="#fff"/>
-  <rect x="34" y="12" width="8" height="5" fill="#fff"/>
-  <path d="M24 26h6M36 26h6M39 23v6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
+       White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
+  <defs>
+    <mask id="batt">
+      <rect width="64" height="48" fill="black"/>
+      <rect x="14" y="16" width="36" height="22" rx="1.2" fill="white"/>
+      <rect x="20" y="11" width="8" height="6" rx="0.4" fill="white"/>
+      <rect x="36" y="11" width="8" height="6" rx="0.4" fill="white"/>
+      <rect x="19" y="25.2" width="9" height="2.8" fill="black"/>
+      <rect x="36" y="25.2" width="9" height="2.8" fill="black"/>
+      <rect x="39.1" y="21.2" width="2.8" height="10.8" fill="black"/>
+    </mask>
+  </defs>
+  <rect width="64" height="48" fill="#fff" mask="url(#batt)"/>
 </svg>

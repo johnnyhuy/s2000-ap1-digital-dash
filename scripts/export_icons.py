@@ -1,28 +1,17 @@
 #!/usr/bin/env python3
-"""Rasterise white OEM telltale PNGs next to the SVG sources."""
+"""Rasterise white OEM telltale PNGs from the SVG plates (rsvg)."""
 from __future__ import annotations
 
-import os
+import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
 
 
 def main() -> None:
-    os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
-    os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
-    import pygame
-
-    from oem_icons import ASSETS, export_pngs
-
-    pygame.init()
-    pygame.display.set_mode((128, 128))
-    written = export_pngs(pygame, ASSETS)
-    for path in written:
-        print(path, path.stat().st_size)
-    pygame.quit()
+    script = ROOT / "scripts" / "rasterize_icons.py"
+    raise SystemExit(subprocess.call([sys.executable, str(script)]))
 
 
 if __name__ == "__main__":
