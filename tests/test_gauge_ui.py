@@ -14,12 +14,14 @@ sys.path.insert(0, str(_ROOT / "tests"))
 
 from gauge_ui import (  # noqa: E402
     ARCH_RISE_PCT,
+    BAR_H_PCT,
     FACE,
     MODULE_ASPECT,
     NOTCH_BOT_PCT,
     NOTCH_TOP_PCT,
     REDLINE_BLOCKS,
     TEMP_SEGS,
+    TEMP_W_PCT,
     tach_arch_xy,
     DisplayState,
     PHASE_READY_S,
@@ -140,18 +142,18 @@ class SmokeTests(unittest.TestCase):
 
 
 class FaceGeomTests(unittest.TestCase):
-    def test_temp_and_fuel_are_horizontal_bottom_bars(self) -> None:
+    def test_temp_and_fuel_are_horizontal_flanking_bars(self) -> None:
         tx, ty, tw, th = FACE.temp
         fx, fy, fw, fh = FACE.fuel
         self.assertEqual(ty, fy)
         self.assertEqual(th, fh)
-        self.assertGreater(tw, th * 3)
-        self.assertGreater(fw, fh * 3)
+        self.assertGreater(tw, th * 6)
+        self.assertGreater(fw, fh * 6)
         self.assertLess(tx + tw, FACE.speed_c[0])
         self.assertGreater(fx, FACE.speed_c[0])
-        lcd_bottom = FACE.lcd[1] + FACE.lcd[3]
-        self.assertGreater(ty, FACE.lcd[1] + FACE.lcd[3] * 0.75)
-        self.assertLessEqual(ty + th, lcd_bottom + 2)
+        # Flank the speed/odo band — not a vertical side stack, not AP2 arches
+        self.assertLess(abs(ty - FACE.odo_c[1]), 40)
+        self.assertLess(th, 16)
 
     def test_module_is_flat_bottom_and_stepped(self) -> None:
         bl, br = hood_bottom_corners(FACE)
@@ -174,11 +176,13 @@ class FaceGeomTests(unittest.TestCase):
         self.assertGreater(aspect, 2.8)
         self.assertLess(aspect, 4.2)
 
-    def test_locked_bottom_and_speed_percentages(self) -> None:
+    def test_locked_flanking_gauges_and_speed_percentages(self) -> None:
         mx, my, mw, mh = FACE.module
-        self.assertAlmostEqual((FACE.temp[0] - mx) / mw, 0.075, delta=0.01)
-        self.assertAlmostEqual((FACE.temp[1] - my) / mh, 0.72, delta=0.015)
-        self.assertAlmostEqual((FACE.fuel[0] - mx) / mw, 0.745, delta=0.01)
+        self.assertAlmostEqual((FACE.temp[0] - mx) / mw, 0.080, delta=0.015)
+        self.assertAlmostEqual((FACE.temp[1] - my) / mh, 0.505, delta=0.02)
+        self.assertAlmostEqual(FACE.temp[3] / mh, BAR_H_PCT, delta=0.01)
+        self.assertAlmostEqual(FACE.temp[2] / mw, TEMP_W_PCT, delta=0.015)
+        self.assertAlmostEqual((FACE.fuel[0] - mx) / mw, 0.760, delta=0.015)
         self.assertAlmostEqual((FACE.speed_c[0] - mx) / mw, 0.50, delta=0.01)
         self.assertAlmostEqual((FACE.speed_c[1] - my) / mh, 0.40, delta=0.02)
         self.assertAlmostEqual((FACE.bezel[1] - my) / mh, 0.805, delta=0.02)

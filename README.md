@@ -45,7 +45,7 @@
 
 Amber-on-black LCD in a **hooded arched cowl**. Flat 2.35:1 elevation — no fake 3D skew.
 
-- **AP1** (default): locked straight **TEMP** / **FUEL**, OEM telltale strip. Proportions in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md). Tach ticks are thin bars **normal to the arch**.
+- **AP1** (default): locked **horizontal TEMP left / FUEL right** flanking the speed/odo. Proportions in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md). Tach ticks are thin bars **normal to the arch**.
 - **AP2**: interpretive stacked arched TEMP / FUEL on the right, plus a clock row. Uses [`refs/oem/ap2/`](refs/oem/ap2/) as reference — **not** a pixel-perfect plate.
 
 Toggle in the [web harness](apps/harness/) or `python src/gauge_ui.py --style ap2` (keys `1` / `2` live). Protocol fields stay frozen.
@@ -170,7 +170,7 @@ Fullscreen by default. Esc or Q quits.
 | `--smoke` | Dummy SDL, draw a few frames, exit (CI / Pi check; no live pipe needed) |
 | `--screenshot DIR` | Write `01_sweep.png` … `05_cruise.png` into DIR |
 | `--serial [PORT]` | Phase 2 UART stub (needs `pyserial`; default `/dev/ttyUSB0`) |
-| `--style ap1\|ap2` | Face layout. **ap1** (default) straight TEMP/FUEL; **ap2** arched side gauges |
+| `--style ap1\|ap2` | Face layout. **ap1** (default) horizontal TEMP/FUEL flanking the speedo; **ap2** arched side gauges |
 
 ```bash
 # Fast health check (same commands CI runs)

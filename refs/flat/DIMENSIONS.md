@@ -29,10 +29,10 @@ Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
 
 | Item | Placement |
 | --- | --- |
-| Speed centre | **(50%, 40%)** — **3-digit 7-seg** (ghost `188`); units (`km/h`, `mph`) to the **right** of the digits |
+| Speed centre | **(50%, 40%)** — **3-digit 7-seg** (ghost `188`); units (`km/h`) to the **right** of the digits |
 | ODO / TRIP | directly under the speed (~50% y): 6-digit odo + `TRIP A` `xxx.x` (ghost `888888` / `888.8`) |
-| TEMP bar | horizontal C–H at **(7.5%, 72.0%)**, **w = 18%**, **h = 3.0%** — **6** OEM coolant bars |
-| FUEL bar | horizontal E–F at **(74.5%, 72.0%)**, same w / h as TEMP |
+| TEMP bar | **horizontal** C→H **left of the speedo** at **(8.0%, 50.5%)**, **w = 16%**, **h = 1.2%** — **6** thin coolant ticks |
+| FUEL bar | **horizontal** E→F **right of the speedo** at **(76.0%, 50.5%)**, same w / h — finer tick ladder |
 | TEMP icon | thermometer above **C** |
 | FUEL icon | pump above **F** |
 | Lamp / hardware strip | y ≈ **80.5%** |
@@ -49,14 +49,19 @@ Hardware strip, left → right:
   **SRS** (red), **→** (green)
 - **SEL** oval + **TRIP** oval
 
-TEMP is **not** a tall vertical stack. Both corner gauges share y = 72%.
+AP1 style = these **horizontal bars flanking the speed/odo**. AP2 arched
+TEMP/FUEL is a separate family — do not copy it here.
+
+A vertical TEMP/FUEL stack was tried against a misread of the live photo
+and is **erroneous**. Do not merge vertical side gauges into this lock.
 
 Protocol JSON fields stay `rpm`, `speed_kmh`, `fuel_pct`, `ect_c`, `batt_v`,
 `odo_km`, plus the existing `lamps` keys.
 
 ## What not to regress
 
-- Vertical TEMP on the mid-face
+- **Vertical** TEMP / FUEL side stacks (erroneous; OEM AP1 is horizontal flanking bars)
+- AP2 arched corner gauges copied onto AP1
 - 45° chamfer instead of the **rectangular** 58–72% notches
 - Semicircle / superellipse crown instead of **y = 28 u²**
 - Units stacked under the speed

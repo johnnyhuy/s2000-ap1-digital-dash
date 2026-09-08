@@ -83,11 +83,12 @@ LAMP_Y_PCT = 0.805          # hardware strip centre-line
 BEZEL_H_PCT = 0.175
 LCD_INSET_X_PCT = 0.010
 LCD_TOP_PCT = 0.055
-LCD_BOTTOM_PCT = 0.76       # just under TEMP / FUEL
+LCD_BOTTOM_PCT = 0.76       # LCD fills to the lamp strip
 ARCH_N = 2.0                # parabola (u²)
-TEMP_X_PCT, TEMP_Y_PCT, TEMP_W_PCT = 0.075, 0.72, 0.180
-FUEL_X_PCT, FUEL_Y_PCT, FUEL_W_PCT = 0.745, 0.72, 0.180
-BAR_H_PCT = 0.014           # OEM AP1 ticks are thin horizontal dashes
+# AP1: thin horizontal bars flanking the speed/odo (not vertical stacks, not AP2 arches)
+TEMP_X_PCT, TEMP_Y_PCT, TEMP_W_PCT = 0.080, 0.505, 0.160
+FUEL_X_PCT, FUEL_Y_PCT, FUEL_W_PCT = 0.760, 0.505, 0.160
+BAR_H_PCT = 0.012           # OEM AP1 ticks are thin horizontal dashes
 SPEED_X_PCT, SPEED_Y_PCT = 0.50, 0.40
 ODO_Y_PCT = 0.50            # directly under the speed (OEM lock)
 # AP2 interpretive side-gauges (not a measured plate)
@@ -355,7 +356,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--style",
         choices=("ap1", "ap2"),
         default=DEFAULT_FACE_STYLE.value,
-        help="Face layout: ap1 (straight TEMP/FUEL, default) or ap2 (arched side gauges)",
+        help="Face layout: ap1 (horizontal TEMP/FUEL flanking the speedo, default) or ap2 (arched side gauges)",
     )
     args = p.parse_args(argv)
     if args.intro is None:
