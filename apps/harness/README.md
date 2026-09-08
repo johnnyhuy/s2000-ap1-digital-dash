@@ -27,12 +27,12 @@ Play / pause, **AP1 / AP2** face presets, and drive presets: **Idle**, **Cruise*
 
 Create a project rooted at **`apps/harness`**.
 
-1. [vercel.com/new](https://vercel.com/new) → import `johnnyhuy/s2000-ap1-digital-dash`
+1. [vercel.com/new](https://vercel.com/new) → import `johnnyhuy/s2000-digital-dash`
 2. **Root Directory**: `apps/harness`
 3. Framework preset: Next.js (auto)
 4. Deploy
 
-If the GitHub repo is later renamed to `johnnyhuy/s2000-digital-dash`, reconnect the Vercel project to that repo. The Vercel project itself can be renamed to **s2000-digital-dash**; Root Directory stays `apps/harness`.
+The Vercel project itself can be renamed to **s2000-digital-dash** for consistency; Root Directory stays `apps/harness`.
 
 CLI from this folder:
 
