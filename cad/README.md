@@ -1,17 +1,22 @@
 # Placeholder CAD (not production)
 
-OpenSCAD sources only. No STLs are committed — export locally if you need a
-bench mock-up.
+These parts are **dimensional guesses**. They are **not** AP1-accurate and
+must not go in the car until the bay and connectors are measured with
+callipers.
 
-These parts are **dimensional guesses** for a Phase 1 wall-powered bench
-(Pi 5 + 7" AMOLED). They are **not** AP1-accurate and must not go in the
-car until the bay and connectors are measured with callipers.
+Two tracks live here on purpose — do not mix them:
+
+| Track | Folder | What it is |
+| --- | --- | --- |
+| Overlay (7" bench bezel) | `bezel_7in_placeholder.scad` + connector shells | Rectangular frame for a Wisecoco-class panel in front of the OEM cluster. Sources only; export STL locally. |
+| **Option 1 replace-face** | [`replace_face/`](replace_face/) | Full arched face stack (tray + acrylic mask + rubber buttons) from the locked `refs/flat/` elevation. Placeholder STLs are committed there. |
 
 ## Overlay path
 
-The factory cluster stays plugged. This bezel is an overlay / replacement
-face for a display that sits in (or in front of) the bay. The legal
-odometer keeps counting on the OEM cluster. Phase 1 is wall power on the
+The factory cluster stays plugged. This bezel is an overlay frame for a
+display that sits in (or in front of) the bay — not the arched
+`replace_face/` stack. The legal odometer keeps counting on the OEM
+cluster. Phase 1 is wall power on the
 bench. Phase 2 will add high-Z taps later — these connector shells are
 **not** those taps and are **not** Honda drop-ins.
 
@@ -47,7 +52,7 @@ Connectors (both ends)
 - **PETG or ASA** for anything that will see cabin heat.
 - **Do not use PLA** in the cabin. It softens and creeps on a sun-soaked dash.
 - Keep fits loose until the second measure. First prints are tracing templates.
-- Export STL locally; do not commit large binaries unless they are tiny fixtures.
+- Overlay path: export STL locally. Option 1 placeholder STLs live in `replace_face/stl/`.
 - Slice with enough perimeters on the bezel lip so the panel cannot punch through.
 
 ## Files
@@ -57,5 +62,6 @@ Connectors (both ends)
 | `bezel_7in_placeholder.scad` | Frame for a ~7" landscape AMOLED (~164×100 overall / ~154×87 active placeholders) |
 | `connector_male_placeholder.scad` | Generic multi-pin male shell |
 | `connector_female_placeholder.scad` | Generic multi-pin female shell |
+| `replace_face/` | Option 1 full-face replace stack — see that folder’s README |
 
 Open in [OpenSCAD](https://openscad.org/) and F6 to render after you edit the measured numbers.

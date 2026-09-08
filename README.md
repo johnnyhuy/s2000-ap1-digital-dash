@@ -94,7 +94,7 @@ Phase 1 is **wall power** on the bench — no ESP32, no car taps. Phase 2 will a
 
 ### Placeholder CAD
 
-OpenSCAD bezel + generic connector shells in [`cad/`](cad/). **Not** AP1-accurate. Bay **callipers required** before any cabin print. **PETG or ASA — not PLA.**
+OpenSCAD in [`cad/`](cad/): overlay 7" bezel + generic connector shells, and an Option 1 **replace-face** stack in [`cad/replace_face/`](cad/replace_face/). **Not** AP1-accurate. Bay **callipers required** before any cabin print. **PETG or ASA — not PLA.**
 
 </td>
 <td width="50%">
@@ -168,7 +168,7 @@ Optional: `lamps` object (`oil`, `cel`, `abs`, `turn_l`, `turn_r`, `high_beam`, 
 - `src/serial_reader.py` — Phase 2 UART stub (pyserial optional)
 - `refs/flat/` — SVG + `DIMENSIONS.md` lock for the OEM face
 - `assets/icons/` — OEM telltale SVG/PNG atlas (tinted at draw time)
-- `cad/` — OpenSCAD placeholders (bezel + generic connector shells)
+- `cad/` — OpenSCAD placeholders (overlay bezel + connectors + `replace_face/`)
 - `shots/` — sweep / ready / reveal / live / cruise stills
 - `docs/assets/` — unofficial mark, intro GIF, VP9 hero
 - `scripts/bake_showcase.py` — regenerate stills + hero media
@@ -176,11 +176,11 @@ Optional: `lamps` object (`oil`, `cel`, `abs`, `turn_l`, `turn_r`, `high_beam`, 
 
 ## CAD placeholders
 
-See [`cad/README.md`](cad/README.md). The 7" bezel and connector shells are dimensional guesses for a wall-powered bench (Pi 5 + 7" AMOLED). They are **not** Honda drop-ins.
+See [`cad/README.md`](cad/README.md). Overlay 7" bezel + connector shells are dimensional guesses for a wall-powered bench (Pi 5 + 7" AMOLED). Option 1 (full arched face replace) lives in [`cad/replace_face/`](cad/replace_face/) with its own README, measure list, and placeholder STLs. None of this is a Honda drop-in.
 
 - Callipers required before any cabin print
 - Print **PETG or ASA**, never PLA in a sun-soaked dash
-- No STLs committed — export locally from OpenSCAD
+- Overlay path: export STL locally. Replace-face placeholder STLs are under `cad/replace_face/stl/`
 
 ## Disclaimer
 
