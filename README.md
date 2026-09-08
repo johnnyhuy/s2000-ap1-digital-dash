@@ -8,19 +8,25 @@ odometer remains the legal one. Phase 1 is **wall power** on the bench — no
 ESP32, no car taps. Phase 2 will add **high-Z taps** later and emit the same
 JSON over UART (`src/serial_reader.py`).
 
-Repo: private under `johnnyhuy/s2000-ap1-digital-dash`.
+Repo: `johnnyhuy/s2000-ap1-digital-dash`.
+
+Proportions are locked in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md)
+(flat SVG: [`refs/flat/ap1_face.svg`](refs/flat/ap1_face.svg)).
 
 ## Face (AP1 OEM geometry)
 
 Amber-on-black LCD sitting in a **hooded arched cowl** (cluster module, not a
-full-bleed app chrome):
+full-bleed app chrome). Flat orthographic elevation — no fake 3D skew.
 
-- Arched dense linear tach **0–9 ×1000**; thick **red blocks 8–9**; amber
-  segments below the numerals
+- Outer silhouette: **flat bottom**, 45° **stepped sides**, broad top arch
+- Arched dense linear tach **0–9 ×1000**; **five** thick red blocks **8–9**;
+  numerals **inside** the tick arc
 - Large digital speed centred under the arc (**km/h**)
-- Vertical **TEMP C–H** on the left; horizontal **FUEL E–F** on the right
-- **ODO / TRIP A / BATT** row
-- Bottom lamp strip (`HI` is cyan when lit)
+- Horizontal **TEMP C–H** at the **bottom-left** (thermometer icon)
+- Horizontal **FUEL E–F** at the **bottom-right** (pump icon), same y/h as TEMP
+- Tight **ODO / TRIP / BATT** row between the corner gauges
+- Lower bezel: `−/+` rocker + **PUSH CANCEL**, dense icon lamp band, blank +
+  **TRIP** ovals
 - Telemetry is lerped so the bars do not chatter at 20 Hz
 
 Boot (ID.4-inspired, skippable with Space / `--no-intro`):
@@ -53,7 +59,7 @@ to a desktop session.
 | `--windowed` | 1920×1080 window instead of fullscreen |
 | `--intro` / `--no-intro` | Force or skip the boot sequence (intro is on unless `--smoke`) |
 | `--smoke` | Dummy SDL, draw a few frames, exit (CI / Pi check; no live pipe needed) |
-| `--screenshot DIR` | Write `01_sweep.png` … `04_live.png` into DIR |
+| `--screenshot DIR` | Write `01_sweep.png` … `05_cruise.png` into DIR |
 | `--serial [PORT]` | Phase 2 UART stub (needs `pyserial`; default `/dev/ttyUSB0`) |
 
 ```bash
@@ -84,6 +90,7 @@ Optional: `lamps` object (`oil`, `cel`, `abs`, `turn_l`, `turn_r`, `high_beam`,
 - `src/mock_telemetry.py` — 20 Hz fake drive loop → stdout
 - `src/gauge_ui.py` — pygame 1920×1080 OEM-geometry cluster + intro
 - `src/serial_reader.py` — Phase 2 UART stub (pyserial optional)
+- `refs/flat/` — SVG + `DIMENSIONS.md` lock file for the OEM face
 - `cad/` — OpenSCAD placeholders (bezel + generic connector shells)
 - `shots/` — optional PNG stills from `--screenshot`
 

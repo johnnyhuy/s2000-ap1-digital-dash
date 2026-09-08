@@ -10,6 +10,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from gauge_ui import (  # noqa: E402
+    FACE,
+    REDLINE_BLOCKS,
     DisplayState,
     PHASE_READY_S,
     PHASE_REVEAL_S,
@@ -18,6 +20,7 @@ from gauge_ui import (  # noqa: E402
     ect_frac,
     exp_smooth,
     fuel_frac,
+    hood_bottom_corners,
     intro_duration_s,
     intro_phase_at,
     lerp,
@@ -103,8 +106,48 @@ class SmokeTests(unittest.TestCase):
             main(["--smoke", "--screenshot", tmp])
             self.assertEqual(
                 sorted(os.listdir(tmp)),
-                ["01_sweep.png", "02_ready.png", "03_reveal.png", "04_live.png"],
+                [
+                    "01_sweep.png",
+                    "02_ready.png",
+                    "03_reveal.png",
+                    "04_live.png",
+                    "05_cruise.png",
+                ],
             )
+
+
+class FaceGeomTests(unittest.TestCase):
+    def test_temp_and_fuel_are_horizontal_bottom_bars(self) -> None:
+        tx, ty, tw, th = FACE.temp
+        fx, fy, fw, fh = FACE.fuel
+        self.assertEqual(ty, fy)
+        self.assertEqual(th, fh)
+        self.assertGreater(tw, th * 3)
+        self.assertGreater(fw, fh * 3)
+        self.assertLess(tx + tw, FACE.speed_c[0])
+        self.assertGreater(fx, FACE.speed_c[0])
+        lcd_bottom = FACE.lcd[1] + FACE.lcd[3]
+        self.assertGreater(ty, FACE.lcd[1] + FACE.lcd[3] * 0.75)
+        self.assertLessEqual(ty + th, lcd_bottom + 2)
+
+    def test_module_is_flat_bottom_and_stepped(self) -> None:
+        bl, br = hood_bottom_corners(FACE)
+        self.assertEqual(bl[1], br[1])
+        self.assertGreater(FACE.step, 0)
+        self.assertGreater(FACE.lcd[0], FACE.module[0])
+        self.assertLess(FACE.lcd[0] + FACE.lcd[2], FACE.module[0] + FACE.module[2])
+
+    def test_bezel_sits_below_lcd(self) -> None:
+        lcd_bottom = FACE.lcd[1] + FACE.lcd[3]
+        self.assertGreaterEqual(FACE.bezel[1], lcd_bottom)
+
+    def test_lcd_is_wide_and_short(self) -> None:
+        aspect = FACE.lcd[2] / FACE.lcd[3]
+        self.assertGreater(aspect, 3.0)
+        self.assertLess(aspect, 4.2)
+
+    def test_five_redline_blocks(self) -> None:
+        self.assertEqual(REDLINE_BLOCKS, 5)
 
 
 if __name__ == "__main__":

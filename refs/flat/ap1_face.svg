@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" role="img" aria-label="AP1 flat face dimension reference">
+  <title>AP1 OEM face  flat orthographic lock</title>
+  <style>
+    .cabin { fill: #121214; }
+    .cowl { fill: #1c1b1a; stroke: #3a342e; stroke-width: 2; }
+    .lip { fill: none; stroke: #2c2824; stroke-width: 3; }
+    .lcd { fill: #020203; stroke: #161210; stroke-width: 1.5; }
+    .tick { fill: #e8a824; }
+    .red { fill: #d22420; }
+    .num { fill: #e8a824; font: 700 13px "DejaVu Sans", sans-serif; text-anchor: middle; }
+    .label { fill: #5c5446; font: 10px "DejaVu Sans", sans-serif; text-anchor: middle; }
+    .read { fill: #e8a824; font: 700 22px "DejaVu Sans Mono", monospace; text-anchor: middle; }
+    .unit { fill: #5c5446; font: 11px "DejaVu Sans", sans-serif; text-anchor: middle; }
+    .tiny { fill: #e8a824; font: 700 11px "DejaVu Sans", sans-serif; text-anchor: middle; }
+    .ghost { fill: #1c1408; }
+    .bezel { fill: #161514; }
+    .band { fill: #0e0f10; stroke: #202224; }
+    .btn { fill: #767674; }
+    .dim { fill: #e6e2d6; font: 700 9px "DejaVu Sans", sans-serif; text-anchor: middle; }
+    .call { fill: #8ad0e8; font: 9px "DejaVu Sans", sans-serif; }
+    .guide { stroke: #3a6a78; stroke-width: 0.8; stroke-dasharray: 3 2; fill: none; }
+  </style>
+
+  <rect class="cabin" width="1000" height="420"/>
+
+  <!-- Module 496% canvas mapped into this viewBox as x=20..980, y=40..360 -->
+  <path class="cowl" d="
+    M 20,360
+    L 980,360
+    L 980,300
+    L 936,256
+    L 936,118
+    C 900,48 760,36 500,36
+    C 240,36 100,48 64,118
+    L 64,256
+    L 20,300
+    Z"/>
+  <path class="lip" d="M 64,118 C 100,48 240,36 500,36 C 760,36 900,48 936,118"/>
+
+  <!-- LCD aperture: arched top, flat bottom -->
+  <path class="lcd" d="
+    M 80,292
+    L 920,292
+    L 920,128
+    C 880,72 740,62 500,62
+    C 260,62 120,72 80,128
+    Z"/>
+
+  <!-- Tach ticks 08 amber, 89 five red blocks -->
+  <g id="tach">
+    <path class="tick" d="M120,250 L132,198 L146,200 L134,252 Z"/>
+    <path class="tick" d="M160,220 L186,172 L200,178 L174,226 Z"/>
+    <path class="tick" d="M220,186 L260,148 L272,158 L232,196 Z"/>
+    <path class="tick" d="M300,148 L348,122 L356,134 L308,160 Z"/>
+    <path class="tick" d="M400,118 L452,108 L456,122 L404,132 Z"/>
+    <path class="tick" d="M500,104 L554,108 L550,122 L496,118 Z"/>
+    <path class="tick" d="M600,118 L652,132 L644,144 L592,130 Z"/>
+    <path class="tick" d="M692,148 L740,174 L728,186 L680,160 Z"/>
+    <path class="red" d="M760,186 L782,164 L792,172 L770,194 Z"/>
+    <path class="red" d="M796,172 L816,154 L826,162 L806,180 Z"/>
+    <path class="red" d="M830,150 L848,136 L858,144 L840,158 Z"/>
+    <path class="red" d="M862,132 L878,122 L888,130 L872,140 Z"/>
+    <path class="red" d="M892,120 L906,114 L916,122 L902,128 Z"/>
+    <text class="num" x="138" y="236" transform="rotate(-28 138 236)">0</text>
+    <text class="num" x="198" y="204" transform="rotate(-22 198 204)">1</text>
+    <text class="num" x="268" y="174" transform="rotate(-14 268 174)">2</text>
+    <text class="num" x="348" y="148" transform="rotate(-8 348 148)">3</text>
+    <text class="num" x="432" y="132">4</text>
+    <text class="num" x="500" y="126">5</text>
+    <text class="num" x="568" y="132">6</text>
+    <text class="num" x="648" y="148" transform="rotate(8 648 148)">7</text>
+    <text class="num" x="728" y="176" transform="rotate(16 728 176)">8</text>
+    <text class="num" x="812" y="208" transform="rotate(24 812 208)">9</text>
+    <text class="label" x="168" y="268">x1000r/min</text>
+  </g>
+
+  <text class="read" x="500" y="196">80</text>
+  <text class="unit" x="500" y="214">km/h</text>
+  <text class="label" x="500" y="238">ODO 142857.3 · TRIP 128.4 · BATT 14.1 V</text>
+
+  <!-- TEMP CH bottom left -->
+  <text class="tiny" x="92" y="278">C</text>
+  <rect x="104" y="268" width="168" height="12" class="ghost"/>
+  <rect x="104" y="268" width="92" height="12" class="tick"/>
+  <text class="tiny" x="286" y="278">H</text>
+  <text class="label" x="188" y="262">TEMP</text>
+
+  <!-- FUEL EF bottom right, mirrored -->
+  <text class="tiny" x="714" y="278">E</text>
+  <rect x="728" y="268" width="168" height="12" class="ghost"/>
+  <rect x="728" y="268" width="80" height="12" class="tick"/>
+  <text class="tiny" x="910" y="278">F</text>
+  <text class="label" x="812" y="262">FUEL</text>
+
+  <!-- Hardware strip -->
+  <rect class="btn" x="36" y="312" width="88" height="28" rx="14"/>
+  <text class="dim" x="58" y="330"></text>
+  <text class="dim" x="102" y="330">+</text>
+  <text class="dim" x="186" y="330">PUSH CANCEL</text>
+  <rect class="band" x="250" y="314" width="520" height="26" rx="3"/>
+  <text class="label" x="510" y="331">turn · HI · oil · CEL · BAT · EPS · ABS · & · TRIP lamps</text>
+  <rect class="btn" x="786" y="312" width="70" height="28" rx="14"/>
+  <rect class="btn" x="866" y="312" width="70" height="28" rx="14"/>
+  <text class="dim" x="901" y="330">TRIP</text>
+
+  <!-- Callouts -->
+  <line class="guide" x1="20" y1="372" x2="980" y2="372"/>
+  <text class="call" x="20" y="388">flat bottom</text>
+  <text class="call" x="430" y="388">LCD ~3.3:1 · TEMP/FUEL y = 88% · 5 redline blocks</text>
+  <text class="call" x="20" y="404">stepped sides 4.4% · bezel 17.5% · arch n = 3.25</text>
+</svg>

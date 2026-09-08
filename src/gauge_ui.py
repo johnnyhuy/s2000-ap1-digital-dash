@@ -8,6 +8,9 @@ Reads Telemetry JSON lines from stdin (or --serial in Phase 2).
   python gauge_ui.py --smoke --screenshot shots
 
 Esc or Q quits. Space skips the boot intro.
+
+Face proportions are locked in `refs/flat/DIMENSIONS.md` (percent of the
+LCD aperture unless noted). Protocol JSON field names are unchanged.
 """
 from __future__ import annotations
 
@@ -32,13 +35,12 @@ from protocol import (
 
 W, H = 1920, 1080
 
-# Cabin around the module — not a full-bleed app chrome
-CABIN = (7, 7, 8)
-CABIN_LIFT = (14, 13, 12)
-COWL = (16, 15, 14)
-COWL_HIGH = (38, 34, 30)
-COWL_EDGE = (52, 46, 40)
-WELL = (4, 4, 5)
+# Cabin around the module — flat orthographic, no fake 3D skew
+CABIN = (8, 8, 9)
+COWL = (18, 17, 16)
+COWL_HIGH = (44, 40, 36)
+COWL_EDGE = (58, 52, 46)
+WELL = (6, 6, 7)
 LCD = (2, 2, 3)
 AMBER = (236, 168, 36)
 AMBER_DIM = (72, 48, 12)
@@ -51,22 +53,177 @@ DIM = (92, 84, 70)
 MUTED = (42, 38, 34)
 GREEN = (52, 200, 110)
 ORANGE = (230, 132, 36)
+BEZEL_BTN = (118, 118, 116)
+BEZEL_BAND = (14, 15, 16)
+BEZEL_BAND_EDGE = (32, 34, 36)
 
-# Shallow rainbow in pygame coords (y-down): 0°=+x, 90°=+y/down, 270°=up
-TACH_START_DEG = 204.0
-TACH_SPAN_DEG = 132.0
-TACH_CX, TACH_CY = 960, 868
-TACH_R_NUM = 548
-TACH_R_OUTER = 498
-TACH_R_INNER = 428
-TACH_SEGS = 90
-TEMP_SEGS = 6
-FUEL_SEGS = 21
+# --- locked % layout (see refs/flat/DIMENSIONS.md) ---------------------------
+# Module as % of the 1920×1080 canvas
+MODULE_X_PCT, MODULE_Y_PCT = 0.040, 0.168
+MODULE_W_PCT, MODULE_H_PCT = 0.920, 0.662
+# Within the module
+STEP_W_PCT = 0.044          # 45° inward step each side
+BEZEL_H_PCT = 0.175         # hardware strip below the LCD
+LCD_INSET_X_PCT = 0.012
+LCD_TOP_PCT = 0.145         # peak of inner arch from module top
+LCD_BOTTOM_GAP_PCT = 0.018  # air between LCD flat bottom and bezel
+ARCH_N = 3.25               # superellipse: flatter crown, steeper sides
+# LCD-relative (0,0 = top-left of LCD bounding box)
+TACH_END_Y_PCT = 0.68
+TACH_PEAK_Y_PCT = 0.050
+TACH_INSET_X_PCT = 0.100
+TEMP_X_PCT, TEMP_W_PCT = 0.018, 0.205
+FUEL_W_PCT, FUEL_RIGHT_PCT = 0.205, 0.018
+BAR_Y_PCT, BAR_H_PCT = 0.880, 0.042
+SPEED_Y_PCT = 0.50
+ODO_Y_PCT = 0.855
+
+TEMP_SEGS = 14
+FUEL_SEGS = 16
+REDLINE_BLOCKS = 5
+TACH_MAJORS = 10  # 0..9
 
 # ID.4-inspired boot: sweep → READY summary → gauge reveal → live
 PHASE_SWEEP_S = 1.35
 PHASE_READY_S = 1.75
 PHASE_REVEAL_S = 1.55
+
+
+@dataclass(frozen=True)
+class FaceGeom:
+    """Pixel geometry derived from the locked OEM percentages."""
+
+    module: tuple[int, int, int, int]
+    lcd: tuple[int, int, int, int]
+    bezel: tuple[int, int, int, int]
+    step: int
+    spring_y: int
+    hood_peak_y: int
+    lcd_peak_y: int
+    lcd_spring_y: int
+    temp: tuple[int, int, int, int]
+    fuel: tuple[int, int, int, int]
+    speed_c: tuple[int, int]
+    odo_c: tuple[int, int]
+    tach_cx: int
+    tach_cy: int
+    tach_r_outer: int
+    tach_r_inner: int
+    tach_r_num: int
+    tach_start_deg: float
+    tach_span_deg: float
+    arch_n: float
+    rocker: tuple[int, int, int, int]
+    lamp_band: tuple[int, int, int, int]
+    trip: tuple[int, int, int, int]
+    trip_blank: tuple[int, int, int, int]
+
+
+def _pct(v: float) -> int:
+    return int(round(v))
+
+
+def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
+    """Build the flat AP1 face. Percentages match refs/flat/DIMENSIONS.md."""
+    mx = _pct(w * MODULE_X_PCT)
+    my = _pct(h * MODULE_Y_PCT)
+    mw = _pct(w * MODULE_W_PCT)
+    mh = _pct(h * MODULE_H_PCT)
+    step = _pct(mw * STEP_W_PCT)
+    bezel_h = _pct(mh * BEZEL_H_PCT)
+    bezel_y = my + mh - bezel_h
+    inset = _pct(mw * LCD_INSET_X_PCT)
+    lcd_x = mx + step + inset
+    lcd_w = mw - 2 * step - 2 * inset
+    lcd_bottom = bezel_y - _pct(mh * LCD_BOTTOM_GAP_PCT)
+    lcd_peak = my + _pct(mh * LCD_TOP_PCT)
+    # Springing line low enough that the aperture is an arch, not a rounded rect
+    spring = lcd_peak + _pct((lcd_bottom - lcd_peak) * 0.52)
+    lcd_y = lcd_peak
+    lcd_h = lcd_bottom - lcd_peak
+    lcd_spring = spring
+
+    temp_w = _pct(lcd_w * TEMP_W_PCT)
+    fuel_w = _pct(lcd_w * FUEL_W_PCT)
+    bar_h = max(10, _pct(lcd_h * BAR_H_PCT))
+    bar_y = lcd_y + _pct(lcd_h * BAR_Y_PCT)
+    temp = (lcd_x + _pct(lcd_w * TEMP_X_PCT), bar_y, temp_w, bar_h)
+    fuel = (lcd_x + lcd_w - _pct(lcd_w * FUEL_RIGHT_PCT) - fuel_w, bar_y, fuel_w, bar_h)
+
+    cx = lcd_x + lcd_w // 2
+    # Circular tach through lower-left, peak, lower-right of the LCD
+    end_y = lcd_y + _pct(lcd_h * TACH_END_Y_PCT)
+    peak_y = lcd_y + _pct(lcd_h * TACH_PEAK_Y_PCT)
+    end_inset = _pct(lcd_w * TACH_INSET_X_PCT)
+    x0 = lcd_x + end_inset
+    x1 = lcd_x + lcd_w - end_inset
+    half = (x1 - x0) / 2.0
+    drop = float(end_y - peak_y)
+    # R from (half, drop) chord: R = (half² + drop²) / (2 drop)
+    tach_r = (half * half + drop * drop) / (2.0 * drop) if drop > 1 else half
+    tach_cy = peak_y + tach_r
+    start_deg = math.degrees(math.atan2(end_y - tach_cy, x0 - cx))
+    end_deg = math.degrees(math.atan2(end_y - tach_cy, x1 - cx))
+    if end_deg < start_deg:
+        end_deg += 360.0
+    span = end_deg - start_deg
+    tach_r_outer = int(round(tach_r))
+    tach_r_inner = tach_r_outer - 52
+    tach_r_num = tach_r_inner - 12
+
+    # Hardware strip: rocker left, dense lamp band centre, TRIP pair right
+    pad = _pct(mw * 0.018)
+    btn_h = _pct(bezel_h * 0.48)
+    btn_y = bezel_y + (bezel_h - btn_h) // 2
+    rocker_w = _pct(mw * 0.092)
+    rocker = (mx + pad, btn_y, rocker_w, btn_h)
+    trip_w = _pct(mw * 0.062)
+    trip = (mx + mw - pad - trip_w, btn_y, trip_w, btn_h)
+    trip_blank = (trip[0] - trip_w - 10, btn_y, trip_w, btn_h)
+    band_h = _pct(bezel_h * 0.58)
+    band_y = bezel_y + (bezel_h - band_h) // 2
+    # Hug the 13 OEM icons (48 px pitch) so the band is dense, not a hollow gap
+    pack_w = 13 * 48 + 28
+    gap_l = rocker[0] + rocker_w + _pct(mw * 0.118)
+    gap_r = trip_blank[0] - 16
+    mid = (gap_l + gap_r) // 2
+    lamp_band = (mid - pack_w // 2, band_y, pack_w, band_h)
+
+    return FaceGeom(
+        module=(mx, my, mw, mh),
+        lcd=(lcd_x, lcd_y, lcd_w, lcd_h),
+        bezel=(mx, bezel_y, mw, bezel_h),
+        step=step,
+        spring_y=spring,
+        hood_peak_y=my + 4,
+        lcd_peak_y=lcd_peak,
+        lcd_spring_y=lcd_spring,
+        temp=temp,
+        fuel=fuel,
+        speed_c=(cx, lcd_y + _pct(lcd_h * SPEED_Y_PCT)),
+        odo_c=(cx, lcd_y + _pct(lcd_h * ODO_Y_PCT)),
+        tach_cx=cx,
+        tach_cy=int(round(tach_cy)),
+        tach_r_outer=tach_r_outer,
+        tach_r_inner=tach_r_inner,
+        tach_r_num=tach_r_num,
+        tach_start_deg=start_deg,
+        tach_span_deg=span,
+        arch_n=ARCH_N,
+        rocker=rocker,
+        lamp_band=lamp_band,
+        trip=trip,
+        trip_blank=trip_blank,
+    )
+
+
+FACE = build_face_geom()
+TACH_CX, TACH_CY = FACE.tach_cx, FACE.tach_cy
+TACH_R_NUM = FACE.tach_r_num
+TACH_R_OUTER = FACE.tach_r_outer
+TACH_R_INNER = FACE.tach_r_inner
+TACH_START_DEG = FACE.tach_start_deg
+TACH_SPAN_DEG = FACE.tach_span_deg
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -95,7 +252,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--screenshot",
         metavar="DIR",
         default=None,
-        help="Write PNG frames (sweep/ready/reveal/live) into DIR",
+        help="Write PNG frames (sweep/ready/reveal/live/cruise) into DIR",
     )
     p.add_argument(
         "--serial",
@@ -310,51 +467,124 @@ def sample_telem() -> Telemetry:
     )
 
 
-def _cowl_rects() -> tuple:
-    """Module + LCD well. Cluster sits as a hooded unit, not full-bleed UI."""
-    module = (130, 118, 1660, 844)
-    well = (210, 214, 1500, 668)
-    return module, well
+def cruise_telem() -> Telemetry:
+    """Steady 80 km/h / 3000 r/min cruise used for the 05_cruise still."""
+    t = sample_telem()
+    t.rpm = 3000
+    t.speed_kmh = 80.0
+    t.fuel_pct = 48.0
+    t.lamps = {**t.lamps, "turn_l": False, "high_beam": False}
+    return t
+
+
+def arch_points(
+    x0: float,
+    x1: float,
+    y_peak: float,
+    y_spring: float,
+    n: float = ARCH_N,
+    steps: int = 56,
+) -> list[tuple[int, int]]:
+    """Flattened superellipse arch. n>2 = flatter crown, steeper sides."""
+    rise = y_spring - y_peak
+    pts: list[tuple[int, int]] = []
+    for i in range(steps + 1):
+        t = i / steps
+        u = 2.0 * t - 1.0
+        x = x0 + (x1 - x0) * t
+        y = y_spring - rise * (1.0 - abs(u) ** n) ** (1.0 / n)
+        pts.append((int(round(x)), int(round(y))))
+    return pts
+
+
+def hood_outer_points(g: FaceGeom = FACE) -> list[tuple[int, int]]:
+    """Flat bottom, short vertical rise, 45° inward step, vertical sides, arch."""
+    mx, my, mw, mh = g.module
+    step = g.step
+    bezel_top = g.bezel[1]
+    lx = mx + step
+    rx = mx + mw - step
+    pts: list[tuple[int, int]] = [
+        (mx, my + mh),
+        (mx + mw, my + mh),
+        (mx + mw, bezel_top),
+        (rx, bezel_top - step),
+        (rx, g.spring_y),
+    ]
+    pts.extend(arch_points(rx, lx, g.hood_peak_y, g.spring_y, n=g.arch_n))
+    pts.extend(
+        [
+            (lx, g.spring_y),
+            (lx, bezel_top - step),
+            (mx, bezel_top),
+        ]
+    )
+    return pts
+
+
+def lcd_aperture_points(g: FaceGeom = FACE) -> list[tuple[int, int]]:
+    lx, ly, lw, lh = g.lcd
+    rx = lx + lw
+    bot = ly + lh
+    pts: list[tuple[int, int]] = [(lx, bot), (rx, bot), (rx, g.lcd_spring_y)]
+    pts.extend(arch_points(rx, lx, g.lcd_peak_y, g.lcd_spring_y, n=g.arch_n))
+    pts.append((lx, g.lcd_spring_y))
+    return pts
+
+
+def hood_bottom_corners(g: FaceGeom = FACE) -> tuple[tuple[int, int], tuple[int, int]]:
+    mx, my, mw, mh = g.module
+    return (mx, my + mh), (mx + mw, my + mh)
 
 
 def draw_cabin(pygame, surf) -> None:
     surf.fill(CABIN)
-    # Soft dash lift behind the module so the cowl reads as a physical cluster
-    pygame.draw.ellipse(surf, CABIN_LIFT, pygame.Rect(40, 40, W - 80, H - 80))
-    pygame.draw.ellipse(surf, CABIN, pygame.Rect(120, 90, W - 240, H - 180))
 
 
-def draw_cowl(pygame, surf, sweep_t: float | None = None) -> None:
-    module, well = _cowl_rects()
-    mx, my, mw, mh = module
-    wx, wy, ww, wh = well
+def draw_cowl(pygame, surf, sweep_t: float | None = None, g: FaceGeom = FACE) -> None:
+    outer = hood_outer_points(g)
+    pygame.draw.polygon(surf, COWL, outer)
+    pygame.draw.polygon(surf, COWL_EDGE, outer, width=2)
+    # Lip highlight along the outer arch only (still flat / orthographic)
+    lip = arch_points(
+        g.module[0] + g.step,
+        g.module[0] + g.module[2] - g.step,
+        g.hood_peak_y + 6,
+        g.spring_y - 4,
+        n=g.arch_n,
+        steps=40,
+    )
+    if len(lip) > 1:
+        pygame.draw.lines(surf, COWL_HIGH, False, lip, 3)
 
-    shadow = pygame.Rect(mx + 18, my + 28, mw, mh)
-    pygame.draw.rect(surf, (2, 2, 3), shadow, border_radius=70)
-
-    body = pygame.Rect(mx, my, mw, mh)
-    pygame.draw.rect(surf, COWL, body, border_radius=64)
-    pygame.draw.rect(surf, COWL_EDGE, body, width=3, border_radius=64)
-
-    # Hood / arched visor — physical cowl, not a screen-chrome title bar
-    hood = pygame.Rect(mx + 20, my - 36, mw - 40, 248)
-    pygame.draw.ellipse(surf, (11, 10, 10), hood)
-    pygame.draw.arc(surf, COWL_HIGH, hood.inflate(12, 16), math.radians(18), math.radians(162), 7)
-    pygame.draw.arc(surf, (8, 7, 7), pygame.Rect(wx - 10, wy - 70, ww + 20, 180), math.radians(12), math.radians(168), 18)
-
-    well_rect = pygame.Rect(wx, wy, ww, wh)
-    pygame.draw.rect(surf, WELL, well_rect, border_radius=38)
-    pygame.draw.rect(surf, (22, 18, 14), well_rect, width=2, border_radius=38)
-
-    glass = well_rect.inflate(-16, -16)
-    pygame.draw.rect(surf, LCD, glass, border_radius=30)
+    aperture = lcd_aperture_points(g)
+    pygame.draw.polygon(surf, WELL, aperture)
+    pygame.draw.polygon(surf, LCD, aperture)
+    pygame.draw.polygon(surf, (22, 18, 14), aperture, width=2)
 
     if sweep_t is not None:
-        # ID. Light-style welcome: a band travels the hood lip
-        band_w = 280
-        x = mx + 80 + int((mw - 160 - band_w) * clamp(sweep_t, 0.0, 1.0))
-        col = lerp_colour(AMBER, CYAN, sweep_t)
-        pygame.draw.rect(surf, col, pygame.Rect(x, my + 28, band_w, 10), border_radius=5)
+        band = arch_points(
+            g.module[0] + g.step + 20,
+            g.module[0] + g.module[2] - g.step - 20,
+            g.hood_peak_y + 10,
+            g.spring_y - 2,
+            n=g.arch_n,
+            steps=36,
+        )
+        t = clamp(sweep_t, 0.0, 1.0)
+        i = int(t * max(0, len(band) - 8))
+        chunk = band[i : i + 8]
+        if len(chunk) > 1:
+            pygame.draw.lines(surf, lerp_colour(AMBER, CYAN, t), False, chunk, 8)
+
+
+def _radial_block(r_in: float, r_out: float, a0: float, a1: float) -> list[tuple[int, int]]:
+    return [
+        (TACH_CX + int(r_in * math.cos(a0)), TACH_CY + int(r_in * math.sin(a0))),
+        (TACH_CX + int(r_out * math.cos(a0)), TACH_CY + int(r_out * math.sin(a0))),
+        (TACH_CX + int(r_out * math.cos(a1)), TACH_CY + int(r_out * math.sin(a1))),
+        (TACH_CX + int(r_in * math.cos(a1)), TACH_CY + int(r_in * math.sin(a1))),
+    ]
 
 
 def draw_tach_segments(
@@ -363,176 +593,307 @@ def draw_tach_segments(
     lit_frac: float,
     ghost: bool = True,
 ) -> None:
-    """Dense linear LCD bars along the arch. 8–9 are thick red blocks."""
-    for i in range(TACH_SEGS):
-        t0 = i / TACH_SEGS
-        t1 = (i + 1) / TACH_SEGS
+    """OEM ticks: majors each 1000, minors each 500, five thick redline blocks 8–9."""
+    red_from = 8.0 / 9.0
+    # Ghost / live fill under the ticks (amber up to 8, then redline)
+    fill_steps = 72
+    for i in range(fill_steps):
+        t0 = i / fill_steps
+        t1 = (i + 1) / fill_steps
         mid = (t0 + t1) * 0.5
-        redline = mid >= (8.0 / 9.0)
+        if mid >= red_from:
+            continue
         on = mid <= lit_frac + 1e-6
-        if redline:
-            r_out, r_in = TACH_R_OUTER + 10, TACH_R_INNER - 8
-            col = RED if on else (36, 12, 10)
-        else:
-            r_out, r_in = TACH_R_OUTER, TACH_R_INNER
-            col = AMBER if on else (AMBER_GHOST if ghost else LCD)
-        pad = 0.12
+        col = AMBER if on else (AMBER_GHOST if ghost else LCD)
+        pad = 0.10
         a0 = tach_angle(t0 + (t1 - t0) * pad)
         a1 = tach_angle(t1 - (t1 - t0) * pad)
-        pts = [
-            (TACH_CX + int(r_in * math.cos(a0)), TACH_CY + int(r_in * math.sin(a0))),
-            (TACH_CX + int(r_out * math.cos(a0)), TACH_CY + int(r_out * math.sin(a0))),
-            (TACH_CX + int(r_out * math.cos(a1)), TACH_CY + int(r_out * math.sin(a1))),
-            (TACH_CX + int(r_in * math.cos(a1)), TACH_CY + int(r_in * math.sin(a1))),
-        ]
-        pygame.draw.polygon(surf, col, pts)
+        pygame.draw.polygon(
+            surf, col, _radial_block(TACH_R_INNER + 10, TACH_R_OUTER - 6, a0, a1)
+        )
+
+    # Five distinct redline blocks between 8 and 9
+    for i in range(REDLINE_BLOCKS):
+        t0 = red_from + (1.0 - red_from) * (i / REDLINE_BLOCKS)
+        t1 = red_from + (1.0 - red_from) * ((i + 1) / REDLINE_BLOCKS)
+        mid = (t0 + t1) * 0.5
+        on = mid <= lit_frac + 1e-6
+        col = RED if on else (36, 12, 10)
+        pad = 0.08
+        a0 = tach_angle(t0 + (t1 - t0) * pad)
+        a1 = tach_angle(t1 - (t1 - t0) * pad)
+        pygame.draw.polygon(
+            surf, col, _radial_block(TACH_R_INNER - 6, TACH_R_OUTER + 8, a0, a1)
+        )
+
+    # Major / minor ticks (skip the redline interval)
+    for i in range(TACH_MAJORS):
+        frac = i / 9.0
+        if frac >= red_from - 1e-6:
+            continue
+        a = tach_angle(frac)
+        half = math.radians(0.55)
+        pygame.draw.polygon(
+            surf,
+            WHITE,
+            _radial_block(TACH_R_INNER - 2, TACH_R_OUTER + 4, a - half, a + half),
+        )
+        if i < 8:
+            am = tach_angle((i + 0.5) / 9.0)
+            half_m = math.radians(0.32)
+            pygame.draw.polygon(
+                surf,
+                (168, 160, 148),
+                _radial_block(TACH_R_INNER + 14, TACH_R_OUTER - 8, am - half_m, am + half_m),
+            )
 
 
-def draw_tach_numbers(fonts, surf, dim: bool = False) -> None:
+def draw_tach_numbers(pygame, fonts, surf, dim: bool = False) -> None:
     for i in range(10):
         hot = i >= 8
         col = (RED if hot else AMBER) if not dim else (RED_DIM if hot else AMBER_DIM)
-        pos = tach_point(TACH_R_NUM, i / 9)
-        blit_text(surf, fonts["tick"], str(i), col, pos, "center")
-    blit_text(surf, fonts["micro"], "×1000", DIM if not dim else MUTED, (268, 268), "center")
+        frac = i / 9.0
+        pos = tach_point(TACH_R_NUM, frac)
+        # Ends sit just inside the ticks, above the TEMP / FUEL bars
+        if i == 0:
+            pos = (pos[0] + 22, pos[1] - 28)
+        elif i == 1:
+            pos = (pos[0] + 8, pos[1] - 14)
+        elif i >= 8:
+            pos = (pos[0] - 12, pos[1] - 20)
+        lean = (frac - 0.5) * 36.0
+        img = fonts["tick"].render(str(i), True, col)
+        rot = pygame.transform.rotate(img, -lean)
+        surf.blit(rot, rot.get_rect(center=pos))
+    # OEM label sits under 0–1 at the lower left of the arc
+    label_pos = tach_point(TACH_R_INNER - 8, 0.04)
+    blit_text(
+        surf,
+        fonts["micro"],
+        "x1000r/min",
+        DIM if not dim else MUTED,
+        (label_pos[0] - 18, label_pos[1] + 28),
+        "center",
+    )
 
 
-def draw_temp_stack(pygame, fonts, surf, frac: float, hot: bool) -> None:
-    """Vertical TEMP C–H on the LEFT of the speed (AP1 straight stack)."""
-    x, y, w, h = 318, 430, 46, 248
-    blit_text(surf, fonts["tiny"], "C", AMBER, (x + w // 2, y - 18), "center")
-    blit_text(surf, fonts["micro"], "TEMP", DIM, (x + w // 2, y - 42), "center")
-    gap = 5
-    seg_h = (h - gap * (TEMP_SEGS - 1)) / TEMP_SEGS
-    lit = int(round(frac * TEMP_SEGS))
-    for i in range(TEMP_SEGS):
-        # i=0 is C (top); fill toward H as ECT rises
-        sy = y + i * (seg_h + gap)
-        on = i < lit
-        col = RED if (on and (hot or i >= TEMP_SEGS - 1 and frac > 0.92)) else (AMBER if on else AMBER_GHOST)
-        pygame.draw.rect(surf, col, pygame.Rect(x, int(sy), w, int(seg_h)), border_radius=3)
-    blit_text(surf, fonts["tiny"], "H", RED if hot else AMBER, (x + w // 2, y + h + 16), "center")
-
-
-def draw_fuel_bar(pygame, fonts, surf, frac: float, low: bool) -> None:
-    """Horizontal FUEL E–F on the RIGHT of the speed (AP1 straight bar)."""
-    x, y, w, h = 1324, 572, 268, 36
-    blit_text(surf, fonts["micro"], "FUEL", DIM, (x + w // 2, y - 36), "center")
-    blit_text(surf, fonts["tiny"], "E", RED if low else AMBER, (x - 18, y + h // 2), "center")
-    blit_text(surf, fonts["tiny"], "F", AMBER, (x + w + 18, y + h // 2), "center")
-    gap = 3
-    seg_w = (w - gap * (FUEL_SEGS - 1)) / FUEL_SEGS
-    lit = int(round(frac * FUEL_SEGS))
-    low_mark = max(1, int(round((FUEL_LOW_PCT / 100.0) * FUEL_SEGS)))
-    for i in range(FUEL_SEGS):
+def _seg_bar(
+    pygame,
+    surf,
+    rect: tuple[int, int, int, int],
+    frac: float,
+    segs: int,
+    warn_low: bool,
+    hot_end: bool,
+) -> None:
+    x, y, w, h = rect
+    pygame.draw.line(surf, AMBER_DIM, (x, y + h + 2), (x + w, y + h + 2), 2)
+    gap = 2
+    seg_w = (w - gap * (segs - 1)) / segs
+    lit = int(round(frac * segs))
+    for i in range(segs):
         sx = x + i * (seg_w + gap)
         on = i < lit
-        warn = i < low_mark
-        if on:
-            col = RED if (low or warn and i == 0) else AMBER
+        last = i >= segs - 1
+        if on and ((warn_low and i == 0) or (hot_end and last and frac > 0.92)):
+            col = RED
+        elif on:
+            col = AMBER
+        elif warn_low and i == 0:
+            col = RED_DIM
         else:
-            col = RED_DIM if warn and i == 0 else AMBER_GHOST
-        pygame.draw.rect(surf, col, pygame.Rect(int(sx), y, max(3, int(seg_w)), h), border_radius=2)
+            col = AMBER_GHOST
+        pygame.draw.rect(surf, col, pygame.Rect(int(sx), y, max(3, int(seg_w)), h), border_radius=1)
 
 
-def draw_speed(fonts, surf, speed: float) -> None:
+def _thermometer_icon(pygame, surf, cx: int, cy: int, col) -> None:
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 3, cy - 14, 6, 18), border_radius=3)
+    pygame.draw.circle(surf, col, (cx, cy + 8), 6)
+    for i, dy in enumerate((-8, -2, 4)):
+        pygame.draw.line(surf, col, (cx + 7, cy + dy), (cx + 12 + i, cy + dy), 2)
+
+
+def _pump_icon(pygame, surf, cx: int, cy: int, col) -> None:
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 8, cy - 8, 12, 16), border_radius=2)
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 6, cy - 14, 8, 6), border_radius=1)
+    pygame.draw.line(surf, col, (cx + 4, cy - 4), (cx + 12, cy - 10), 2)
+    pygame.draw.line(surf, col, (cx + 12, cy - 10), (cx + 12, cy + 6), 2)
+
+
+def draw_temp_bar(pygame, fonts, surf, frac: float, hot: bool, g: FaceGeom = FACE) -> None:
+    """Horizontal TEMP C–H at the bottom-left of the LCD (OEM)."""
+    x, y, w, h = g.temp
+    blit_text(surf, fonts["tiny"], "C", AMBER, (x - 14, y + h // 2), "center")
+    blit_text(surf, fonts["tiny"], "H", RED if hot else AMBER, (x + w + 14, y + h // 2), "center")
+    _thermometer_icon(pygame, surf, x + 10, y - 22, AMBER if not hot else RED)
+    _seg_bar(pygame, surf, g.temp, frac, TEMP_SEGS, warn_low=False, hot_end=hot)
+
+
+def draw_fuel_bar(pygame, fonts, surf, frac: float, low: bool, g: FaceGeom = FACE) -> None:
+    """Horizontal FUEL E–F at the bottom-right of the LCD, mirrored with TEMP."""
+    x, y, w, h = g.fuel
+    blit_text(surf, fonts["tiny"], "E", RED if low else AMBER, (x - 14, y + h // 2), "center")
+    blit_text(surf, fonts["tiny"], "F", AMBER, (x + w + 14, y + h // 2), "center")
+    _pump_icon(pygame, surf, x + w - 6, y - 20, AMBER if not low else ORANGE)
+    _seg_bar(pygame, surf, g.fuel, frac, FUEL_SEGS, warn_low=low, hot_end=False)
+
+
+def draw_speed(fonts, surf, speed: float, g: FaceGeom = FACE) -> None:
     digits = f"{int(round(clamp(speed, 0.0, 399.0))):d}"
-    blit_text(surf, fonts["speed"], digits, AMBER, (960, 538), "center")
-    blit_text(surf, fonts["label"], "km/h", DIM, (960, 638), "center")
+    blit_text(surf, fonts["speed"], digits, AMBER, g.speed_c, "center")
+    blit_text(surf, fonts["label"], "km/h", DIM, (g.speed_c[0], g.speed_c[1] + 64), "center")
 
 
-def draw_odo_row(fonts, surf, face: DisplayState, batt_warn: bool) -> None:
-    y = 718
-    blit_text(surf, fonts["micro"], "ODO km", DIM, (620, y), "center")
-    blit_text(surf, fonts["readout"], f"{face.odo_km:,.1f}", AMBER, (620, y + 26), "center")
-    blit_text(surf, fonts["micro"], "TRIP A km", DIM, (960, y), "center")
-    blit_text(surf, fonts["readout"], f"{face.trip_km:,.1f}", AMBER, (960, y + 26), "center")
-    blit_text(surf, fonts["micro"], "BATT", DIM, (1300, y), "center")
+def draw_odo_row(fonts, surf, face: DisplayState, batt_warn: bool, g: FaceGeom = FACE) -> None:
+    cx, y = g.odo_c
+    # Single baseline with TEMP / FUEL so the lower face is not a hollow band
+    blit_text(surf, fonts["micro"], "ODO", DIM, (cx - 168, y - 16), "center")
+    blit_text(surf, fonts["readout"], f"{face.odo_km:,.1f}", AMBER, (cx - 168, y + 6), "center")
+    blit_text(surf, fonts["micro"], "TRIP", DIM, (cx + 8, y - 16), "center")
+    blit_text(surf, fonts["readout"], f"{face.trip_km:,.1f}", AMBER, (cx + 8, y + 6), "center")
+    blit_text(surf, fonts["micro"], "BATT", DIM, (cx + 168, y - 16), "center")
     blit_text(
         surf,
         fonts["readout"],
         f"{face.batt_v:.1f} V",
         RED if batt_warn else AMBER,
-        (1300, y + 26),
+        (cx + 168, y + 6),
         "center",
     )
 
 
-def _lamp_states(face: DisplayState, bulb_check: bool = False) -> list[tuple[str, bool, tuple[int, int, int], str]]:
-    if bulb_check:
-        return [
-            ("◀", True, GREEN, "tri_l"),
-            ("OIL", True, RED, "rect"),
-            ("CEL", True, ORANGE, "rect"),
-            ("ABS", True, ORANGE, "rect"),
-            ("HI", True, CYAN, "rect"),
-            ("FOG", True, GREEN, "rect"),
-            ("FUEL", True, ORANGE, "rect"),
-            ("BAT", True, RED, "rect"),
-            ("HOT", True, RED, "rect"),
-            ("▶", True, GREEN, "tri_r"),
-        ]
+def _lamp_spec(face: DisplayState, bulb_check: bool) -> list[tuple[str, bool, tuple[int, int, int]]]:
+    """Dense OEM-style strip. Extra keys (eps, brake, airbag) pass through lamps."""
+
+    def flag(key: str, extra: bool = False) -> bool:
+        if bulb_check:
+            return True
+        return bool(face.lamps.get(key, False) or extra)
+
     return [
-        ("◀", face.lamps.get("turn_l", False), GREEN, "tri_l"),
-        ("OIL", face.lamps.get("oil", False), RED, "rect"),
-        ("CEL", face.lamps.get("cel", False), ORANGE, "rect"),
-        ("ABS", face.lamps.get("abs", False), ORANGE, "rect"),
-        ("HI", face.lamps.get("high_beam", False), CYAN, "rect"),
-        ("FOG", face.lamps.get("fog", False), GREEN, "rect"),
-        (
-            "FUEL",
-            face.lamps.get("fuel_low", False) or face.fuel_pct < FUEL_LOW_PCT,
-            ORANGE,
-            "rect",
-        ),
-        (
-            "BAT",
-            face.lamps.get("batt_warn", False) or face.batt_v < BATT_LOW_V,
-            RED,
-            "rect",
-        ),
-        (
-            "HOT",
-            face.lamps.get("ect_hot", False) or face.ect_c >= ECT_HOT_C,
-            RED,
-            "rect",
-        ),
-        ("▶", face.lamps.get("turn_r", False), GREEN, "tri_r"),
+        ("turn_l", flag("turn_l"), GREEN),
+        ("hi", flag("high_beam"), CYAN),
+        ("oil", flag("oil"), RED),
+        ("cel", flag("cel"), ORANGE),
+        ("bat", flag("batt_warn", face.batt_v < BATT_LOW_V), RED),
+        ("eps", flag("eps"), ORANGE),
+        ("abs", flag("abs"), ORANGE),
+        ("brake", flag("brake"), RED),
+        ("airbag", flag("airbag"), RED),
+        ("fuel", flag("fuel_low", face.fuel_pct < FUEL_LOW_PCT), ORANGE),
+        ("fog", flag("fog"), GREEN),
+        ("hot", flag("ect_hot", face.ect_c >= ECT_HOT_C), RED),
+        ("turn_r", flag("turn_r"), GREEN),
     ]
 
 
-def draw_lamp_strip(pygame, fonts, surf, face: DisplayState, bulb_check: bool = False) -> None:
-    lamps = _lamp_states(face, bulb_check=bulb_check)
-    y = 812
-    x0 = W // 2 - (len(lamps) - 1) * 86 // 2
-    for i, (label, on, colour, shape) in enumerate(lamps):
-        cx = x0 + i * 86
-        col = colour if on else AMBER_GHOST
-        if shape == "tri_l":
-            pygame.draw.polygon(surf, col, [(cx - 20, y), (cx + 14, y - 14), (cx + 14, y + 14)])
-        elif shape == "tri_r":
-            pygame.draw.polygon(surf, col, [(cx + 20, y), (cx - 14, y - 14), (cx - 14, y + 14)])
-        else:
-            pygame.draw.rect(surf, col if on else (16, 14, 12), pygame.Rect(cx - 30, y - 14, 60, 28), border_radius=5)
-            blit_text(surf, fonts["lamp"], label, WHITE if on else MUTED, (cx, y), "center")
+def _draw_lamp_icon(pygame, surf, kind: str, cx: int, cy: int, col) -> None:
+    if kind == "turn_l":
+        pygame.draw.polygon(surf, col, [(cx + 8, cy - 8), (cx - 10, cy), (cx + 8, cy + 8)])
+    elif kind == "turn_r":
+        pygame.draw.polygon(surf, col, [(cx - 8, cy - 8), (cx + 10, cy), (cx - 8, cy + 8)])
+    elif kind == "hi":
+        pygame.draw.circle(surf, col, (cx - 4, cy), 7, 2)
+        for dy in (-6, 0, 6):
+            pygame.draw.line(surf, col, (cx + 4, cy + dy), (cx + 14, cy + dy - 2), 2)
+    elif kind == "oil":
+        pygame.draw.rect(surf, col, pygame.Rect(cx - 8, cy - 4, 14, 8), border_radius=2)
+        pygame.draw.line(surf, col, (cx + 6, cy - 4), (cx + 12, cy - 10), 2)
+        pygame.draw.circle(surf, col, (cx - 8, cy + 6), 3)
+    elif kind == "cel":
+        pygame.draw.rect(surf, col, pygame.Rect(cx - 10, cy - 5, 20, 10), border_radius=2)
+        pygame.draw.rect(surf, col, pygame.Rect(cx - 4, cy - 9, 8, 4))
+        pygame.draw.line(surf, col, (cx - 10, cy), (cx - 16, cy + 4), 2)
+        pygame.draw.line(surf, col, (cx + 10, cy), (cx + 16, cy + 4), 2)
+    elif kind == "bat":
+        pygame.draw.rect(surf, col, pygame.Rect(cx - 10, cy - 6, 20, 12), width=2)
+        pygame.draw.rect(surf, col, pygame.Rect(cx - 6, cy - 9, 4, 3))
+        pygame.draw.rect(surf, col, pygame.Rect(cx + 2, cy - 9, 4, 3))
+    elif kind == "eps":
+        blit_text(surf, _font(pygame, 11, bold=True), "EPS", col, (cx, cy), "center")
+    elif kind == "abs":
+        blit_text(surf, _font(pygame, 11, bold=True), "ABS", col, (cx, cy), "center")
+    elif kind == "brake":
+        pygame.draw.circle(surf, col, (cx, cy), 9, 2)
+        blit_text(surf, _font(pygame, 9, bold=True), "!", col, (cx, cy), "center")
+    elif kind == "airbag":
+        pygame.draw.circle(surf, col, (cx, cy + 2), 6, 2)
+        pygame.draw.arc(surf, col, pygame.Rect(cx - 10, cy - 8, 20, 14), 0.2, 2.9, 2)
+    elif kind == "fuel":
+        _pump_icon(pygame, surf, cx, cy, col)
+    elif kind == "fog":
+        pygame.draw.circle(surf, col, (cx - 4, cy), 6, 2)
+        for i, dy in enumerate((-4, 0, 4)):
+            pygame.draw.line(surf, col, (cx + 4, cy + dy), (cx + 14, cy + dy), 2)
+    elif kind == "hot":
+        _thermometer_icon(pygame, surf, cx, cy, col)
+    else:
+        pygame.draw.circle(surf, col, (cx, cy), 4)
 
 
-def draw_ready_card(fonts, surf, face: DisplayState) -> None:
+def draw_hardware_strip(
+    pygame,
+    fonts,
+    surf,
+    face: DisplayState,
+    bulb_check: bool = False,
+    g: FaceGeom = FACE,
+) -> None:
+    """Lower bezel: −/+ PUSH CANCEL, dense lamp band, blank + TRIP ovals."""
+    rx, ry, rw, rh = g.rocker
+    pygame.draw.rect(surf, BEZEL_BTN, pygame.Rect(rx, ry, rw, rh), border_radius=rh // 2)
+    pygame.draw.line(surf, (88, 88, 86), (rx + rw // 2, ry + 6), (rx + rw // 2, ry + rh - 6), 2)
+    blit_text(surf, fonts["tiny"], "−", RED, (rx + rw * 0.25, ry + rh // 2), "center")
+    blit_text(surf, fonts["tiny"], "+", WHITE, (rx + rw * 0.75, ry + rh // 2), "center")
+
+    # Brightness pictogram (dial + needle) then PUSH CANCEL
+    dial_x = rx + rw + 28
+    dial_y = ry + rh // 2
+    pygame.draw.circle(surf, WHITE, (dial_x, dial_y), 9, 2)
+    pygame.draw.line(surf, WHITE, (dial_x, dial_y), (dial_x + 6, dial_y - 6), 2)
+    blit_text(surf, fonts["lamp"], "PUSH CANCEL", WHITE, (dial_x + 78, dial_y), "center")
+
+    bx, by, bw, bh = g.lamp_band
+    pygame.draw.rect(surf, BEZEL_BAND, pygame.Rect(bx, by, bw, bh), border_radius=4)
+    pygame.draw.rect(surf, BEZEL_BAND_EDGE, pygame.Rect(bx, by, bw, bh), width=1, border_radius=4)
+
+    lamps = _lamp_spec(face, bulb_check)
+    n = len(lamps)
+    pitch = 48
+    total = n * pitch
+    x0 = bx + max(8, (bw - total) // 2) + pitch // 2
+    for i, (kind, lit, colour) in enumerate(lamps):
+        cx = x0 + i * pitch
+        cy = by + bh // 2
+        col = colour if lit else (38, 36, 34)
+        _draw_lamp_icon(pygame, surf, kind, cx, cy, col)
+
+    for rect, label in ((g.trip_blank, ""), (g.trip, "TRIP")):
+        tx, ty, tw, th = rect
+        pygame.draw.rect(surf, BEZEL_BTN, pygame.Rect(tx, ty, tw, th), border_radius=th // 2)
+        if label:
+            blit_text(surf, fonts["lamp"], label, WHITE, (tx + tw // 2, ty + th // 2), "center")
+
+
+def draw_ready_card(fonts, surf, face: DisplayState, g: FaceGeom = FACE) -> None:
     """ID.4-like pre-drive summary sitting in the LCD well."""
-    blit_text(surf, fonts["micro"], "HONDA  S2000  AP1", DIM, (960, 360), "center")
-    blit_text(surf, fonts["ready"], "READY", AMBER, (960, 470), "center")
-    blit_text(surf, fonts["tiny"], "IGNITION ON  ·  SYSTEMS OK", DIM, (960, 548), "center")
+    cx = g.speed_c[0]
+    ly = g.lcd[1]
+    blit_text(surf, fonts["micro"], "HONDA  S2000  AP1", DIM, (cx, ly + 70), "center")
+    blit_text(surf, fonts["ready"], "READY", AMBER, g.speed_c, "center")
+    blit_text(surf, fonts["tiny"], "IGNITION ON  ·  SYSTEMS OK", DIM, (cx, g.speed_c[1] + 58), "center")
     chips = [
         ("BATT", f"{face.batt_v:.1f} V"),
         ("FUEL", f"{face.fuel_pct:.0f} %"),
         ("TEMP", f"{face.ect_c:.0f} °C"),
         ("ODO", f"{face.odo_km:,.0f} km"),
     ]
-    x0 = 430
+    y = g.odo_c[1]
+    x0 = cx - 270
     for i, (name, val) in enumerate(chips):
-        x = x0 + i * 270
-        blit_text(surf, fonts["micro"], name, DIM, (x, 640), "center")
-        blit_text(surf, fonts["readout"], val, AMBER, (x, 672), "center")
+        x = x0 + i * 180
+        blit_text(surf, fonts["micro"], name, DIM, (x, y), "center")
+        blit_text(surf, fonts["readout"], val, AMBER, (x, y + 26), "center")
 
 
 def draw_live_face(
@@ -549,8 +910,8 @@ def draw_live_face(
     if fade < 0.999:
         layer = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
     draw_tach_segments(pygame, layer, clamp(rpm / float(RPM_REDLINE), 0.0, 1.0))
-    draw_tach_numbers(fonts, layer)
-    draw_temp_stack(pygame, fonts, layer, ect_frac(face.ect_c), face.ect_c >= ECT_HOT_C)
+    draw_tach_numbers(pygame, fonts, layer)
+    draw_temp_bar(pygame, fonts, layer, ect_frac(face.ect_c), face.ect_c >= ECT_HOT_C)
     draw_fuel_bar(pygame, fonts, layer, fuel_frac(face.fuel_pct), face.fuel_pct < FUEL_LOW_PCT)
     draw_speed(fonts, layer, face.speed_kmh)
     draw_odo_row(
@@ -559,19 +920,20 @@ def draw_live_face(
         face,
         face.batt_v < BATT_LOW_V or face.lamps.get("batt_warn", False),
     )
-    draw_lamp_strip(pygame, fonts, layer, face, bulb_check=bulb_check)
+    draw_hardware_strip(pygame, fonts, layer, face, bulb_check=bulb_check)
     if fade < 0.999:
         layer.set_alpha(int(255 * clamp(fade, 0.0, 1.0)))
         surf.blit(layer, (0, 0))
 
 
-def draw_caption(fonts, surf) -> None:
+def draw_caption(fonts, surf, g: FaceGeom = FACE) -> None:
+    mx, my, mw, mh = g.module
     blit_text(
         surf,
         fonts["micro"],
-        "OVERLAY MODULE  ·  OEM CLUSTER STAYS PLUGGED  ·  DISPLAY-ONLY ODO",
+        "OEM cluster remains powered for legal odometer  ·  Esc quit",
         MUTED,
-        (W // 2, 1008),
+        (W // 2, my + mh + 28),
         "center",
     )
 
@@ -587,11 +949,14 @@ def draw_frame(
     draw_cabin(pygame, surf)
     draw_cowl(pygame, surf, sweep_t=phase_t if phase == "sweep" else None)
     if phase == "sweep":
-        # Dim ghost of the LCD so the sweep reads as a wake-up, not an empty hole
         draw_tach_segments(pygame, surf, 0.0, ghost=True)
-        draw_tach_numbers(fonts, surf, dim=True)
+        draw_tach_numbers(pygame, fonts, surf, dim=True)
+        draw_temp_bar(pygame, fonts, surf, 0.0, False)
+        draw_fuel_bar(pygame, fonts, surf, 0.0, False)
+        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False)
     elif phase == "ready":
         draw_ready_card(fonts, surf, face)
+        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False)
     elif phase == "reveal":
         draw_live_face(
             pygame,
@@ -612,6 +977,7 @@ SCREENSHOT_SCENES: tuple[tuple[str, str, float], ...] = (
     ("02_ready", "ready", 0.55),
     ("03_reveal", "reveal", 0.62),
     ("04_live", "live", 1.0),
+    ("05_cruise", "live", 1.0),
 )
 
 
@@ -619,8 +985,12 @@ def write_screenshots(pygame, fonts, face: DisplayState, dest: Path) -> list[Pat
     dest.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
     canvas = pygame.Surface((W, H))
+    cruise = DisplayState()
+    cruise.snap(cruise_telem())
+    cruise.trip_origin = cruise.odo_km - 128.4
+    cruise.trip_km = 128.4
     for name, phase, local_t in SCREENSHOT_SCENES:
-        draw_frame(pygame, fonts, canvas, face, phase, local_t)
+        draw_frame(pygame, fonts, canvas, cruise if name.endswith("cruise") else face, phase, local_t)
         path = dest / f"{name}.png"
         pygame.image.save(canvas, str(path))
         written.append(path)
@@ -629,14 +999,14 @@ def write_screenshots(pygame, fonts, face: DisplayState, dest: Path) -> list[Pat
 
 def build_fonts(pygame) -> dict:
     return {
-        "speed": _font(pygame, 168, bold=True, mono=True),
-        "ready": _font(pygame, 92, bold=True),
-        "tick": _font(pygame, 28, bold=True),
-        "label": _font(pygame, 26),
-        "readout": _font(pygame, 30, bold=True, mono=True),
-        "tiny": _font(pygame, 22, bold=True),
-        "micro": _font(pygame, 16),
-        "lamp": _font(pygame, 15, bold=True),
+        "speed": _font(pygame, 132, bold=True, mono=True),
+        "ready": _font(pygame, 78, bold=True),
+        "tick": _font(pygame, 26, bold=True),
+        "label": _font(pygame, 22),
+        "readout": _font(pygame, 26, bold=True, mono=True),
+        "tiny": _font(pygame, 18, bold=True),
+        "micro": _font(pygame, 15),
+        "lamp": _font(pygame, 14, bold=True),
     }
 
 
@@ -689,7 +1059,6 @@ def main(argv: list[str] | None = None) -> None:
             print(path)
 
     if args.smoke:
-        # Exercise a couple of live frames after optional screenshot dump
         for _ in range(3):
             draw_frame(pygame, fonts, screen, face, "live", 1.0)
             pygame.display.flip()
