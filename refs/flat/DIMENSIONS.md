@@ -42,8 +42,12 @@ Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
 Hardware strip, left → right:
 
 - `−/+` rocker; brightness dial + **PUSH CANCEL** under the rocker
-- Dense icon lamps: battery, oil, CEL, EPS, brake, ABS, SRS, seatbelt, …
-- Blank oval + **TRIP**
+- OEM telltales (self-test order, after the signal pair):
+  **←** (green), high beam (blue), **ABS** (amber), **BRAKE** (red),
+  battery (red), oil (red), CEL (amber), immobilizer key (green),
+  **MAINT REQ'D** (amber), **EPS** (amber), seatbelt (red), door (red),
+  **SRS** (red), **→** (green)
+- **SEL** oval + **TRIP** oval
 
 TEMP is **not** a tall vertical stack. Both corner gauges share y = 72%.
 
@@ -56,6 +60,7 @@ Protocol JSON fields stay `rpm`, `speed_kmh`, `fuel_pct`, `ect_c`, `batt_v`,
 - 45° chamfer instead of the **rectangular** 58–72% notches
 - Semicircle / superellipse crown instead of **y = 28 u²**
 - Units stacked under the speed
-- Lamps as large labelled chips on the LCD
+- Lamps as large labelled chips on the LCD (use OEM telltale artwork)
+- Neon cyan high beam or sweep (high beam is ISO blue)
 - Fake 3D cabin ellipses
 - Module aspect drifting off **2.35:1**

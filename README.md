@@ -37,7 +37,7 @@
 
 Amber-on-black LCD in a **hooded arched cowl**. Flat 2.35:1 elevation — no fake 3D skew. Proportions live in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md).
 
-Arched tach **0–9 ×1000**, five redline blocks **8–9**, digital speed, horizontal **TEMP** / **FUEL**, **ODO / TRIP / BATT**.
+Arched tach **0–9 ×1000**, five redline blocks **8–9**, digital speed, horizontal **TEMP** / **FUEL**, **ODO / TRIP / BATT**. Bottom strip uses OEM telltales: red BRAKE / battery / oil / door / seatbelt / SRS, amber ABS / CEL / MAINT / EPS, green immobilizer + turn arrows, blue high beam.
 
 </td>
 <td width="50%">
@@ -167,6 +167,7 @@ Optional: `lamps` object (`oil`, `cel`, `abs`, `turn_l`, `turn_r`, `high_beam`, 
 - `src/gauge_ui.py` — pygame 1920×1080 OEM-geometry cluster + intro
 - `src/serial_reader.py` — Phase 2 UART stub (pyserial optional)
 - `refs/flat/` — SVG + `DIMENSIONS.md` lock for the OEM face
+- `assets/icons/` — OEM telltale SVG/PNG atlas (tinted at draw time)
 - `cad/` — OpenSCAD placeholders (bezel + generic connector shells)
 - `shots/` — sweep / ready / reveal / live / cruise stills
 - `docs/assets/` — unofficial mark, intro GIF, VP9 hero

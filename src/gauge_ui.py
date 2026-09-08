@@ -23,6 +23,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from oem_icons import (
+    LAMP_GHOST,
+    blit_glow,
+    icon_surface,
+    lamp_states,
+    lamp_strip_inner_width,
+)
 from protocol import (
     BATT_LOW_V,
     ECT_HOT_C,
@@ -40,18 +47,19 @@ CABIN = (8, 8, 9)
 COWL = (18, 17, 16)
 COWL_HIGH = (44, 40, 36)
 COWL_EDGE = (58, 52, 46)
-WELL = (6, 6, 7)
-LCD = (2, 2, 3)
-AMBER = (236, 168, 36)
-AMBER_DIM = (72, 48, 12)
-AMBER_GHOST = (28, 20, 8)
-RED = (210, 36, 32)
+WELL = (8, 6, 4)
+LCD = (6, 4, 2)
+AMBER = (236, 152, 32)
+AMBER_HOT = (255, 176, 46)
+AMBER_DIM = (78, 50, 14)
+AMBER_GHOST = (40, 26, 10)
+AMBER_WASH = (52, 38, 12)
+RED = (214, 36, 30)
 RED_DIM = (78, 16, 14)
-CYAN = (72, 210, 230)
+RED_GHOST = (42, 14, 12)
 WHITE = (230, 226, 214)
 DIM = (92, 84, 70)
 MUTED = (42, 38, 34)
-GREEN = (52, 200, 110)
 ORANGE = (230, 132, 36)
 BEZEL_BTN = (118, 118, 116)
 BEZEL_BAND = (14, 15, 16)
@@ -196,8 +204,8 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
     trip_blank = (trip[0] - trip_w - 10, btn_y, trip_w, btn_h)
     band_h = _pct(bezel_h * 0.58)
     band_y = bezel_y + (bezel_h - band_h) // 2
-    # Hug the 13 OEM icons (48 px pitch) so the band is dense, not a hollow gap
-    pack_w = 14 * 48 + 28
+    # Hug the OEM telltale strip (variable pitch: BRAKE / MAINT are wider)
+    pack_w = lamp_strip_inner_width() + 28
     gap_l = rocker[0] + rocker_w + _pct(mw * 0.118)
     gap_r = trip_blank[0] - 16
     mid = (gap_l + gap_r) // 2
@@ -593,7 +601,7 @@ def draw_cowl(pygame, surf, sweep_t: float | None = None, g: FaceGeom = FACE) ->
         i = int(t * max(0, len(band) - 8))
         chunk = band[i : i + 8]
         if len(chunk) > 1:
-            pygame.draw.lines(surf, lerp_colour(AMBER, CYAN, t), False, chunk, 8)
+            pygame.draw.lines(surf, lerp_colour(AMBER, WHITE, t), False, chunk, 8)
 
 
 def _radial_block(r_in: float, r_out: float, a0: float, a1: float) -> list[tuple[int, int]]:
@@ -605,16 +613,57 @@ def _radial_block(r_in: float, r_out: float, a0: float, a1: float) -> list[tuple
     ]
 
 
+def _expand_poly(pts: list[tuple[int, int]], px: float) -> list[tuple[int, int]]:
+    cx = sum(p[0] for p in pts) / len(pts)
+    cy = sum(p[1] for p in pts) / len(pts)
+    out: list[tuple[int, int]] = []
+    for x, y in pts:
+        dx, dy = x - cx, y - cy
+        n = math.hypot(dx, dy) or 1.0
+        out.append((int(x + dx / n * px), int(y + dy / n * px)))
+    return out
+
+
+def _blit_seg_bloom(pygame, surf, bloom, pts, color) -> None:
+    glow = (
+        min(255, color[0] + 28),
+        min(255, color[1] + 20),
+        min(255, color[2] + 8),
+        78,
+    )
+    pygame.draw.polygon(bloom, glow, _expand_poly(pts, 5))
+    pygame.draw.polygon(surf, color, pts)
+
+
 def draw_tach_segments(
     pygame,
     surf,
     lit_frac: float,
     ghost: bool = True,
 ) -> None:
-    """OEM ticks: majors each 1000, minors each 500, five thick redline blocks 8–9."""
+    """OEM ticks: majors each 1000, minors each 500, five thick redline blocks 8–9.
+
+    Lit segments are warm amber→orange with a soft bloom. Unlit ticks stay as
+    dim ghosts on a faint amber wash — not neon.
+    """
     red_from = 8.0 / 9.0
-    # Ghost / live fill under the ticks (amber up to 8, then redline)
     fill_steps = 72
+    bloom = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
+
+    # Continuous warm wash under the scale (night-idle backlight)
+    wash_steps = 36
+    for i in range(wash_steps):
+        t0 = i / wash_steps
+        t1 = (i + 1) / wash_steps
+        pad = 0.02
+        a0 = tach_angle(t0 + (t1 - t0) * pad)
+        a1 = tach_angle(t1 - (t1 - t0) * pad)
+        pygame.draw.polygon(
+            surf,
+            AMBER_WASH,
+            _radial_block(TACH_R_INNER + 8, TACH_R_OUTER - 4, a0, a1),
+        )
+
     for i in range(fill_steps):
         t0 = i / fill_steps
         t1 = (i + 1) / fill_steps
@@ -622,29 +671,34 @@ def draw_tach_segments(
         if mid >= red_from:
             continue
         on = mid <= lit_frac + 1e-6
-        col = AMBER if on else (AMBER_GHOST if ghost else LCD)
         pad = 0.10
         a0 = tach_angle(t0 + (t1 - t0) * pad)
         a1 = tach_angle(t1 - (t1 - t0) * pad)
-        pygame.draw.polygon(
-            surf, col, _radial_block(TACH_R_INNER + 10, TACH_R_OUTER - 6, a0, a1)
-        )
+        pts = _radial_block(TACH_R_INNER + 10, TACH_R_OUTER - 6, a0, a1)
+        if on:
+            col = lerp_colour(AMBER, AMBER_HOT, mid)
+            _blit_seg_bloom(pygame, surf, bloom, pts, col)
+        else:
+            col = AMBER_GHOST if ghost else LCD
+            pygame.draw.polygon(surf, col, pts)
 
-    # Five distinct redline blocks between 8 and 9
     for i in range(REDLINE_BLOCKS):
         t0 = red_from + (1.0 - red_from) * (i / REDLINE_BLOCKS)
         t1 = red_from + (1.0 - red_from) * ((i + 1) / REDLINE_BLOCKS)
         mid = (t0 + t1) * 0.5
         on = mid <= lit_frac + 1e-6
-        col = RED if on else (36, 12, 10)
         pad = 0.08
         a0 = tach_angle(t0 + (t1 - t0) * pad)
         a1 = tach_angle(t1 - (t1 - t0) * pad)
-        pygame.draw.polygon(
-            surf, col, _radial_block(TACH_R_INNER - 6, TACH_R_OUTER + 8, a0, a1)
-        )
+        pts = _radial_block(TACH_R_INNER - 6, TACH_R_OUTER + 8, a0, a1)
+        if on:
+            _blit_seg_bloom(pygame, surf, bloom, pts, RED)
+        else:
+            pygame.draw.polygon(surf, RED_GHOST if ghost else (36, 12, 10), pts)
 
-    # Major / minor ticks (skip the redline interval)
+    small = pygame.transform.smoothscale(bloom, (surf.get_width() // 3, surf.get_height() // 3))
+    surf.blit(pygame.transform.smoothscale(small, surf.get_size()), (0, 0))
+
     for i in range(TACH_MAJORS):
         frac = i / 9.0
         if frac >= red_from - 1e-6:
@@ -756,24 +810,25 @@ def draw_fuel_bar(pygame, fonts, surf, frac: float, low: bool, g: FaceGeom = FAC
     _seg_bar(pygame, surf, g.fuel, frac, FUEL_SEGS, warn_low=low, hot_end=False)
 
 
-def draw_speed(fonts, surf, speed: float, g: FaceGeom = FACE) -> None:
+def draw_speed(pygame, fonts, surf, speed: float, g: FaceGeom = FACE) -> None:
     digits = f"{int(round(clamp(speed, 0.0, 399.0))):d}"
     cx, cy = g.speed_c
     img = fonts["speed"].render(digits, True, AMBER)
+    blit_glow(pygame, surf, img, (cx, cy), strength=0.38, scale=1.08)
     rect = img.get_rect(center=(cx, cy))
-    surf.blit(img, rect)
     # OEM lock: units sit to the right of the digits, not underneath
     unit_x = rect.right + 16
     blit_text(surf, fonts["label"], "km/h", AMBER, (unit_x, cy - 10), "midleft")
     blit_text(surf, fonts["micro"], "mph", DIM, (unit_x, cy + 16), "midleft")
 
 
-def draw_odo_row(fonts, surf, face: DisplayState, batt_warn: bool, g: FaceGeom = FACE) -> None:
+def draw_odo_row(pygame, fonts, surf, face: DisplayState, batt_warn: bool, g: FaceGeom = FACE) -> None:
     """ODO / TRIP directly under the speed, matching the flat lock drawing."""
     cx, y = g.odo_c
     batt = f"{face.batt_v:.1f}V"
     line = f"ODO  {face.odo_km:07.1f}    TRIP  {face.trip_km:05.1f}"
-    blit_text(surf, fonts["readout"], line, AMBER, (cx, y), "center")
+    odo_img = fonts["readout"].render(line, True, AMBER)
+    blit_glow(pygame, surf, odo_img, (cx, y), strength=0.22, scale=1.04)
     blit_text(
         surf,
         fonts["micro"],
@@ -784,79 +839,6 @@ def draw_odo_row(fonts, surf, face: DisplayState, batt_warn: bool, g: FaceGeom =
     )
 
 
-def _lamp_spec(face: DisplayState, bulb_check: bool) -> list[tuple[str, bool, tuple[int, int, int]]]:
-    """Dense OEM-style strip. Extra keys (eps, brake, airbag) pass through lamps."""
-
-    def flag(key: str, extra: bool = False) -> bool:
-        if bulb_check:
-            return True
-        return bool(face.lamps.get(key, False) or extra)
-
-    return [
-        ("turn_l", flag("turn_l"), GREEN),
-        ("hi", flag("high_beam"), CYAN),
-        ("oil", flag("oil"), RED),
-        ("cel", flag("cel"), ORANGE),
-        ("bat", flag("batt_warn", face.batt_v < BATT_LOW_V), RED),
-        ("eps", flag("eps"), ORANGE),
-        ("abs", flag("abs"), ORANGE),
-        ("brake", flag("brake"), RED),
-        ("airbag", flag("airbag"), RED),
-        ("seat", flag("seatbelt"), RED),
-        ("fuel", flag("fuel_low", face.fuel_pct < FUEL_LOW_PCT), ORANGE),
-        ("fog", flag("fog"), GREEN),
-        ("hot", flag("ect_hot", face.ect_c >= ECT_HOT_C), RED),
-        ("turn_r", flag("turn_r"), GREEN),
-    ]
-
-
-def _draw_lamp_icon(pygame, surf, kind: str, cx: int, cy: int, col) -> None:
-    if kind == "turn_l":
-        pygame.draw.polygon(surf, col, [(cx + 8, cy - 8), (cx - 10, cy), (cx + 8, cy + 8)])
-    elif kind == "turn_r":
-        pygame.draw.polygon(surf, col, [(cx - 8, cy - 8), (cx + 10, cy), (cx - 8, cy + 8)])
-    elif kind == "hi":
-        pygame.draw.circle(surf, col, (cx - 4, cy), 7, 2)
-        for dy in (-6, 0, 6):
-            pygame.draw.line(surf, col, (cx + 4, cy + dy), (cx + 14, cy + dy - 2), 2)
-    elif kind == "oil":
-        pygame.draw.rect(surf, col, pygame.Rect(cx - 8, cy - 4, 14, 8), border_radius=2)
-        pygame.draw.line(surf, col, (cx + 6, cy - 4), (cx + 12, cy - 10), 2)
-        pygame.draw.circle(surf, col, (cx - 8, cy + 6), 3)
-    elif kind == "cel":
-        pygame.draw.rect(surf, col, pygame.Rect(cx - 10, cy - 5, 20, 10), border_radius=2)
-        pygame.draw.rect(surf, col, pygame.Rect(cx - 4, cy - 9, 8, 4))
-        pygame.draw.line(surf, col, (cx - 10, cy), (cx - 16, cy + 4), 2)
-        pygame.draw.line(surf, col, (cx + 10, cy), (cx + 16, cy + 4), 2)
-    elif kind == "bat":
-        pygame.draw.rect(surf, col, pygame.Rect(cx - 10, cy - 6, 20, 12), width=2)
-        pygame.draw.rect(surf, col, pygame.Rect(cx - 6, cy - 9, 4, 3))
-        pygame.draw.rect(surf, col, pygame.Rect(cx + 2, cy - 9, 4, 3))
-    elif kind == "eps":
-        blit_text(surf, _font(pygame, 11, bold=True), "EPS", col, (cx, cy), "center")
-    elif kind == "abs":
-        blit_text(surf, _font(pygame, 11, bold=True), "ABS", col, (cx, cy), "center")
-    elif kind == "brake":
-        pygame.draw.circle(surf, col, (cx, cy), 9, 2)
-        blit_text(surf, _font(pygame, 9, bold=True), "!", col, (cx, cy), "center")
-    elif kind == "airbag":
-        pygame.draw.circle(surf, col, (cx, cy + 2), 6, 2)
-        pygame.draw.arc(surf, col, pygame.Rect(cx - 10, cy - 8, 20, 14), 0.2, 2.9, 2)
-    elif kind == "seat":
-        pygame.draw.rect(surf, col, pygame.Rect(cx - 6, cy - 2, 12, 8), width=2)
-        pygame.draw.circle(surf, col, (cx, cy - 8), 4, 2)
-    elif kind == "fuel":
-        _pump_icon(pygame, surf, cx, cy, col)
-    elif kind == "fog":
-        pygame.draw.circle(surf, col, (cx - 4, cy), 6, 2)
-        for i, dy in enumerate((-4, 0, 4)):
-            pygame.draw.line(surf, col, (cx + 4, cy + dy), (cx + 14, cy + dy), 2)
-    elif kind == "hot":
-        _thermometer_icon(pygame, surf, cx, cy, col)
-    else:
-        pygame.draw.circle(surf, col, (cx, cy), 4)
-
-
 def draw_hardware_strip(
     pygame,
     fonts,
@@ -865,7 +847,7 @@ def draw_hardware_strip(
     bulb_check: bool = False,
     g: FaceGeom = FACE,
 ) -> None:
-    """Lower bezel: −/+ PUSH CANCEL, dense lamp band, blank + TRIP ovals."""
+    """Lower bezel: −/+ PUSH CANCEL, OEM lamp band, SEL + TRIP ovals."""
     rx, ry, rw, rh = g.rocker
     pygame.draw.rect(surf, BEZEL_BTN, pygame.Rect(rx, ry, rw, rh), border_radius=rh // 2)
     pygame.draw.line(surf, (88, 88, 86), (rx + rw // 2, ry + 6), (rx + rw // 2, ry + rh - 6), 2)
@@ -876,25 +858,34 @@ def draw_hardware_strip(
     dial_x = rx + 12
     dial_y = ry + rh + 14
     pygame.draw.circle(surf, WHITE, (dial_x, dial_y), 7, 2)
-    pygame.draw.line(surf, WHITE, (dial_x, dial_y), (dial_x + 5, dial_y - 5), 2)
-    blit_text(surf, fonts["lamp"], "PUSH CANCEL", WHITE, (dial_x + 70, dial_y), "center")
+    pygame.draw.line(surf, WHITE, (dial_x, dial_y), (dial_x + 4, dial_y - 5), 2)
+    pygame.draw.arc(surf, WHITE, pygame.Rect(dial_x - 9, dial_y - 9, 18, 18), 0.6, 2.4, 2)
+    blit_text(surf, fonts["lamp"], "PUSH CANCEL", WHITE, (dial_x + 76, dial_y), "center")
 
     bx, by, bw, bh = g.lamp_band
     pygame.draw.rect(surf, BEZEL_BAND, pygame.Rect(bx, by, bw, bh), border_radius=4)
     pygame.draw.rect(surf, BEZEL_BAND_EDGE, pygame.Rect(bx, by, bw, bh), width=1, border_radius=4)
 
-    lamps = _lamp_spec(face, bulb_check)
-    n = len(lamps)
-    pitch = 48
-    total = n * pitch
-    x0 = bx + max(8, (bw - total) // 2) + pitch // 2
-    for i, (kind, lit, colour) in enumerate(lamps):
-        cx = x0 + i * pitch
-        cy = by + bh // 2
-        col = colour if lit else (38, 36, 34)
-        _draw_lamp_icon(pygame, surf, kind, cx, cy, col)
+    lamps = lamp_states(
+        face.lamps,
+        bulb_check=bulb_check,
+        batt_low=face.batt_v < BATT_LOW_V,
+    )
+    total = sum(item.width for item in lamps)
+    x = bx + max(8, (bw - total) // 2)
+    cy = by + bh // 2
+    icon_h = max(22, bh - 10)
+    for item in lamps:
+        cx = x + item.width // 2
+        col = item.color if item.lit else LAMP_GHOST
+        sprite = icon_surface(pygame, item.kind, col, icon_h)
+        if item.lit:
+            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.42, scale=1.14)
+        else:
+            surf.blit(sprite, sprite.get_rect(center=(cx, cy)))
+        x += item.width
 
-    for rect, label in ((g.trip_blank, ""), (g.trip, "TRIP")):
+    for rect, label in ((g.trip_blank, "SEL"), (g.trip, "TRIP")):
         tx, ty, tw, th = rect
         pygame.draw.rect(surf, BEZEL_BTN, pygame.Rect(tx, ty, tw, th), border_radius=th // 2)
         if label:
@@ -939,8 +930,9 @@ def draw_live_face(
     draw_tach_numbers(pygame, fonts, layer)
     draw_temp_bar(pygame, fonts, layer, ect_frac(face.ect_c), face.ect_c >= ECT_HOT_C)
     draw_fuel_bar(pygame, fonts, layer, fuel_frac(face.fuel_pct), face.fuel_pct < FUEL_LOW_PCT)
-    draw_speed(fonts, layer, face.speed_kmh)
+    draw_speed(pygame, fonts, layer, face.speed_kmh)
     draw_odo_row(
+        pygame,
         fonts,
         layer,
         face,
@@ -1001,7 +993,7 @@ def draw_frame(
 SCREENSHOT_SCENES: tuple[tuple[str, str, float], ...] = (
     ("01_sweep", "sweep", 0.55),
     ("02_ready", "ready", 0.55),
-    ("03_reveal", "reveal", 0.62),
+    ("03_reveal", "reveal", 0.40),
     ("04_live", "live", 1.0),
     ("05_cruise", "live", 1.0),
 )

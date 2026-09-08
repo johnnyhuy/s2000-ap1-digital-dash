@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" width="64" height="48" role="img" aria-label="High beam telltale">
+  <title>High beam telltale</title>
+  <circle cx="24" cy="24" r="10" fill="none" stroke="#fff" stroke-width="2.4"/>
+  <path d="M24 14a10 10 0 0 0 0 20" fill="none" stroke="#fff" stroke-width="2.4"/>
+  <path d="M36 14l14-2M36 20l14-1M36 28l14 1M36 34l14 2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+</svg>
