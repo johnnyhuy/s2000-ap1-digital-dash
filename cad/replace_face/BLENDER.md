@@ -26,10 +26,12 @@ Or `python3 cad/replace_face/blender_remesh.py` — the script re-execs
 `--help` works without Blender. `--check` confirms `bpy`.
 
 This agent ran **Blender 4.0.2** (`bpy`) against the raw files in
-`stl/`. Re-run after any OpenSCAD export (`export.sh`) so printables
-stay in lockstep with the SCAD.
+`stl/` after the #12 horizontal TEMP/FUEL lock. Re-run after any
+OpenSCAD export (`export.sh`) so printables stay in lockstep with the
+SCAD.
 
-Last clean (no verts welded — the CGAL dumps were already watertight):
+Last clean (no verts welded — the CGAL dumps were already watertight;
+silhouette bbox unchanged because the bars sit inside the LCD aperture):
 
 | Part | Verts | Tris | BBox mm (origin kept) |
 | --- | ---: | ---: | --- |

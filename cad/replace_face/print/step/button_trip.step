@@ -1,7 +1,7 @@
 ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('replace-face cleaned mesh - faceted PLACEHOLDER, not parametric CAD, not a verified AP1 drop-in'),'2;1');
-FILE_NAME('button_trip.step','2026-09-08T03:58:20Z',('s2000-ap1-digital-dash'),(''),'cad/replace_face/blender_remesh.py','s2000-ap1-digital-dash','');
+FILE_NAME('button_trip.step','2026-09-08T05:33:20Z',('s2000-ap1-digital-dash'),(''),'cad/replace_face/blender_remesh.py','s2000-ap1-digital-dash','');
 FILE_SCHEMA(('CONFIG_CONTROL_DESIGN'));
 ENDSEC;
 DATA;
