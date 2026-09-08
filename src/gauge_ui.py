@@ -58,25 +58,26 @@ BEZEL_BAND = (14, 15, 16)
 BEZEL_BAND_EDGE = (32, 34, 36)
 
 # --- locked % layout (see refs/flat/DIMENSIONS.md) ---------------------------
-# Module as % of the 1920×1080 canvas
-MODULE_X_PCT, MODULE_Y_PCT = 0.040, 0.168
-MODULE_W_PCT, MODULE_H_PCT = 0.920, 0.662
-# Within the module
-STEP_W_PCT = 0.044          # 45° inward step each side
-BEZEL_H_PCT = 0.175         # hardware strip below the LCD
+# Module as % of the 1920×1080 canvas; height from OEM 2.35:1 elevation
+MODULE_X_PCT = 0.040
+MODULE_W_PCT = 0.920
+MODULE_ASPECT = 2.35
+# Within the module (0,0 = module top-left) — locked from the flat OEM drawing
+STEP_W_PCT = 0.044          # side notches / 45° inward step
+LAMP_Y_PCT = 0.805          # hardware strip (lamps + buttons)
+BEZEL_H_PCT = 0.175
 LCD_INSET_X_PCT = 0.012
-LCD_TOP_PCT = 0.145         # peak of inner arch from module top
-LCD_BOTTOM_GAP_PCT = 0.018  # air between LCD flat bottom and bezel
-ARCH_N = 3.25               # superellipse: flatter crown, steeper sides
-# LCD-relative (0,0 = top-left of LCD bounding box)
-TACH_END_Y_PCT = 0.68
-TACH_PEAK_Y_PCT = 0.050
-TACH_INSET_X_PCT = 0.100
-TEMP_X_PCT, TEMP_W_PCT = 0.018, 0.205
-FUEL_W_PCT, FUEL_RIGHT_PCT = 0.205, 0.018
-BAR_Y_PCT, BAR_H_PCT = 0.880, 0.042
-SPEED_Y_PCT = 0.50
-ODO_Y_PCT = 0.855
+LCD_TOP_PCT = 0.118
+LCD_BOTTOM_GAP_PCT = 0.018
+ARCH_N = 2.0                # parabola (u²) — OEM crown, not a semicircle
+TEMP_X_PCT, TEMP_Y_PCT, TEMP_W_PCT = 0.075, 0.72, 0.180
+FUEL_X_PCT, FUEL_Y_PCT, FUEL_W_PCT = 0.745, 0.72, 0.180
+BAR_H_PCT = 0.028
+SPEED_X_PCT, SPEED_Y_PCT = 0.50, 0.40
+ODO_Y_PCT = 0.72
+TACH_END_Y_PCT = 0.66
+TACH_PEAK_Y_PCT = 0.145
+TACH_INSET_X_PCT = 0.095
 
 TEMP_SEGS = 14
 FUEL_SEGS = 16
@@ -126,12 +127,12 @@ def _pct(v: float) -> int:
 def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
     """Build the flat AP1 face. Percentages match refs/flat/DIMENSIONS.md."""
     mx = _pct(w * MODULE_X_PCT)
-    my = _pct(h * MODULE_Y_PCT)
     mw = _pct(w * MODULE_W_PCT)
-    mh = _pct(h * MODULE_H_PCT)
+    mh = _pct(mw / MODULE_ASPECT)
+    my = _pct((h - mh) * 0.42)  # sit slightly high so the caption clears
     step = _pct(mw * STEP_W_PCT)
     bezel_h = _pct(mh * BEZEL_H_PCT)
-    bezel_y = my + mh - bezel_h
+    bezel_y = my + _pct(mh * LAMP_Y_PCT)
     inset = _pct(mw * LCD_INSET_X_PCT)
     lcd_x = mx + step + inset
     lcd_w = mw - 2 * step - 2 * inset
@@ -143,17 +144,24 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
     lcd_h = lcd_bottom - lcd_peak
     lcd_spring = spring
 
-    temp_w = _pct(lcd_w * TEMP_W_PCT)
-    fuel_w = _pct(lcd_w * FUEL_W_PCT)
-    bar_h = max(10, _pct(lcd_h * BAR_H_PCT))
-    bar_y = lcd_y + _pct(lcd_h * BAR_Y_PCT)
-    temp = (lcd_x + _pct(lcd_w * TEMP_X_PCT), bar_y, temp_w, bar_h)
-    fuel = (lcd_x + lcd_w - _pct(lcd_w * FUEL_RIGHT_PCT) - fuel_w, bar_y, fuel_w, bar_h)
+    bar_h = max(10, _pct(mh * BAR_H_PCT))
+    temp = (
+        mx + _pct(mw * TEMP_X_PCT),
+        my + _pct(mh * TEMP_Y_PCT),
+        _pct(mw * TEMP_W_PCT),
+        bar_h,
+    )
+    fuel = (
+        mx + _pct(mw * FUEL_X_PCT),
+        my + _pct(mh * FUEL_Y_PCT),
+        _pct(mw * FUEL_W_PCT),
+        bar_h,
+    )
 
-    cx = lcd_x + lcd_w // 2
+    cx = mx + _pct(mw * SPEED_X_PCT)
     # Circular tach through lower-left, peak, lower-right of the LCD
-    end_y = lcd_y + _pct(lcd_h * TACH_END_Y_PCT)
-    peak_y = lcd_y + _pct(lcd_h * TACH_PEAK_Y_PCT)
+    end_y = my + _pct(mh * TACH_END_Y_PCT)
+    peak_y = my + _pct(mh * TACH_PEAK_Y_PCT)
     end_inset = _pct(lcd_w * TACH_INSET_X_PCT)
     x0 = lcd_x + end_inset
     x1 = lcd_x + lcd_w - end_inset
@@ -200,8 +208,8 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
         lcd_spring_y=lcd_spring,
         temp=temp,
         fuel=fuel,
-        speed_c=(cx, lcd_y + _pct(lcd_h * SPEED_Y_PCT)),
-        odo_c=(cx, lcd_y + _pct(lcd_h * ODO_Y_PCT)),
+        speed_c=(cx, my + _pct(mh * SPEED_Y_PCT)),
+        odo_c=(cx, my + _pct(mh * ODO_Y_PCT)),
         tach_cx=cx,
         tach_cy=int(round(tach_cy)),
         tach_r_outer=tach_r_outer,

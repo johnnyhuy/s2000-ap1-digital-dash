@@ -106,6 +106,6 @@
   <!-- Callouts -->
   <line class="guide" x1="20" y1="372" x2="980" y2="372"/>
   <text class="call" x="20" y="388">flat bottom</text>
-  <text class="call" x="430" y="388">LCD ~3.3:1 · TEMP/FUEL y = 88% · 5 redline blocks</text>
-  <text class="call" x="20" y="404">stepped sides 4.4% · bezel 17.5% · arch n = 3.25</text>
+  <text class="call" x="430" y="388">module 2.35:1 · TEMP/FUEL (7.5%, 72%) / (74.5%, 72%) · speed (50%, 40%)</text>
+  <text class="call" x="20" y="404">side notches · parabolic arch · lamp strip y 80.5% · 5 redline blocks</text>
 </svg>

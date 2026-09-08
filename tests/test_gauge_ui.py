@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from gauge_ui import (  # noqa: E402
     FACE,
+    MODULE_ASPECT,
     REDLINE_BLOCKS,
     DisplayState,
     PHASE_READY_S,
@@ -141,10 +142,24 @@ class FaceGeomTests(unittest.TestCase):
         lcd_bottom = FACE.lcd[1] + FACE.lcd[3]
         self.assertGreaterEqual(FACE.bezel[1], lcd_bottom)
 
+    def test_module_aspect_is_locked(self) -> None:
+        self.assertAlmostEqual(MODULE_ASPECT, 2.35, places=2)
+        mw, mh = FACE.module[2], FACE.module[3]
+        self.assertAlmostEqual(mw / mh, 2.35, delta=0.05)
+
     def test_lcd_is_wide_and_short(self) -> None:
         aspect = FACE.lcd[2] / FACE.lcd[3]
-        self.assertGreater(aspect, 3.0)
+        self.assertGreater(aspect, 2.8)
         self.assertLess(aspect, 4.2)
+
+    def test_locked_bottom_and_speed_percentages(self) -> None:
+        mx, my, mw, mh = FACE.module
+        self.assertAlmostEqual((FACE.temp[0] - mx) / mw, 0.075, delta=0.01)
+        self.assertAlmostEqual((FACE.temp[1] - my) / mh, 0.72, delta=0.015)
+        self.assertAlmostEqual((FACE.fuel[0] - mx) / mw, 0.745, delta=0.01)
+        self.assertAlmostEqual((FACE.speed_c[0] - mx) / mw, 0.50, delta=0.01)
+        self.assertAlmostEqual((FACE.speed_c[1] - my) / mh, 0.40, delta=0.02)
+        self.assertAlmostEqual((FACE.bezel[1] - my) / mh, 0.805, delta=0.02)
 
     def test_five_redline_blocks(self) -> None:
         self.assertEqual(REDLINE_BLOCKS, 5)

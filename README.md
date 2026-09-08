@@ -11,7 +11,8 @@ JSON over UART (`src/serial_reader.py`).
 Repo: `johnnyhuy/s2000-ap1-digital-dash`.
 
 Proportions are locked in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md)
-(flat SVG: [`refs/flat/ap1_face.svg`](refs/flat/ap1_face.svg)).
+(flat SVG / PNG: [`refs/flat/ap1_face.svg`](refs/flat/ap1_face.svg),
+[`refs/flat/ap1_face.png`](refs/flat/ap1_face.png)). Module aspect is **2.35:1**.
 
 ## Face (AP1 OEM geometry)
 
