@@ -10,8 +10,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from gauge_ui import (  # noqa: E402
+    ARCH_RISE_PCT,
     FACE,
     MODULE_ASPECT,
+    NOTCH_BOT_PCT,
+    NOTCH_TOP_PCT,
     REDLINE_BLOCKS,
     DisplayState,
     PHASE_READY_S,
@@ -163,6 +166,16 @@ class FaceGeomTests(unittest.TestCase):
 
     def test_five_redline_blocks(self) -> None:
         self.assertEqual(REDLINE_BLOCKS, 5)
+
+    def test_notch_and_arch_lock(self) -> None:
+        mx, my, mw, mh = FACE.module
+        self.assertAlmostEqual(NOTCH_TOP_PCT, 0.58)
+        self.assertAlmostEqual(NOTCH_BOT_PCT, 0.72)
+        self.assertAlmostEqual(ARCH_RISE_PCT, 0.28)
+        self.assertAlmostEqual((FACE.notch_top_y - my) / mh, 0.58, delta=0.015)
+        self.assertAlmostEqual((FACE.notch_bot_y - my) / mh, 0.72, delta=0.015)
+        self.assertAlmostEqual((FACE.spring_y - my) / mh, 0.28, delta=0.02)
+        self.assertEqual(FACE.hood_peak_y, my)
 
 
 if __name__ == "__main__":

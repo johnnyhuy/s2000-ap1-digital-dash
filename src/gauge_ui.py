@@ -10,7 +10,7 @@ Reads Telemetry JSON lines from stdin (or --serial in Phase 2).
 Esc or Q quits. Space skips the boot intro.
 
 Face proportions are locked in `refs/flat/DIMENSIONS.md` (percent of the
-LCD aperture unless noted). Protocol JSON field names are unchanged.
+module bounding box). Protocol JSON field names are unchanged.
 """
 from __future__ import annotations
 
@@ -63,21 +63,24 @@ MODULE_X_PCT = 0.040
 MODULE_W_PCT = 0.920
 MODULE_ASPECT = 2.35
 # Within the module (0,0 = module top-left) — locked from the flat OEM drawing
-STEP_W_PCT = 0.044          # side notches / 45° inward step
-LAMP_Y_PCT = 0.805          # hardware strip (lamps + buttons)
+STEP_W_PCT = 0.044          # rectangular side-notch depth
+NOTCH_TOP_PCT = 0.58        # notch y-range (OEM lock)
+NOTCH_BOT_PCT = 0.72
+ARCH_RISE_PCT = 0.28        # y% = 28 * u² from the module top
+LAMP_Y_PCT = 0.805          # hardware strip centre-line
 BEZEL_H_PCT = 0.175
-LCD_INSET_X_PCT = 0.012
-LCD_TOP_PCT = 0.118
-LCD_BOTTOM_GAP_PCT = 0.018
-ARCH_N = 2.0                # parabola (u²) — OEM crown, not a semicircle
+LCD_INSET_X_PCT = 0.010
+LCD_TOP_PCT = 0.055
+LCD_BOTTOM_PCT = 0.76       # just under TEMP / FUEL
+ARCH_N = 2.0                # parabola (u²)
 TEMP_X_PCT, TEMP_Y_PCT, TEMP_W_PCT = 0.075, 0.72, 0.180
 FUEL_X_PCT, FUEL_Y_PCT, FUEL_W_PCT = 0.745, 0.72, 0.180
-BAR_H_PCT = 0.028
+BAR_H_PCT = 0.030
 SPEED_X_PCT, SPEED_Y_PCT = 0.50, 0.40
-ODO_Y_PCT = 0.72
-TACH_END_Y_PCT = 0.66
-TACH_PEAK_Y_PCT = 0.145
-TACH_INSET_X_PCT = 0.095
+ODO_Y_PCT = 0.50            # directly under the speed (OEM lock)
+TACH_END_Y_PCT = 0.64
+TACH_PEAK_Y_PCT = 0.12
+TACH_INSET_X_PCT = 0.090
 
 TEMP_SEGS = 14
 FUEL_SEGS = 16
@@ -102,6 +105,8 @@ class FaceGeom:
     hood_peak_y: int
     lcd_peak_y: int
     lcd_spring_y: int
+    notch_top_y: int
+    notch_bot_y: int
     temp: tuple[int, int, int, int]
     fuel: tuple[int, int, int, int]
     speed_c: tuple[int, int]
@@ -133,16 +138,17 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
     step = _pct(mw * STEP_W_PCT)
     bezel_h = _pct(mh * BEZEL_H_PCT)
     bezel_y = my + _pct(mh * LAMP_Y_PCT)
+    notch_top_y = my + _pct(mh * NOTCH_TOP_PCT)
+    notch_bot_y = my + _pct(mh * NOTCH_BOT_PCT)
     inset = _pct(mw * LCD_INSET_X_PCT)
     lcd_x = mx + step + inset
     lcd_w = mw - 2 * step - 2 * inset
-    lcd_bottom = bezel_y - _pct(mh * LCD_BOTTOM_GAP_PCT)
+    lcd_bottom = my + _pct(mh * LCD_BOTTOM_PCT)
     lcd_peak = my + _pct(mh * LCD_TOP_PCT)
-    # Springing line low enough that the aperture is an arch, not a rounded rect
-    spring = lcd_peak + _pct((lcd_bottom - lcd_peak) * 0.52)
+    spring = my + _pct(mh * ARCH_RISE_PCT)
     lcd_y = lcd_peak
     lcd_h = lcd_bottom - lcd_peak
-    lcd_spring = spring
+    lcd_spring = spring - _pct(mh * 0.02)
 
     bar_h = max(10, _pct(mh * BAR_H_PCT))
     temp = (
@@ -191,7 +197,7 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
     band_h = _pct(bezel_h * 0.58)
     band_y = bezel_y + (bezel_h - band_h) // 2
     # Hug the 13 OEM icons (48 px pitch) so the band is dense, not a hollow gap
-    pack_w = 13 * 48 + 28
+    pack_w = 14 * 48 + 28
     gap_l = rocker[0] + rocker_w + _pct(mw * 0.118)
     gap_r = trip_blank[0] - 16
     mid = (gap_l + gap_r) // 2
@@ -203,9 +209,11 @@ def build_face_geom(w: int = W, h: int = H) -> FaceGeom:
         bezel=(mx, bezel_y, mw, bezel_h),
         step=step,
         spring_y=spring,
-        hood_peak_y=my + 4,
+        hood_peak_y=my,
         lcd_peak_y=lcd_peak,
         lcd_spring_y=lcd_spring,
+        notch_top_y=notch_top_y,
+        notch_bot_y=notch_bot_y,
         temp=temp,
         fuel=fuel,
         speed_c=(cx, my + _pct(mh * SPEED_Y_PCT)),
@@ -493,38 +501,40 @@ def arch_points(
     n: float = ARCH_N,
     steps: int = 56,
 ) -> list[tuple[int, int]]:
-    """Flattened superellipse arch. n>2 = flatter crown, steeper sides."""
+    """OEM lock: y = y_peak + rise * u²  (n is kept for call-site compatibility)."""
+    del n
     rise = y_spring - y_peak
     pts: list[tuple[int, int]] = []
     for i in range(steps + 1):
         t = i / steps
         u = 2.0 * t - 1.0
         x = x0 + (x1 - x0) * t
-        y = y_spring - rise * (1.0 - abs(u) ** n) ** (1.0 / n)
+        y = y_peak + rise * u * u
         pts.append((int(round(x)), int(round(y))))
     return pts
 
 
 def hood_outer_points(g: FaceGeom = FACE) -> list[tuple[int, int]]:
-    """Flat bottom, short vertical rise, 45° inward step, vertical sides, arch."""
+    """Flat bottom, rectangular side notches (58–72%), parabolic crown (28% rise)."""
     mx, my, mw, mh = g.module
     step = g.step
-    bezel_top = g.bezel[1]
     lx = mx + step
     rx = mx + mw - step
     pts: list[tuple[int, int]] = [
         (mx, my + mh),
         (mx + mw, my + mh),
-        (mx + mw, bezel_top),
-        (rx, bezel_top - step),
+        (mx + mw, g.notch_bot_y),
+        (rx, g.notch_bot_y),
+        (rx, g.notch_top_y),
         (rx, g.spring_y),
     ]
     pts.extend(arch_points(rx, lx, g.hood_peak_y, g.spring_y, n=g.arch_n))
     pts.extend(
         [
             (lx, g.spring_y),
-            (lx, bezel_top - step),
-            (mx, bezel_top),
+            (lx, g.notch_top_y),
+            (lx, g.notch_bot_y),
+            (mx, g.notch_bot_y),
         ]
     )
     return pts
@@ -748,25 +758,29 @@ def draw_fuel_bar(pygame, fonts, surf, frac: float, low: bool, g: FaceGeom = FAC
 
 def draw_speed(fonts, surf, speed: float, g: FaceGeom = FACE) -> None:
     digits = f"{int(round(clamp(speed, 0.0, 399.0))):d}"
-    blit_text(surf, fonts["speed"], digits, AMBER, g.speed_c, "center")
-    blit_text(surf, fonts["label"], "km/h", DIM, (g.speed_c[0], g.speed_c[1] + 64), "center")
+    cx, cy = g.speed_c
+    img = fonts["speed"].render(digits, True, AMBER)
+    rect = img.get_rect(center=(cx, cy))
+    surf.blit(img, rect)
+    # OEM lock: units sit to the right of the digits, not underneath
+    unit_x = rect.right + 16
+    blit_text(surf, fonts["label"], "km/h", AMBER, (unit_x, cy - 10), "midleft")
+    blit_text(surf, fonts["micro"], "mph", DIM, (unit_x, cy + 16), "midleft")
 
 
 def draw_odo_row(fonts, surf, face: DisplayState, batt_warn: bool, g: FaceGeom = FACE) -> None:
+    """ODO / TRIP directly under the speed, matching the flat lock drawing."""
     cx, y = g.odo_c
-    # Single baseline with TEMP / FUEL so the lower face is not a hollow band
-    blit_text(surf, fonts["micro"], "ODO", DIM, (cx - 168, y - 16), "center")
-    blit_text(surf, fonts["readout"], f"{face.odo_km:,.1f}", AMBER, (cx - 168, y + 6), "center")
-    blit_text(surf, fonts["micro"], "TRIP", DIM, (cx + 8, y - 16), "center")
-    blit_text(surf, fonts["readout"], f"{face.trip_km:,.1f}", AMBER, (cx + 8, y + 6), "center")
-    blit_text(surf, fonts["micro"], "BATT", DIM, (cx + 168, y - 16), "center")
+    batt = f"{face.batt_v:.1f}V"
+    line = f"ODO  {face.odo_km:07.1f}    TRIP  {face.trip_km:05.1f}"
+    blit_text(surf, fonts["readout"], line, AMBER, (cx, y), "center")
     blit_text(
         surf,
-        fonts["readout"],
-        f"{face.batt_v:.1f} V",
-        RED if batt_warn else AMBER,
-        (cx + 168, y + 6),
-        "center",
+        fonts["micro"],
+        batt,
+        RED if batt_warn else DIM,
+        (cx + 250, y),
+        "midleft",
     )
 
 
@@ -788,6 +802,7 @@ def _lamp_spec(face: DisplayState, bulb_check: bool) -> list[tuple[str, bool, tu
         ("abs", flag("abs"), ORANGE),
         ("brake", flag("brake"), RED),
         ("airbag", flag("airbag"), RED),
+        ("seat", flag("seatbelt"), RED),
         ("fuel", flag("fuel_low", face.fuel_pct < FUEL_LOW_PCT), ORANGE),
         ("fog", flag("fog"), GREEN),
         ("hot", flag("ect_hot", face.ect_c >= ECT_HOT_C), RED),
@@ -827,6 +842,9 @@ def _draw_lamp_icon(pygame, surf, kind: str, cx: int, cy: int, col) -> None:
     elif kind == "airbag":
         pygame.draw.circle(surf, col, (cx, cy + 2), 6, 2)
         pygame.draw.arc(surf, col, pygame.Rect(cx - 10, cy - 8, 20, 14), 0.2, 2.9, 2)
+    elif kind == "seat":
+        pygame.draw.rect(surf, col, pygame.Rect(cx - 6, cy - 2, 12, 8), width=2)
+        pygame.draw.circle(surf, col, (cx, cy - 8), 4, 2)
     elif kind == "fuel":
         _pump_icon(pygame, surf, cx, cy, col)
     elif kind == "fog":
@@ -854,12 +872,12 @@ def draw_hardware_strip(
     blit_text(surf, fonts["tiny"], "−", RED, (rx + rw * 0.25, ry + rh // 2), "center")
     blit_text(surf, fonts["tiny"], "+", WHITE, (rx + rw * 0.75, ry + rh // 2), "center")
 
-    # Brightness pictogram (dial + needle) then PUSH CANCEL
-    dial_x = rx + rw + 28
-    dial_y = ry + rh // 2
-    pygame.draw.circle(surf, WHITE, (dial_x, dial_y), 9, 2)
-    pygame.draw.line(surf, WHITE, (dial_x, dial_y), (dial_x + 6, dial_y - 6), 2)
-    blit_text(surf, fonts["lamp"], "PUSH CANCEL", WHITE, (dial_x + 78, dial_y), "center")
+    # OEM lock: brightness dial + PUSH CANCEL sit under the rocker
+    dial_x = rx + 12
+    dial_y = ry + rh + 14
+    pygame.draw.circle(surf, WHITE, (dial_x, dial_y), 7, 2)
+    pygame.draw.line(surf, WHITE, (dial_x, dial_y), (dial_x + 5, dial_y - 5), 2)
+    blit_text(surf, fonts["lamp"], "PUSH CANCEL", WHITE, (dial_x + 70, dial_y), "center")
 
     bx, by, bw, bh = g.lamp_band
     pygame.draw.rect(surf, BEZEL_BAND, pygame.Rect(bx, by, bw, bh), border_radius=4)
@@ -896,7 +914,7 @@ def draw_ready_card(fonts, surf, face: DisplayState, g: FaceGeom = FACE) -> None
         ("TEMP", f"{face.ect_c:.0f} °C"),
         ("ODO", f"{face.odo_km:,.0f} km"),
     ]
-    y = g.odo_c[1]
+    y = g.temp[1] - 8
     x0 = cx - 270
     for i, (name, val) in enumerate(chips):
         x = x0 + i * 180
