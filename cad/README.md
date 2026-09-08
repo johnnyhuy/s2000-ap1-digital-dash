@@ -9,7 +9,7 @@ Two tracks live here on purpose — do not mix them:
 | Track | Folder | What it is |
 | --- | --- | --- |
 | Overlay (7" bench bezel) | `bezel_7in_placeholder.scad` + connector shells | Rectangular frame for a Wisecoco-class panel in front of the OEM cluster. Sources only; export STL locally. |
-| **Option 1 replace-face** | [`replace_face/`](replace_face/) | Full arched face stack from the locked `refs/flat/` elevation. One solid per STL (Blender remesh later). Callipers TBD. **PETG / ASA, not PLA.** |
+| **Option 1 replace-face** | [`replace_face/`](replace_face/) | Full arched face stack from the locked `refs/flat/` elevation. One solid per STL; cleaned printables in `replace_face/print/` + `preview/assembly.glb`. Callipers TBD. **PETG / ASA, not PLA.** |
 
 ## Overlay path
 
@@ -52,7 +52,7 @@ Connectors (both ends)
 - **PETG or ASA** for anything that will see cabin heat.
 - **Do not use PLA** in the cabin. It softens and creeps on a sun-soaked dash.
 - Keep fits loose until the second measure. First prints are tracing templates.
-- Overlay path: export STL locally. Option 1 placeholder STLs live in `replace_face/stl/`.
+- Overlay path: export STL locally. Option 1 raw STLs live in `replace_face/stl/`; cleaned printables in `replace_face/print/`.
 - Slice with enough perimeters on the bezel lip so the panel cannot punch through.
 
 ## Files

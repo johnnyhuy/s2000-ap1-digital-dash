@@ -180,7 +180,7 @@ See [`cad/README.md`](cad/README.md). Overlay 7" bezel + connector shells are di
 
 - Callipers required before any cabin print
 - Print **PETG or ASA**, never PLA in a sun-soaked dash
-- Overlay path: export STL locally. Replace-face placeholder STLs are under `cad/replace_face/stl/`
+- Overlay path: export STL locally. Replace-face placeholder STLs are under `cad/replace_face/stl/`. Cleaned remesh printables live under `cad/replace_face/print/` with a coloured GLB preview at `cad/replace_face/preview/assembly.glb`
 
 ## Disclaimer
 

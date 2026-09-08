@@ -16,9 +16,9 @@ No connector pitch, clip pattern, or “it will just click in” claim lives
 here. The generic shells in `cad/connector_*_placeholder.scad` are
 unrelated bench guesses — do not mate them to a factory Honda plug.
 
-OpenSCAD is the parametric source of truth. Committed STLs are raw CGAL
-dumps — one body per file — meant for a later Blender remesh. Do not
-block on that pass; edit numbers here, not in a mesh.
+OpenSCAD is the parametric source of truth. Committed STLs in `stl/` are
+raw CGAL dumps — one body per file. The Blender clean pass lives in
+[`blender_remesh.py`](blender_remesh.py); edit numbers here, not in a mesh.
 
 ## What you get
 
@@ -48,13 +48,20 @@ bash cad/replace_face/export.sh
 
 ## Blender handoff
 
+See [`BLENDER.md`](BLENDER.md) for the remesh steps and material notes.
+
 - Units: millimetres. Face-plate origin is the bottom-left of the 170 × 72.3
   bounding box. Buttons are local to the part.
-- One STL = one manifold solid. Do not merge the tray and web in OpenSCAD.
-- Remesh / fair / decimate in Blender as needed. Keep this SCAD parametric
-  — callipers will change the numbers.
+- One STL = one manifold solid. Do not merge the tray and web in OpenSCAD
+  or in Blender.
+- Raw dumps: `stl/*.stl`. Cleaned printables: `print/stl/*.stl` plus
+  faceted `print/step/*.step` (OBJ fallback in `print/obj/`). Coloured
+  exploded preview: `preview/assembly.glb`.
+- Re-run `blender --background --python cad/replace_face/blender_remesh.py`
+  after `export.sh`. Keep this SCAD parametric — callipers will change
+  the numbers.
 - Stems, clips, and pin bosses are omitted on purpose (unknown hardware).
-  Add them after measure, or in Blender, without pretending they fit.
+  Add them after measure, without pretending they fit.
 
 ## BOM layers (front → rear)
 
@@ -129,7 +136,7 @@ connector. Measure the real plug if you ever model one.
 - Not a pygame / UI change (Honda’s track)
 - Not a factory-harness replica
 - Not optically designed (tach “channels” are layout placeholders)
-- Not a finished printable mesh (Blender remesh is a later pass)
+- Not a finished cabin part (Blender only cleaned the placeholder mesh)
 
 If the face geometry in `refs/flat/` moves, update `dims.scad` to match
 that lock file — do not invent a new silhouette family.
