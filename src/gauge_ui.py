@@ -271,6 +271,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Write PNG frames (sweep/ready/reveal/live/cruise) into DIR",
     )
     p.add_argument(
+        "--gif",
+        metavar="PATH",
+        default=None,
+        help="Write an intro→live demo GIF (needs Pillow)",
+    )
+    p.add_argument(
         "--serial",
         metavar="PORT",
         nargs="?",
@@ -891,6 +897,10 @@ def draw_hardware_strip(
     for i, (kind, lit, colour) in enumerate(lamps):
         cx = x0 + i * pitch
         cy = by + bh // 2
+        if lit:
+            glow = pygame.Surface((36, 36), pygame.SRCALPHA)
+            pygame.draw.circle(glow, (*colour, 70), (18, 18), 16)
+            surf.blit(glow, (cx - 18, cy - 18))
         col = colour if lit else (38, 36, 34)
         _draw_lamp_icon(pygame, surf, kind, cx, cy, col)
 
@@ -1023,6 +1033,53 @@ def write_screenshots(pygame, fonts, face: DisplayState, dest: Path) -> list[Pat
     return written
 
 
+def write_gif(
+    pygame,
+    fonts,
+    dest: Path,
+    seconds: float = 11.5,
+    fps: int = 8,
+    scale: float = 0.28,
+) -> Path:
+    """Record sweep → READY → reveal → live. Requires Pillow."""
+    try:
+        from PIL import Image
+    except ImportError as e:
+        raise SystemExit(
+            "Pillow is required for --gif: pip install Pillow"
+        ) from e
+
+    dest = Path(dest)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    face = DisplayState()
+    face.snap(sample_telem())
+    face.trip_origin = face.odo_km - 128.4
+    face.trip_km = 128.4
+    canvas = pygame.Surface((W, H))
+    sw, sh = max(160, int(W * scale)), max(90, int(H * scale))
+    frames: list = []
+    n = max(2, int(round(seconds * fps)))
+    dt = seconds / n
+    boot_t = 0.0
+    for _ in range(n):
+        phase, phase_t = intro_phase_at(boot_t)
+        draw_frame(pygame, fonts, canvas, face, phase, phase_t)
+        small = pygame.transform.smoothscale(canvas, (sw, sh))
+        raw = pygame.image.tostring(small, "RGB")
+        img = Image.frombytes("RGB", (sw, sh), raw)
+        frames.append(img.convert("P", palette=Image.ADAPTIVE, colors=48))
+        boot_t += dt
+    frames[0].save(
+        dest,
+        save_all=True,
+        append_images=frames[1:],
+        duration=int(1000 / fps),
+        loop=0,
+        optimize=True,
+    )
+    return dest
+
+
 def build_fonts(pygame) -> dict:
     return {
         "speed": _font(pygame, 132, bold=True, mono=True),
@@ -1051,7 +1108,7 @@ def init_pygame(windowed: bool, headless: bool):
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
-    if args.smoke:
+    if args.smoke or args.gif:
         os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
         os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
@@ -1083,6 +1140,10 @@ def main(argv: list[str] | None = None) -> None:
         paths = write_screenshots(pygame, fonts, face, Path(args.screenshot))
         for path in paths:
             print(path)
+
+    if args.gif:
+        path = write_gif(pygame, fonts, Path(args.gif))
+        print(path)
 
     if args.smoke:
         for _ in range(3):

@@ -46,10 +46,11 @@ class FlagTests(unittest.TestCase):
         self.assertFalse(parse_args(["--no-intro"]).intro)
 
     def test_screenshot_and_windowed_and_serial(self) -> None:
-        args = parse_args(["--windowed", "--screenshot", "shots", "--serial"])
+        args = parse_args(["--windowed", "--screenshot", "shots", "--serial", "--gif", "out.gif"])
         self.assertTrue(args.windowed)
         self.assertEqual(args.screenshot, "shots")
         self.assertEqual(args.serial, "/dev/ttyUSB0")
+        self.assertEqual(args.gif, "out.gif")
 
 
 class IntroTests(unittest.TestCase):

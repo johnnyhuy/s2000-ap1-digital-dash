@@ -62,6 +62,7 @@ to a desktop session.
 | `--intro` / `--no-intro` | Force or skip the boot sequence (intro is on unless `--smoke`) |
 | `--smoke` | Dummy SDL, draw a few frames, exit (CI / Pi check; no live pipe needed) |
 | `--screenshot DIR` | Write `01_sweep.png` … `05_cruise.png` into DIR |
+| `--gif PATH` | Intro→live demo GIF (needs Pillow) |
 | `--serial [PORT]` | Phase 2 UART stub (needs `pyserial`; default `/dev/ttyUSB0`) |
 
 ```bash
@@ -70,6 +71,7 @@ python src/gauge_ui.py --smoke --windowed
 
 # Regenerate reference shots (dummy SDL, no display required)
 python src/gauge_ui.py --smoke --screenshot shots
+python src/record_demo.py shots/demo_intro_live.gif
 ```
 
 `shots/` in this repo is optional. If the PNGs are missing, the command above
