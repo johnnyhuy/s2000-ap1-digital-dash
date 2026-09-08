@@ -1,5 +1,5 @@
 [project]
-name = "s2000-digital-dash"
+name = "s2000-ap1-digital-dash"
 version = "0.1.0"
 description = "S2000 digital dash — Phase 1 bench mock (AP1/AP2 face styles, pygame gauges, frozen JSON protocol)"
 readme = "README.md"
