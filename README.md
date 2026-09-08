@@ -4,7 +4,7 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/johnnyhuy/s2000-ap1-digital-dash/actions/workflows/ci.yml"><img src="https://github.com/johnnyhuy/s2000-ap1-digital-dash/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/johnnyhuy/s2000-digital-dash/actions/workflows/ci.yml"><img src="https://github.com/johnnyhuy/s2000-digital-dash/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <img src="https://img.shields.io/badge/python-3.11%2B-3776AB?style=flat" alt="Python 3.11+" />
   <img src="https://img.shields.io/badge/pkg-uv-DE5FE9?style=flat" alt="uv" />
   <img src="https://img.shields.io/badge/phase-1%20bench%20mock-ECA824?style=flat" alt="Phase 1 bench mock" />
@@ -123,8 +123,8 @@ OpenSCAD in [`cad/`](cad/): overlay 7" bezel + generic connector shells, and an 
 Python **3.11+**. Prefer **[uv](https://docs.astral.sh/uv/)** (`pyproject.toml` + `uv.lock`). Dummy SDL is enough for tests and screenshots; a real display is only needed for the fullscreen Pi session.
 
 ```bash
-git clone https://github.com/johnnyhuy/s2000-ap1-digital-dash.git
-cd s2000-ap1-digital-dash
+git clone https://github.com/johnnyhuy/s2000-digital-dash.git
+cd s2000-digital-dash
 uv sync
 ```
 
@@ -269,19 +269,12 @@ This is an **unofficial** enthusiast / DIY bench project.
 
 ## Community
 
-Bench notes and Phase 2 tap ideas belong in [Issues](https://github.com/johnnyhuy/s2000-ap1-digital-dash/issues). Keep protocol field names stable so mock, UI, and a future UART source stay interchangeable.
+Bench notes and Phase 2 tap ideas belong in [Issues](https://github.com/johnnyhuy/s2000-digital-dash/issues). Keep protocol field names stable so mock, UI, and a future UART source stay interchangeable.
 
 This is a small overlay experiment, not a product landing page. If the **AP1** face geometry drifts, the lock file in `refs/flat/` wins. AP2 is a separate interpretive layout.
 
-## Suggested repository rename
+## Repository name
 
-The GitHub repo is still [`johnnyhuy/s2000-ap1-digital-dash`](https://github.com/johnnyhuy/s2000-ap1-digital-dash). This PR does **not** rename it (needs Johnny on GitHub).
-
-Suggested later:
-
-| Where | Today | Suggested |
-| --- | --- | --- |
-| GitHub | `johnnyhuy/s2000-ap1-digital-dash` | `johnnyhuy/s2000-digital-dash` |
-| Vercel project | whatever is linked now | **s2000-digital-dash** — keep **Root Directory** `apps/harness`; reconnect git if the GitHub name changes |
+The live GitHub repo is [`johnnyhuy/s2000-digital-dash`](https://github.com/johnnyhuy/s2000-digital-dash) (renamed from `s2000-ap1-digital-dash`; old URLs redirect).
 
 Historical AP1 paths (`refs/flat/ap1_*`, `refs/oem/lit/lit_ap1_*`, `docs/assets/compare/compare_ap1_*`) stay. They are AP1-specific and labelled as such.
