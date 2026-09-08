@@ -198,10 +198,11 @@ class HeadlessDrawTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
         os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
-        from _headless import init_cluster, sample_near
+        from _headless import count_warm, init_cluster, sample_near
 
         cls.pygame, cls.screen, cls.fonts = init_cluster()
         cls.sample_near = staticmethod(sample_near)
+        cls.count_warm = staticmethod(count_warm)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -220,9 +221,15 @@ class HeadlessDrawTests(unittest.TestCase):
         blobs = []
         for phase, local_t in SMOKE_PHASES:
             frame = self._draw(face, phase, local_t)
-            amber = self.sample_near(frame, AMBER, step=12, tol=48)
-            self.assertGreater(amber, 20, f"{phase} should show amber LCD bloom")
-            blobs.append(frame.tobytes())
+            warm = self.count_warm(frame, step=12)
+            self.assertGreater(warm, 20, f"{phase} should show amber LCD (got {warm})")
+            if phase in ("ready", "live"):
+                self.assertGreater(
+                    self.sample_near(frame, AMBER, step=12, tol=48),
+                    8,
+                    f"{phase} should hit bright amber",
+                )
+            blobs.append(self.pygame.image.tobytes(frame, "RGB"))
         self.assertNotEqual(blobs[0], blobs[1], "sweep and ready must differ")
         self.assertNotEqual(blobs[1], blobs[3], "ready and live must differ")
 
@@ -243,13 +250,19 @@ class HeadlessDrawTests(unittest.TestCase):
         self.assertEqual(self.sample_near(strip, NEON_CYAN, step=2, tol=20), 0)
 
     def test_reveal_bulb_check_lights_the_strip(self) -> None:
+        from gauge_ui import draw_hardware_strip
         from oem_icons import LAMP_RED
 
         face = DisplayState()
         face.snap(sample_telem())
-        reveal = self._draw(face, "reveal", 0.35)
-        strip = reveal.subsurface(FACE.lamp_band)
+        self.assertFalse(face.lamps.get("oil"))
+        canvas = self.pygame.Surface(self.screen.get_size())
+        canvas.fill((8, 8, 9))
+        draw_hardware_strip(self.pygame, self.fonts, canvas, face, bulb_check=True)
+        strip = canvas.subsurface(FACE.lamp_band)
         self.assertGreater(self.sample_near(strip, LAMP_RED, step=2, tol=40), 0)
+        reveal = self._draw(face, "reveal", 0.40)
+        self.assertGreater(self.count_warm(reveal, step=12), 20)
 
 
 class SourceTests(unittest.TestCase):

@@ -78,6 +78,11 @@ class SerialLineReader:
         waiting = getattr(self._ser, "in_waiting", 0) or 0
         if waiting:
             self._buf += _decode_chunk(self._ser.read(waiting))
+        elif hasattr(self._ser, "readline"):
+            # PTY/pyserial can report in_waiting=0 until a readline
+            raw = self._ser.readline()
+            if raw:
+                self._buf += _decode_chunk(raw)
         while "\n" in self._buf:
             line, self._buf = self._buf.split("\n", 1)
             parsed = try_parse_line(line)

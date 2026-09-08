@@ -46,6 +46,20 @@ def sample_near(surf, target: tuple[int, int, int], *, step: int = 8, tol: int =
     return hits
 
 
+def count_warm(surf, *, step: int = 8, min_r: int = 36) -> int:
+    """Count amber-ish LCD samples (R high, B low) — sweep ghosts through live bloom."""
+    w, h = surf.get_size()
+    hits = 0
+    for y in range(0, h, step):
+        for x in range(0, w, step):
+            px = surf.get_at((x, y))
+            if px.a < 16:
+                continue
+            if px.r >= min_r and px.r > px.b and px.g >= px.b:
+                hits += 1
+    return hits
+
+
 def region(surf, rect: tuple[int, int, int, int]):
     x, y, w, h = rect
     return surf.subsurface((x, y, w, h)).copy()

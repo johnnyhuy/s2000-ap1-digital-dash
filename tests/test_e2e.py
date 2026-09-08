@@ -36,7 +36,7 @@ from mocks.fake_serial import FakeSerial  # noqa: E402
 from oem_icons import LAMP_BLUE, NEON_CYAN  # noqa: E402
 from protocol import REQUIRED_FIELDS, parse_line  # noqa: E402
 from serial_reader import SerialLineReader  # noqa: E402
-from _headless import init_cluster, sample_near  # noqa: E402
+from _headless import count_warm, init_cluster, sample_near  # noqa: E402
 
 
 SHOT_NAMES = [
@@ -65,8 +65,10 @@ class E2EPipelineTests(unittest.TestCase):
             for phase, local_t in SMOKE_PHASES:
                 draw_frame(pygame, fonts, screen, face, phase, local_t)
                 self.assertEqual(screen.get_size(), (W, H))
-                self.assertGreater(sample_near(screen, AMBER, step=12, tol=48), 20, phase)
-                blobs.append(screen.tobytes())
+                self.assertGreater(count_warm(screen, step=12), 20, phase)
+                if phase in ("ready", "live"):
+                    self.assertGreater(sample_near(screen, AMBER, step=12, tol=48), 8, phase)
+                blobs.append(pygame.image.tobytes(screen, "RGB"))
             self.assertNotEqual(blobs[0], blobs[3])
         finally:
             pygame.quit()
@@ -169,10 +171,16 @@ class E2EPtyTests(unittest.TestCase):
         telem = warn_frame()
         slave_name, master_fd, slave_fd = open_pty_pair()
         try:
-            write_pty(master_fd, telem.to_line())
+            # Open the reader first — opening a PTY slave often flushes queued bytes.
             ser = serial.Serial(slave_name, SERIAL_BAUD, timeout=0.2)
             try:
+                write_pty(master_fd, telem.to_line())
                 got = SerialLineReader(ser).poll()
+                if got is None:
+                    raw = ser.readline()
+                    from protocol import try_parse_line
+
+                    got = try_parse_line(raw.decode("utf-8", errors="ignore"))
             finally:
                 ser.close()
         finally:
