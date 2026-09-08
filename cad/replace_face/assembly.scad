@@ -1,8 +1,8 @@
 // =============================================================================
 // PLACEHOLDER — stacked preview (Option 1 replace-face)
 // =============================================================================
-// F5 preview. Explode is millimetres of air between layers — not a fit claim.
-// Exporting this STL is optional; the three part STLs are the printables.
+// F5 preview only — do not export a combined STL (multi-body, poor remesh).
+// Explode is millimetres of air between layers — not a fit claim.
 // =============================================================================
 
 include <parts.scad>

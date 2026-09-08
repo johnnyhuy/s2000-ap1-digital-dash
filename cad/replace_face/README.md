@@ -16,24 +16,45 @@ No connector pitch, clip pattern, or “it will just click in” claim lives
 here. The generic shells in `cad/connector_*_placeholder.scad` are
 unrelated bench guesses — do not mate them to a factory Honda plug.
 
+OpenSCAD is the parametric source of truth. Committed STLs are raw CGAL
+dumps — one body per file — meant for a later Blender remesh. Do not
+block on that pass; edit numbers here, not in a mesh.
+
 ## What you get
 
-| File | Part |
-| --- | --- |
-| `backlight.scad` + `stl/backlight.stl` | Rear light tray / diffuser frame (backscreen) |
-| `acrylic_face.scad` + `stl/acrylic_face.stl` | Arched mask: LCD window, tach slot placeholders, lamp window, button holes |
-| `rubber_buttons.scad` + `stl/rubber_buttons.stl` | −/+ PUSH CANCEL rocker, SEL oval, TRIP oval |
-| `assembly.scad` + `stl/assembly.stl` | Stacked preview (explode = 14 mm). Not a printable fit check. |
+Each printable is **one solid** (meshes cleanly; Blender can remesh
+without splitting bodies).
+
+| File | Part | Material |
+| --- | --- | --- |
+| `backlight.scad` + `stl/backlight.stl` | Tray shell (floor, rim, face rebate, stem wells, align holes) | PETG / ASA |
+| `backlight_web.scad` + `stl/backlight_web.stl` | Cowl-band light-web insert (drops on the tray floor) | PETG / ASA |
+| `acrylic_face.scad` + `stl/acrylic_face.stl` | Arched mask: LCD / tach / lamp / button / align windows | PETG / ASA proxy, or laser acrylic |
+| `button_rocker.scad` + `stl/button_rocker.stl` | −/+ PUSH CANCEL rocker (no stem — switch UNKNOWN) | TPU / silicone |
+| `button_sel.scad` + `stl/button_sel.stl` | SEL oval (if present on the OEM face) | TPU / silicone |
+| `button_trip.scad` + `stl/button_trip.stl` | TRIP oval | TPU / silicone |
+
+Preview only (do **not** export as printables):
+
+- `assembly.scad` — exploded stack (F5)
+- `rubber_buttons.scad` — three buttons on one plate (F5)
 
 Shared math: `dims.scad` (numbers), `outline.scad` (2D lock), `parts.scad`
-(3D modules). Open `assembly.scad` in [OpenSCAD](https://openscad.org/)
-and F5 to preview. F6 each part file before you trust an export.
-
-Regenerate STLs:
+(3D modules).
 
 ```bash
 bash cad/replace_face/export.sh
 ```
+
+## Blender handoff
+
+- Units: millimetres. Face-plate origin is the bottom-left of the 170 × 72.3
+  bounding box. Buttons are local to the part.
+- One STL = one manifold solid. Do not merge the tray and web in OpenSCAD.
+- Remesh / fair / decimate in Blender as needed. Keep this SCAD parametric
+  — callipers will change the numbers.
+- Stems, clips, and pin bosses are omitted on purpose (unknown hardware).
+  Add them after measure, or in Blender, without pretending they fit.
 
 ## BOM layers (front → rear)
 
@@ -47,16 +68,15 @@ Driver / glass plane
    breach the arch and split the mask), ten tach slots (0–9 placeholders,
    not OEM digits), lamp strip, three button holes, four align holes.
 3. **Diffuser sheet** — bought 1.2 mm opal acrylic / PET **PLACEHOLDER**.
-   Cut to the LCD rebate. Not a printed part; the tray only holds it.
-4. **Backlight / backscreen tray** — PETG or ASA. Floor + rim + cowl-band
-   light web + lamp well + stem wells + face rebate. Outer rim is
+   Cut to the LCD aperture. Not a printed part.
+4. **Cowl-band web** — optional PETG / ASA insert. Layout only, not optics.
+5. **Backlight / backscreen tray** — PETG or ASA. Outer rim is
    `offset(wall)` around the 170 × 72.3 silhouette — a print wall, **not**
    a measured bay clip.
-5. **LCD / AMOLED module** — not modelled. Pocket clearance is a guess.
+6. **LCD / AMOLED module** — not modelled. Pocket clearance is a guess.
    Phase 1 bench panel (Wisecoco-class 7") is a different rectangle; do
    not assume it fills this aperture.
-6. **Switches / encoder under the rocker** — not modelled. Stem diameter
-   and travel are fiction until you pick a switch.
+7. **Switches / encoder under the rocker** — not modelled.
 
 Rear / harness (out of scope — no pitch invented)
 
@@ -64,7 +84,7 @@ Rear / harness (out of scope — no pitch invented)
 
 | Part | Use | Do not use |
 | --- | --- | --- |
-| Tray, printed face proxy, any cabin-facing hard plastic | **PETG or ASA** | **PLA** — softens and creeps on a sun-soaked dash |
+| Tray, web, printed face proxy, any cabin-facing hard plastic | **PETG or ASA** | **PLA** — softens and creeps on a sun-soaked dash |
 | Buttons | TPU 95A, or silicone from a printed master | PLA, and do not call TPU “OEM rubber” |
 | Production face | Cast acrylic (laser) | PLA |
 | Diffuser | Opal acrylic / PET sheet | PLA |
@@ -97,7 +117,7 @@ Stack
 - [ ] Acrylic thickness
 - [ ] Diffuser thickness
 - [ ] LCD module thickness (PCB + stiffener)
-- [ ] Alignment pin locations on the real face (the four pins here are fiction)
+- [ ] Alignment hole / pin locations on the real face (the four holes here are fiction)
 
 Do **not** copy a 2.54 mm pitch or any other hobby pitch onto a Honda
 connector. Measure the real plug if you ever model one.
@@ -109,6 +129,7 @@ connector. Measure the real plug if you ever model one.
 - Not a pygame / UI change (Honda’s track)
 - Not a factory-harness replica
 - Not optically designed (tach “channels” are layout placeholders)
+- Not a finished printable mesh (Blender remesh is a later pass)
 
 If the face geometry in `refs/flat/` moves, update `dims.scad` to match
 that lock file — do not invent a new silhouette family.

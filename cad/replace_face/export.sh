@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Render placeholder STLs. Requires OpenSCAD (xvfb-run on headless boxes).
+# One SCAD → one solid STL. Assembly / plate previews are not exported.
+# Requires OpenSCAD (xvfb-run on headless boxes).
 set -euo pipefail
 cd "$(dirname "$0")"
 mkdir -p stl
@@ -16,7 +17,9 @@ run_scad() {
 }
 
 run_scad backlight.scad backlight.stl
+run_scad backlight_web.scad backlight_web.stl
 run_scad acrylic_face.scad acrylic_face.stl
-run_scad rubber_buttons.scad rubber_buttons.stl
-run_scad assembly.scad assembly.stl
+run_scad button_rocker.scad button_rocker.stl
+run_scad button_sel.scad button_sel.stl
+run_scad button_trip.scad button_trip.stl
 echo "done"

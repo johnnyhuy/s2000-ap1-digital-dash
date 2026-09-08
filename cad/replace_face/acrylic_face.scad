@@ -1,7 +1,7 @@
 // =============================================================================
 // PLACEHOLDER — acrylic front face / mask (Option 1 replace-face)
 // =============================================================================
-// Arched silhouette + LCD / tach / lamp / button windows.
+// One mask plate — through-windows only (clean remesh).
 // ESTIMATED from refs/flat/DIMENSIONS.md. Callipers UNKNOWN.
 // NOT a verified AP1 drop-in.
 //

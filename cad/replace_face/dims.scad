@@ -66,10 +66,10 @@ lcd_pocket_clear = 0.40;    // PLACEHOLDER
 cable_w = 16.0;             // PLACEHOLDER — FPC / tail location UNKNOWN
 cable_h = 4.0;              // PLACEHOLDER
 
-align_pin_d = 2.0;          // PLACEHOLDER — do not drill the bay from this
-align_hole_d = 2.3;         // PLACEHOLDER
-align_pin_h = 2.6;          // PLACEHOLDER
-align_boss_d = 4.4;         // PLACEHOLDER
+align_pin_d = 2.0;          // PLACEHOLDER — holes only; no printed bosses
+align_hole_d = 2.3;         // PLACEHOLDER — do not drill the bay from this
+align_pin_h = 2.6;          // PLACEHOLDER — unused until a pin is measured
+align_boss_d = 4.4;         // PLACEHOLDER — unused (web/tray stay separate)
 
 button_clear = 0.40;        // PLACEHOLDER hole oversize
 button_cap_t = 2.4;         // PLACEHOLDER proud cap
