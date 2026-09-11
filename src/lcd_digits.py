@@ -64,8 +64,8 @@ def _v_seg(x: float, y: float, h: float, t: float) -> list[tuple[float, float]]:
 
 def segment_polys(x: int, y: int, w: int, h: int) -> dict[str, list[tuple[int, int]]]:
     """Pixel polygons for one digit. Origin is top-left of the digit box."""
-    t = max(3.0, h * 0.145)
-    t_g = t * 1.18  # slightly heavier middle bar (OEM 7-seg)
+    t = max(2.8, h * 0.128)
+    t_g = t * 1.12  # slightly heavier middle bar (OEM 7-seg)
     gap = max(1.4, t * 0.28)
     inner_w = w - t
     half = (h - t) / 2.0
@@ -114,12 +114,12 @@ def draw_digit(
             continue
         if bloom is not None:
             glow = (
-                min(255, color[0] + 42),
-                min(255, color[1] + 28),
-                min(255, color[2] + 10),
-                110,
+                min(255, color[0] + 28),
+                min(255, color[1] + 16),
+                min(255, color[2] + 6),
+                88,
             )
-            pygame.draw.polygon(bloom, glow, _expand(pts, 7))
+            pygame.draw.polygon(bloom, glow, _expand(pts, 5))
         pygame.draw.polygon(dest, color, pts)
         cap_r = max(1, int(round(h * 0.04)))
         pygame.draw.circle(dest, color, pts[0], cap_r)
@@ -151,7 +151,7 @@ def blit_digits(
     ghost: tuple[int, int, int] | None = None,
     ghost_text: str | None = None,
     bloom: bool = True,
-    italic: float = 0.06,
+    italic: float = 0.08,
 ) -> tuple[int, int, int, int]:
     """Draw ``text`` (digits / space / minus / one '.') centred on ``center``.
 
@@ -214,8 +214,8 @@ def lcd_window(
 ) -> None:
     """Recessed rectangular LCD well with a light screen-door wash."""
     x, y, w, h = rect
-    pygame.draw.rect(dest, wash, pygame.Rect(x, y, w, h), border_radius=4)
-    pygame.draw.rect(dest, edge, pygame.Rect(x, y, w, h), width=1, border_radius=4)
+    pygame.draw.rect(dest, wash, pygame.Rect(x, y, w, h), border_radius=3)
+    pygame.draw.rect(dest, edge, pygame.Rect(x, y, w, h), width=1, border_radius=3)
     polariser = pygame.Surface((w, h), pygame.SRCALPHA)
     for i in range(0, w, 4):
         pygame.draw.line(polariser, door, (i, 0), (i, h))

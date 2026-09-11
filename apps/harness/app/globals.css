@@ -137,7 +137,8 @@ body {
   letter-spacing: -0.02em;
 }
 
-.cluster-stage > svg text.lcd-label {
+.cluster-stage > svg text.lcd-label,
+.cluster-stage > svg text.unit-label {
   font-family: var(--font-cluster);
   font-style: normal;
   letter-spacing: 0.06em;
@@ -149,12 +150,12 @@ body {
 }
 
 .seg-lit {
-  filter: drop-shadow(0 0 3.6px rgba(255, 176, 48, 0.88));
-  transition: fill 90ms ease-out, filter 90ms ease-out, opacity 90ms ease-out;
+  filter: drop-shadow(0 0 2.4px rgba(255, 176, 48, 0.62));
+  transition: fill 80ms ease-out, filter 80ms ease-out, opacity 80ms ease-out;
 }
 
 .seg-lit.seg-red {
-  filter: drop-shadow(0 0 6.2px rgba(255, 38, 28, 0.92));
+  filter: drop-shadow(0 0 4.2px rgba(255, 38, 28, 0.72));
 }
 
 .seg-ghost {
@@ -162,15 +163,15 @@ body {
 }
 
 .needle {
-  filter: drop-shadow(0 0 7px rgba(255, 208, 112, 0.95));
+  filter: drop-shadow(0 0 4px rgba(255, 208, 112, 0.55));
 }
 
 .needle-hot {
-  filter: drop-shadow(0 0 9px rgba(255, 48, 32, 0.98));
+  filter: drop-shadow(0 0 5px rgba(255, 48, 32, 0.7));
 }
 
 .sweep-bead {
-  filter: drop-shadow(0 0 16px #ffc050);
+  filter: drop-shadow(0 0 8px #ffc050);
 }
 
 .ready-word {
@@ -365,16 +366,16 @@ body {
 
 .telltale-on {
   opacity: 1;
-  filter: drop-shadow(0 0 8px var(--lamp)) drop-shadow(0 0 1.6px var(--lamp));
-  animation: lamp-strike 0.42s ease-out;
+  filter: drop-shadow(0 0 6px var(--lamp)) drop-shadow(0 0 1.2px var(--lamp));
+  animation: lamp-strike 0.36s ease-out;
 }
 
 @keyframes lamp-strike {
   from {
-    filter: drop-shadow(0 0 16px var(--lamp)) brightness(1.42);
+    filter: drop-shadow(0 0 12px var(--lamp)) brightness(1.28);
   }
   to {
-    filter: drop-shadow(0 0 8px var(--lamp)) drop-shadow(0 0 1.6px var(--lamp));
+    filter: drop-shadow(0 0 6px var(--lamp)) drop-shadow(0 0 1.2px var(--lamp));
   }
 }
 

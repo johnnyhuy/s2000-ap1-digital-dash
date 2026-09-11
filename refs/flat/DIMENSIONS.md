@@ -36,7 +36,7 @@ Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
 | TEMP icon | thermometer above **C** |
 | FUEL icon | pump above **F** |
 | Lamp / hardware strip | y ≈ **80.5%** |
-| Tach 0–9 | printed amber band + thin ticks **normal to the parabola** (not upright bricks / not a circular fill); cream needle; white numerals outside the ticks (including 8 and 9) |
+| Tach 0–9 | printed amber band + thin ticks **normal to the parabola** (not upright bricks / not a circular fill); cream needle from the well onto the band; white italic numerals **inside the well**, below the printed band (including 8 and 9) |
 | Redline | printed red zone **8–9** with five thick blocks |
 
 Hardware strip, left → right:
@@ -69,3 +69,4 @@ Protocol JSON fields stay `rpm`, `speed_kmh`, `fuel_pct`, `ect_c`, `batt_v`,
 - Neon cyan high beam or sweep (high beam is ISO blue)
 - Fake 3D cabin ellipses
 - Module aspect drifting off **2.35:1**
+- Tach numerals sitting **outside** the printed band (OEM AP1 puts 0–9 in the well)

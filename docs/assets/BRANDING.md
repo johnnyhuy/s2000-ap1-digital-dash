@@ -23,7 +23,9 @@ matching the AP1 photo. Faces live under `assets/fonts/` (SIL OFL). The web
 harness loads the same families from Google Fonts; Oxanium stays on the
 masthead only. DejaVu remains the pygame fallback when those files are absent.
 
-Printed tach amber sits near `#b05812` with live wash `#f08c1c`. LCD red is
-`#ff261c`. Telltales: red `#e22820`, amber `#ec941c`, green `#28c85c`, ISO
+Printed tach amber grades `#c67020` → `#8c3c0c` toward redline, with a quiet
+live wash `#f08c1c`. LCD red is `#ff261c`. The LCD well is charcoal, not a
+brown overlay. Telltales: red `#e22820`, amber `#ec941c`, green `#28c85c`, ISO
 high-beam blue `#2460e4` (never neon cyan). Icons are white-on-transparent
-silhouettes under `assets/icons/`, tinted at draw time.
+silhouettes under `assets/icons/`, tinted at draw time. Tach numerals sit
+**inside** the well; ticks stay on the printed band.
