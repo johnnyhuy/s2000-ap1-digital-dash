@@ -3,16 +3,12 @@
   <title>Battery telltale</title>
   <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
        White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
-  <defs>
-    <mask id="batt">
-      <rect width="64" height="48" fill="black"/>
-      <rect x="14" y="16" width="36" height="22" rx="1.2" fill="white"/>
-      <rect x="20" y="11" width="8" height="6" rx="0.4" fill="white"/>
-      <rect x="36" y="11" width="8" height="6" rx="0.4" fill="white"/>
-      <rect x="19" y="25.2" width="9" height="2.8" fill="black"/>
-      <rect x="36" y="25.2" width="9" height="2.8" fill="black"/>
-      <rect x="39.1" y="21.2" width="2.8" height="10.8" fill="black"/>
-    </mask>
-  </defs>
-  <rect width="64" height="48" fill="#fff" mask="url(#batt)"/>
+  <g fill="#fff">
+    <rect x="21.5" y="10.5" width="8.2" height="5.6" rx="0.6"/>
+    <rect x="34.3" y="10.5" width="8.2" height="5.6" rx="0.6"/>
+    <path fill-rule="evenodd" d="M13.5 16.2h37v22.2h-37z M16.4 19.1h31.2v16.4H16.4z"/>
+    <rect x="19.6" y="25.6" width="10.2" height="2.7"/>
+    <rect x="23.3" y="21.6" width="2.8" height="10.7"/>
+    <rect x="34.2" y="25.6" width="10.2" height="2.7"/>
+  </g>
 </svg>

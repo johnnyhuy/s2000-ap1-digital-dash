@@ -16,11 +16,11 @@ from pathlib import Path
 from typing import Iterable, Sequence
 
 # --- OEM telltale colours (back-lit plastic, not UI chrome) -----------------
-LAMP_RED = (214, 34, 30)
-LAMP_AMBER = (228, 138, 26)
-LAMP_GREEN = (44, 196, 88)
-LAMP_BLUE = (28, 86, 214)
-LAMP_GHOST = (26, 24, 22)
+LAMP_RED = (226, 40, 32)
+LAMP_AMBER = (236, 148, 28)
+LAMP_GREEN = (40, 204, 92)
+LAMP_BLUE = (36, 96, 228)
+LAMP_GHOST = (28, 26, 24)
 
 # Reject the old neon sweep / high-beam cyan
 NEON_CYAN = (72, 210, 230)
@@ -128,7 +128,7 @@ def tint_white(pygame, surf, color: tuple[int, int, int]):
     return out
 
 
-def blit_glow(pygame, dest, src, center: tuple[int, int], strength: float = 0.5, scale: float = 1.16) -> None:
+def blit_glow(pygame, dest, src, center: tuple[int, int], strength: float = 0.58, scale: float = 1.22) -> None:
     """Soft bloom: a larger, faded copy under the sharp sprite."""
     gw = max(2, int(src.get_width() * scale))
     gh = max(2, int(src.get_height() * scale))
@@ -187,8 +187,9 @@ def _draw_high_beam(pygame, w: int, h: int):
     cx, cy = w // 2 + 4, h // 2
     pygame.draw.circle(s, (255, 255, 255), (cx, cy), 11)
     pygame.draw.rect(s, (255, 255, 255), (cx - 14, cy - 11, 14, 22))
-    for dy in (-10, -5, 0, 5, 10):
-        pygame.draw.line(s, (255, 255, 255), (6, cy + dy), (cx - 16, cy + dy), 2)
+    for i, dy in enumerate((-10, -5, 0, 5, 10)):
+        x0 = 5 if i in (0, 4) else 3
+        pygame.draw.rect(s, (255, 255, 255), (x0, cy + dy - 1, cx - 18 - x0, 3))
     return s
 
 
@@ -198,25 +199,25 @@ def _draw_battery(pygame, w: int, h: int):
     pygame.draw.rect(s, (255, 255, 255), (cx - 16, cy - 7, 32, 18), border_radius=1)
     pygame.draw.rect(s, (255, 255, 255), (cx - 10, cy - 12, 7, 5))
     pygame.draw.rect(s, (255, 255, 255), (cx + 3, cy - 12, 7, 5))
-    pygame.draw.rect(s, (0, 0, 0, 0), (cx - 11, cy + 1, 8, 3))
     s.fill((0, 0, 0, 0), pygame.Rect(cx - 11, cy + 1, 8, 3))
+    s.fill((0, 0, 0, 0), pygame.Rect(cx - 8, cy - 3, 3, 10))
     s.fill((0, 0, 0, 0), pygame.Rect(cx + 3, cy + 1, 8, 3))
-    s.fill((0, 0, 0, 0), pygame.Rect(cx + 6, cy - 3, 3, 10))
     return s
 
 
 def _draw_oil(pygame, w: int, h: int):
     s = _blank(pygame, w, h)
     cx, cy = w // 2 - 2, h // 2 + 2
-    pygame.draw.rect(s, (255, 255, 255), (cx - 15, cy - 7, 24, 16), border_radius=1)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 16, cy - 8, 26, 18), border_radius=1)
+    s.fill((0, 0, 0, 0), pygame.Rect(cx - 11, cy - 4, 16, 10))
     pygame.draw.polygon(
         s,
         (255, 255, 255),
-        [(cx + 7, cy - 7), (cx + 20, cy - 18), (cx + 25, cy - 13), (cx + 10, cy - 1)],
+        [(cx + 8, cy - 8), (cx + 22, cy - 20), (cx + 27, cy - 14), (cx + 12, cy - 1)],
     )
-    pygame.draw.rect(s, (255, 255, 255), (cx - 19, cy - 5, 6, 10), border_radius=1)
-    pygame.draw.circle(s, (255, 255, 255), (cx + 20, cy - 5), 5)
-    pygame.draw.ellipse(s, (255, 255, 255), (cx + 17, cy - 2, 7, 10))
+    pygame.draw.rect(s, (255, 255, 255), (cx - 21, cy - 6, 7, 12), border_radius=2)
+    pygame.draw.circle(s, (255, 255, 255), (cx + 22, cy - 6), 5)
+    pygame.draw.ellipse(s, (255, 255, 255), (cx + 19, cy - 2, 8, 11))
     return s
 
 

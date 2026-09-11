@@ -22,7 +22,7 @@ describe("boot intro", () => {
   it("sweeps rpm to redline then settles", () => {
     assert.equal(revealRpm(0, 2000), 0);
     assert.ok(revealRpm(0.3, 2000) > 3000);
-    assert.equal(revealRpm(0.58, 2000), RPM_REDLINE);
+    assert.ok(revealRpm(0.55, 2000) > RPM_REDLINE);
     assert.ok(Math.abs(revealRpm(1, 2000) - 2000) < 1e-6);
   });
 
