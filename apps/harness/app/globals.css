@@ -4,11 +4,11 @@
   --cabin: #060607;
   --panel: #121214;
   --line: #322c24;
-  --amber: #f08c1c;
+  --amber: #f49420;
   --amber-dim: #8a4e10;
   --paper: #f6f0e6;
   --muted: #8e8678;
-  --danger: #e0241c;
+  --danger: #e42820;
   --lcd-red: #ff261c;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-share-tech), var(--font-geist-mono), ui-monospace, monospace;
@@ -134,7 +134,7 @@ body {
   font-family: var(--font-tach);
   font-style: italic;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
 }
 
 .cluster-stage > svg text.lcd-label,
@@ -163,11 +163,15 @@ body {
 }
 
 .needle {
-  filter: drop-shadow(0 0 4px rgba(255, 208, 112, 0.55));
+  filter: drop-shadow(0 0 5px rgba(255, 208, 112, 0.62));
 }
 
 .needle-hot {
-  filter: drop-shadow(0 0 5px rgba(255, 48, 32, 0.7));
+  filter: drop-shadow(0 0 6px rgba(255, 48, 32, 0.78));
+}
+
+.cluster-reveal .needle {
+  animation: needle-settle 1.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sweep-bead {
@@ -216,6 +220,15 @@ body {
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes needle-settle {
+  from {
+    filter: drop-shadow(0 0 10px rgba(255, 208, 112, 0.9));
+  }
+  to {
+    filter: drop-shadow(0 0 5px rgba(255, 208, 112, 0.62));
   }
 }
 
@@ -328,7 +341,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  opacity: 0.26;
+  opacity: 0.4;
   flex: 0 0 auto;
   color: #3a3632;
   transition: opacity 110ms ease-out, filter 110ms ease-out, color 110ms ease-out;
@@ -351,9 +364,9 @@ body {
   align-items: center;
   justify-content: center;
   font-family: var(--font-cluster);
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   line-height: 0.95;
   color: currentColor;
 }
@@ -550,7 +563,8 @@ body {
   .telltale-on,
   .ready-word,
   .cluster-reveal .seven-seg,
-  .cluster-reveal .lcd-window {
+  .cluster-reveal .lcd-window,
+  .cluster-reveal .needle {
     animation: none;
   }
 

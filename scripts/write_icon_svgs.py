@@ -33,7 +33,7 @@ def wrap(name: str, body: str, vb_w: int = 64, vb_h: int = 48, label: str | None
 # Word lamps: condensed bold gothic, matching the OEM printed legends.
 WORD = (
     '  <text x="{x}" y="{y}" text-anchor="middle" fill="#fff" '
-    'font-family="DejaVu Sans, Liberation Sans, Arial Narrow, sans-serif" '
+    'font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, Arial Narrow, sans-serif" '
     'font-size="{size}" font-weight="700" letter-spacing="{track}">{label}</text>\n'
 )
 
@@ -41,18 +41,18 @@ WORD = (
 SVGS: dict[str, str] = {
     "turn_l": wrap(
         "turn_l",
-        '  <path fill="#fff" d="M46 8.5 7 24l39 15.5v-8.2h13.5V16.7H46z"/>\n',
+        '  <path fill="#fff" d="M48 7.2 5 24l43 16.8v-8.6h12.2V15.8H48z"/>\n',
         label="Left turn telltale",
     ),
     "turn_r": wrap(
         "turn_r",
-        '  <path fill="#fff" d="M18 8.5v8.2H4.5v14.6H18v8.2L57 24z"/>\n',
+        '  <path fill="#fff" d="M16 7.2v8.6H3.8v16.6H16v8.6L59 24z"/>\n',
         label="Right turn telltale",
     ),
     "high_beam": wrap(
         "high_beam",
-        """  <path fill="#fff" d="M38 10c12.4 0 19.2 8.1 19.2 14S50.4 38 38 38h-6.4V10H38z"/>
-  <path fill="#fff" d="M6 13.2h23.5v2.7H6zm-2 5.2h25.5v2.7H4zm0 5.2h25.5v2.7H4zm0 5.2h25.5v2.7H4zm2 5.2h23.5v2.7H6z"/>
+        """  <path fill="#fff" d="M39.2 9.2c12.8 0 19.6 8.2 19.6 14.8S52 38.8 39.2 38.8H32V9.2h7.2z"/>
+  <path fill="#fff" d="M5.2 12.6h24.2v2.6H5.2zm-2.2 5.2h26.4v2.6H3zm0 5.2h26.4v2.6H3zm0 5.2h26.4v2.6H3zm2.2 5.2h24.2v2.6H5.2z"/>
 """,
         label="High beam telltale",
     ),
@@ -157,8 +157,8 @@ ATLAS = '''<?xml version="1.0" encoding="UTF-8"?>
     <path d="M28 8c9 0 14 6.4 14 10.4S37 28.8 28 28.8h-4V8h4z"/>
     <path d="M4 11h18M2 15.2h20M2 19.2h20M2 23.2h20M4 27.2h18" stroke="#2460e4" stroke-width="2.2" fill="none"/>
   </g>
-  <text x="130" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#ec941c">ABS</text>
-  <text x="210" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#e22820">BRAKE</text>
+  <text x="130" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#ec941c">ABS</text>
+  <text x="210" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#e22820">BRAKE</text>
   <g transform="translate(268,16)" fill="#e22820">
     <rect x="6" y="2" width="6" height="4" rx="0.4"/>
     <rect x="16" y="2" width="6" height="4" rx="0.4"/>
@@ -176,7 +176,7 @@ ATLAS = '''<?xml version="1.0" encoding="UTF-8"?>
   <g transform="translate(360,14)" fill="#ec941c">
     <path d="M4 16h5l2.4-5.2h7l1.6 5.2h12l2.6-3.4H38v5.4h2.4v9H38V36H4v-4H1.2v-8.2H4z"/>
     <rect x="12" y="20" width="20" height="5.6" fill="#0a0a0a"/>
-    <text x="22" y="25" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6" font-weight="800" fill="#ec941c">CHECK</text>
+    <text x="22" y="25" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="6" font-weight="800" fill="#ec941c">CHECK</text>
   </g>
   <g transform="translate(414,16)" fill="#28c85c">
     <path fill-rule="evenodd" d="M10 6.2a8.4 8.4 0 1 0 .01 0zm0 4.2a4.2 4.2 0 1 0 .01 0z"/>
@@ -184,9 +184,9 @@ ATLAS = '''<?xml version="1.0" encoding="UTF-8"?>
     <rect x="27" y="18" width="2.8" height="6"/>
     <rect x="31.6" y="18" width="2.8" height="8.2"/>
   </g>
-  <text x="500" y="32" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#ec941c">MAINT</text>
-  <text x="500" y="48" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#ec941c">REQ'D</text>
-  <text x="568" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#ec941c">EPS</text>
+  <text x="500" y="32" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#ec941c">MAINT</text>
+  <text x="500" y="48" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#ec941c">REQ'D</text>
+  <text x="568" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#ec941c">EPS</text>
   <g transform="translate(600,10)" fill="#e22820">
     <circle cx="22" cy="8.6" r="5.5"/>
     <path fill-rule="evenodd" d="M11 18.4c0-2 3.2-3.6 11-3.6s11 1.6 11 3.6V40H11z M13.4 17.2 33.6 40h-7.4L12.2 22.4z"/>
@@ -196,7 +196,7 @@ ATLAS = '''<?xml version="1.0" encoding="UTF-8"?>
     <path d="M13 20 4.2 25.4l2.2 3.4 8.6-4.6z"/>
     <path d="M37 20l8.8 5.4-2.2 3.4-8.6-4.6z"/>
   </g>
-  <text x="760" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#e22820">SRS</text>
+  <text x="760" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#e22820">SRS</text>
   <g transform="translate(800,16)" fill="#28c85c"><path d="M10 6v9H0v12h10v9l28-15z"/></g>
 </svg>
 '''

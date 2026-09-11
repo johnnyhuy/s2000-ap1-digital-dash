@@ -54,38 +54,38 @@ COWL_HIGH = (122, 112, 98)
 COWL_EDGE = (52, 48, 44)
 WELL = (5, 3, 2)
 LCD = (5, 1, 1)
-AMBER = (240, 140, 28)
-AMBER_HOT = (255, 176, 48)
-AMBER_DIM = (102, 54, 12)
-AMBER_GHOST = (38, 22, 8)
-AMBER_WASH = (72, 38, 10)
-AMBER_BAND = (168, 80, 16)
-AMBER_BAND_LO = (198, 112, 32)
-AMBER_BAND_HI = (140, 60, 12)
-RED = (224, 36, 28)
-RED_DIM = (82, 16, 14)
-RED_GHOST = (42, 14, 12)
+AMBER = (244, 148, 32)
+AMBER_HOT = (255, 184, 56)
+AMBER_DIM = (110, 58, 14)
+AMBER_GHOST = (42, 24, 10)
+AMBER_WASH = (80, 42, 10)
+AMBER_BAND = (176, 88, 20)
+AMBER_BAND_LO = (224, 140, 36)
+AMBER_BAND_HI = (176, 72, 16)
+RED = (228, 40, 32)
+RED_DIM = (86, 18, 16)
+RED_GHOST = (44, 14, 12)
 RED_LCD = (255, 38, 28)
-RED_LCD_GHOST = (48, 8, 6)
+RED_LCD_GHOST = (56, 10, 8)
 WHITE = (248, 242, 232)
-CREAM = (242, 234, 216)
+CREAM = (246, 236, 214)
 DIM = (110, 100, 84)
 MUTED = (48, 44, 38)
-ORANGE = (240, 116, 28)
-TICK_MAJOR_DIM = (240, 234, 220)
-TICK_MINOR_DIM = (168, 108, 32)
-REDLINE_PRINT = (168, 32, 24)
+ORANGE = (244, 120, 32)
+TICK_MAJOR_DIM = (248, 242, 228)
+TICK_MINOR_DIM = (196, 124, 40)
+REDLINE_PRINT = (196, 40, 28)
 BEZEL_BTN = (148, 148, 144)
 BEZEL_BAND = (10, 11, 12)
 BEZEL_BAND_EDGE = (36, 38, 40)
 # Printed band depth along the inward normal; ticks stay inside it.
 TACH_BAND_OUTER = 32.0
 # Numerals sit in the dark well, below the printed band (OEM photo)
-TACH_NUM_INSET = 50.0
+TACH_NUM_INSET = 54.0
 TACH_TICK_MAJOR = (2.4, 22.0)
 TACH_TICK_MINOR = (1.4, 13.0)
-TACH_NEEDLE_TIP = -4.0
-TACH_NEEDLE_TAIL = 62.0
+TACH_NEEDLE_TIP = -5.0
+TACH_NEEDLE_TAIL = 68.0
 
 # --- locked % layout (see refs/flat/DIMENSIONS.md) ---------------------------
 # Module as % of the 1920×1080 canvas; height from OEM 2.35:1 elevation
@@ -464,10 +464,16 @@ def tach_arch_normal(frac: float, g: FaceGeom | None = None) -> tuple[float, flo
 
 
 def tach_num_xy(frac: float, g: FaceGeom | None = None) -> tuple[float, float]:
-    """Tach numeral centre — inside the well, not on the printed band."""
+    """Tach numeral centre — inside the well, not on the printed band.
+
+    The parabola's inward normal is shallower at 0 and 9, so those two
+    digits get an extra drop into the well (OEM photo).
+    """
     x, y = tach_arch_xy(frac, g)
     nx, ny = tach_arch_normal(frac, g)
-    return x + nx * TACH_NUM_INSET, y + ny * TACH_NUM_INSET
+    end = abs(2.0 * clamp(frac, 0.0, 1.0) - 1.0)
+    extra = 14.0 * (end * end)
+    return x + nx * TACH_NUM_INSET, y + ny * TACH_NUM_INSET + extra
 
 
 def tach_tick_poly(
@@ -599,8 +605,8 @@ class DisplayState:
         self.trip_km = max(0.0, self.odo_km - self.trip_origin)
 
     def follow(self, telem: Telemetry, dt: float) -> None:
-        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.055)
-        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.09)
+        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.08)
+        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.11)
         self.fuel_pct = exp_smooth(self.fuel_pct, float(telem.fuel_pct), dt, 0.32)
         self.ect_c = exp_smooth(self.ect_c, float(telem.ect_c), dt, 0.38)
         self.batt_v = exp_smooth(self.batt_v, float(telem.batt_v), dt, 0.20)
@@ -920,8 +926,8 @@ def draw_tach_segments(
             pygame.draw.polygon(surf, col, slab)
     red_band = tach_band_poly(red_from, 1.0, 0.4, TACH_BAND_OUTER + 2.0, g)
     if red_band:
-        pygame.draw.polygon(surf, (96, 20, 16), red_band)
-        pygame.draw.polygon(bloom, (*RED, 48), red_band)
+        pygame.draw.polygon(surf, (148, 32, 24), red_band)
+        pygame.draw.polygon(bloom, (*RED, 56), red_band)
 
     wash_to = clamp(lit_frac, 0.0, 1.0)
     if wash_to > 0.012:
@@ -953,11 +959,10 @@ def draw_tach_segments(
         mid = (t0 + t1) * 0.5
         reached = mid <= lit_frac + 1e-6
         pts = tach_tick_poly(mid, 7.2, TACH_BAND_OUTER - 2.0, g, inset=1.0)
-        col = ORANGE if i < 4 else RED
         if reached:
-            _blit_seg_bloom(pygame, surf, bloom, pts, col)
+            _blit_seg_bloom(pygame, surf, bloom, pts, RED)
         else:
-            pygame.draw.polygon(surf, REDLINE_PRINT if i < 4 else (168, 36, 28), pts)
+            pygame.draw.polygon(surf, REDLINE_PRINT, pts)
 
     small = pygame.transform.smoothscale(bloom, (surf.get_width() // 3, surf.get_height() // 3))
     surf.blit(pygame.transform.smoothscale(small, surf.get_size()), (0, 0))
@@ -967,28 +972,38 @@ def draw_tach_segments(
 
 
 def _draw_tach_pointer(pygame, surf, frac: float, g: FaceGeom) -> None:
-    """Cream analog stand-in: shaft from the well onto the printed band."""
+    """Cream analog dart: wide shoulders in the well, tip on the printed band."""
     red_from = 8.0 / 9.0
     tx, ty = tach_arch_xy(frac, g)
     nx, ny = tach_arch_normal(frac, g)
     px, py = -ny, nx
-    tip = (int(tx + nx * TACH_NEEDLE_TIP), int(ty + ny * TACH_NEEDLE_TIP))
-    tail = (int(tx + nx * TACH_NEEDLE_TAIL), int(ty + ny * TACH_NEEDLE_TAIL))
-    hub = (int(tx + nx * 12.0), int(ty + ny * 12.0))
-    mid = (int(tx + nx * 6.0), int(ty + ny * 6.0))
+    tip = (tx + nx * TACH_NEEDLE_TIP, ty + ny * TACH_NEEDLE_TIP)
+    shoulder = (tx + nx * 14.0, ty + ny * 14.0)
+    hub = (tx + nx * 22.0, ty + ny * 22.0)
+    tail = (tx + nx * TACH_NEEDLE_TAIL, ty + ny * TACH_NEEDLE_TAIL)
     col = CREAM if frac < red_from else RED
     glow = AMBER_HOT if frac < red_from else RED
-    pygame.draw.line(surf, glow, tip, tail, 5)
-    pygame.draw.line(surf, col, tip, tail, 3)
-    chevron = [
-        tip,
-        (int(mid[0] + px * 3.2), int(mid[1] + py * 3.2)),
-        (int(mid[0] - px * 3.2), int(mid[1] - py * 3.2)),
-    ]
-    pygame.draw.polygon(surf, col, chevron)
-    pygame.draw.circle(surf, glow, hub, 5)
-    pygame.draw.circle(surf, col, hub, 3)
-    pygame.draw.circle(surf, (20, 14, 8), hub, 1)
+
+    def dart(half: float) -> list[tuple[int, int]]:
+        sh, hh, th = half, half * 0.48, max(1.2, half * 0.22)
+        return [
+            (int(tip[0]), int(tip[1])),
+            (int(shoulder[0] + px * sh), int(shoulder[1] + py * sh)),
+            (int(hub[0] + px * hh), int(hub[1] + py * hh)),
+            (int(tail[0] + px * th), int(tail[1] + py * th)),
+            (int(tail[0] - px * th), int(tail[1] - py * th)),
+            (int(hub[0] - px * hh), int(hub[1] - py * hh)),
+            (int(shoulder[0] - px * sh), int(shoulder[1] - py * sh)),
+        ]
+
+    pygame.draw.polygon(surf, (28, 20, 12), dart(13.0))
+    pygame.draw.polygon(surf, glow, dart(11.5))
+    pygame.draw.polygon(surf, col, dart(9.6))
+    hx, hy = int(hub[0]), int(hub[1])
+    pygame.draw.circle(surf, (28, 20, 12), (hx, hy), 8)
+    pygame.draw.circle(surf, glow, (hx, hy), 6)
+    pygame.draw.circle(surf, col, (hx, hy), 3)
+    pygame.draw.circle(surf, (22, 16, 10), (hx, hy), 1)
 
 
 def draw_welcome_sweep(pygame, surf, sweep_t: float, g: FaceGeom | None = None) -> None:
@@ -998,7 +1013,7 @@ def draw_welcome_sweep(pygame, surf, sweep_t: float, g: FaceGeom | None = None) 
     bloom = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
     trail = tach_band_poly(max(0.0, t - 0.07), max(t, 0.012), 0.4, TACH_BAND_OUTER, g, steps=22)
     if trail:
-        pygame.draw.polygon(bloom, (255, 196, 80, 64), trail)
+        pygame.draw.polygon(bloom, (255, 208, 96, 78), trail)
     n = 36
     for i in range(n + 1):
         frac = i / n
@@ -1224,7 +1239,7 @@ def draw_speed(pygame, fonts, surf, speed: float, g: FaceGeom | None = None) -> 
     digits = f"{value:d}".rjust(3)
     cx, cy = g.speed_c
     win = (cx - 150, cy - 62, 270, 118)
-    lcd_window(pygame, surf, win, (10, 3, 2), (72, 22, 16), door=(255, 42, 28, 18))
+    lcd_window(pygame, surf, win, (10, 3, 2), (58, 16, 14), door=(255, 42, 28, 16))
     box = blit_digits(
         pygame,
         surf,
@@ -1263,7 +1278,7 @@ def draw_odo_row(
     if g.style == FaceStyle.AP2.value:
         blit_text(surf, fonts["readout"], _clock_text(), DIM, g.clock_c, "center")
     win = (cx - 210, y - 30, 420, 60)
-    lcd_window(pygame, surf, win, (10, 3, 2), (64, 20, 16), door=(255, 42, 28, 16))
+    lcd_window(pygame, surf, win, (10, 3, 2), (52, 14, 12), door=(255, 42, 28, 14))
     blit_digits(
         pygame,
         surf,
@@ -1354,7 +1369,7 @@ def draw_hardware_strip(
         col = item.color if item.lit else LAMP_GHOST
         sprite = icon_surface(pygame, item.kind, col, icon_h, max_width=item.width - 2)
         if item.lit:
-            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.55, scale=1.18)
+            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.48, scale=1.12)
         else:
             surf.blit(sprite, sprite.get_rect(center=(cx, cy)))
         x += item.width + LAMP_GAP
@@ -1511,14 +1526,14 @@ def write_screenshots(pygame, fonts, face: DisplayState, dest: Path) -> list[Pat
 def build_fonts(pygame) -> dict:
     return {
         "speed": _font(pygame, 132, bold=True, mono=True),
-        "ready": _font(pygame, 82, bold=True),
-        "tick": _font(pygame, 32, italic=True),
+        "ready": _font(pygame, 88, bold=True),
+        "tick": _font(pygame, 36, italic=True),
         "label": _font(pygame, 20, bold=True),
         "readout": _font(pygame, 26, bold=True, mono=True),
         "tiny": _font(pygame, 16, italic=True),
-        "unit": _font(pygame, 17, bold=True),
+        "unit": _font(pygame, 18, bold=True),
         "micro": _font(pygame, 13, bold=True),
-        "lamp": _font(pygame, 14, bold=True),
+        "lamp": _font(pygame, 15, bold=True),
     }
 
 

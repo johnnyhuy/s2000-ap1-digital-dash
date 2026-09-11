@@ -15,6 +15,8 @@ import {
   tachArchXY,
   tachBandPath,
   tachTickPath,
+  tachNumXY,
+  TACH_NUM_INSET,
   type FaceGeom,
 } from "@/lib/geometry";
 import { SevenSeg } from "./SevenSeg";
@@ -25,24 +27,23 @@ import type { DisplayState } from "@/lib/mockDrive";
 import { ectFrac, fuelFrac } from "@/lib/mockDrive";
 import { HardwareBezel } from "./Telltales";
 
-const AMBER = "#f08c1c";
-const AMBER_HOT = "#ffb030";
-const AMBER_GHOST = "#261608";
-const AMBER_BAND_LO = "#c67020";
-const AMBER_BAND_HI = "#8c3c0c";
-const RED = "#e0241c";
+const AMBER = "#f49420";
+const AMBER_HOT = "#ffb838";
+const AMBER_GHOST = "#2a180a";
+const AMBER_BAND_LO = "#e08c24";
+const AMBER_BAND_HI = "#b04810";
+const RED = "#e42820";
 const RED_LCD = "#ff261c";
 const WHITE = "#f8f2e8";
-const CREAM = "#f2ead8";
+const CREAM = "#f6ecd6";
 const DIM = "#6e6454";
-const TICK_MINOR_DIM = "#a86c20";
-const REDLINE_PRINT = "#a82018";
+const TICK_MINOR_DIM = "#c47c28";
+const REDLINE_PRINT = "#c4281c";
 const TACH_BAND_OUTER = 16;
-const TACH_NUM_INSET = 26;
 const TACH_TICK_MAJOR = { w: 1.35, len: 11.5 };
 const TACH_TICK_MINOR = { w: 0.75, len: 6.8 };
-const TACH_NEEDLE_TIP = -2.2;
-const TACH_NEEDLE_TAIL = 32;
+const TACH_NEEDLE_TIP = -2.6;
+const TACH_NEEDLE_TAIL = 35;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -62,7 +63,7 @@ function lerpHex(a: string, b: string, t: number): string {
 function LcdWindow({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
   return (
     <g className="lcd-window">
-      <rect x={x} y={y} width={w} height={h} rx={3} fill="#0a0302" stroke="#5a1812" strokeWidth={0.8} />
+      <rect x={x} y={y} width={w} height={h} rx={3} fill="#0a0302" stroke="#3a100e" strokeWidth={0.8} />
       <rect x={x} y={y} width={w} height={h} rx={3} fill="url(#lcd-door)" />
     </g>
   );
@@ -75,24 +76,36 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
   const py = n.x;
   const tipX = p.x + n.x * TACH_NEEDLE_TIP;
   const tipY = p.y + n.y * TACH_NEEDLE_TIP;
+  const shoulderX = p.x + n.x * 7.2;
+  const shoulderY = p.y + n.y * 7.2;
+  const hubX = p.x + n.x * 11.2;
+  const hubY = p.y + n.y * 11.2;
   const tailX = p.x + n.x * TACH_NEEDLE_TAIL;
   const tailY = p.y + n.y * TACH_NEEDLE_TAIL;
-  const hubX = p.x + n.x * 6.2;
-  const hubY = p.y + n.y * 6.2;
-  const midX = p.x + n.x * 3.2;
-  const midY = p.y + n.y * 3.2;
   const hot = frac >= 8 / 9;
   const col = hot ? RED : CREAM;
   const glow = hot ? RED : AMBER_HOT;
+  const dart = (half: number) => {
+    const sh = half;
+    const hh = half * 0.48;
+    const th = Math.max(0.6, half * 0.22);
+    return [
+      `${tipX},${tipY}`,
+      `${shoulderX + px * sh},${shoulderY + py * sh}`,
+      `${hubX + px * hh},${hubY + py * hh}`,
+      `${tailX + px * th},${tailY + py * th}`,
+      `${tailX - px * th},${tailY - py * th}`,
+      `${hubX - px * hh},${hubY - py * hh}`,
+      `${shoulderX - px * sh},${shoulderY - py * sh}`,
+    ].join(" ");
+  };
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <line x1={tipX} y1={tipY} x2={tailX} y2={tailY} stroke={glow} strokeWidth={2.4} strokeLinecap="round" />
-      <line x1={tipX} y1={tipY} x2={tailX} y2={tailY} stroke={col} strokeWidth={1.45} strokeLinecap="round" />
-      <polygon
-        points={`${tipX},${tipY} ${midX + px * 1.7},${midY + py * 1.7} ${midX - px * 1.7},${midY - py * 1.7}`}
-        fill={col}
-      />
-      <circle cx={hubX} cy={hubY} r={2.4} fill={glow} />
+      <polygon points={dart(6.8)} fill="#1c140c" />
+      <polygon points={dart(5.9)} fill={glow} />
+      <polygon points={dart(4.9)} fill={col} />
+      <circle cx={hubX} cy={hubY} r={3.2} fill="#1c140c" />
+      <circle cx={hubX} cy={hubY} r={2.5} fill={glow} />
       <circle cx={hubX} cy={hubY} r={1.2} fill={col} />
       <circle cx={hubX} cy={hubY} r={0.45} fill="#140e08" />
     </g>
@@ -169,7 +182,7 @@ function TachSegments({
   return (
     <g aria-hidden>
       {printed}
-      <path d={tachBandPath(redFrom, 1, 0.25, TACH_BAND_OUTER + 1, geom)} fill="#5c1410" stroke="none" />
+      <path d={tachBandPath(redFrom, 1, 0.25, TACH_BAND_OUTER + 1, geom)} fill="#941c18" stroke="none" />
       {wash ? <path d={wash} fill={AMBER_HOT} opacity={0.22} stroke="none" /> : null}
       {washRed ? <path className="seg-lit seg-red" d={washRed} fill={RED} opacity={0.34} stroke="none" /> : null}
       {trail ? <path className="sweep-bead" d={trail} fill={AMBER_HOT} opacity={0.62} stroke="none" /> : null}
@@ -187,15 +200,14 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
         const frac = i / 9;
-        const p = tachArchXY(frac, geom);
-        const n = tachArchNormal(frac, geom);
+        const p = tachNumXY(frac, geom);
         return (
           <text
             key={i}
             className="tach-num"
-            x={p.x + n.x * TACH_NUM_INSET}
-            y={p.y + n.y * TACH_NUM_INSET}
-            fontSize={14.5}
+            x={p.x}
+            y={p.y}
+            fontSize={16}
             fontWeight={600}
             fontStyle="italic"
             fill={dim ? DIM : WHITE}
@@ -485,7 +497,7 @@ export function ClusterFace({
                 ghost="188"
                 digitH={58}
                 color={RED_LCD}
-                ghostColor="#340808"
+                ghostColor="#3a0a08"
                 italic={0.08}
               />
               <text x={sc.x + 62} y={sc.y + 2} fontSize={11} fontWeight={700} fill={RED_LCD} className="lcd-label">
@@ -504,7 +516,7 @@ export function ClusterFace({
                 ghost="888888"
                 digitH={22}
                 color={RED_LCD}
-                ghostColor="#340808"
+                ghostColor="#3a0a08"
                 italic={0.04}
               />
               <text
@@ -525,7 +537,7 @@ export function ClusterFace({
                 ghost="888.8"
                 digitH={16}
                 color={RED_LCD}
-                ghostColor="#340808"
+                ghostColor="#3a0a08"
                 italic={0.04}
               />
               {battWarn ? (
