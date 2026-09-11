@@ -62,7 +62,7 @@ Arched tach **0–9 ×1000**, five redline blocks **8–9**, digital speed, **OD
 
 ### ID.4-style boot
 
-Skippable with Space or `--no-intro`:
+Skippable with Space or `--no-intro` (web harness: Space or **Skip boot**):
 
 1. Welcome light sweep along the cowl
 2. **READY** summary (batt / fuel / temp / odo)
@@ -138,7 +138,7 @@ uv sync --extra dev
 
 ## Web cluster harness (no Pi)
 
-Shareable Next.js demo of the amber OEM-geometry face, driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn). Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track.
+Shareable Next.js demo of the amber OEM-geometry face, driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn) and the same sweep → READY → reveal boot as the Pi UI. Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track.
 
 ```bash
 cd apps/harness
