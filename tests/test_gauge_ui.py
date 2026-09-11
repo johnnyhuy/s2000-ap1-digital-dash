@@ -31,6 +31,7 @@ from gauge_ui import (  # noqa: E402
     SMOKE_PHASES,
     SerialSource,
     StdinSource,
+    boot_strip_mode,
     draw_frame,
     ect_frac,
     exp_smooth,
@@ -81,6 +82,20 @@ class IntroTests(unittest.TestCase):
         self.assertGreater(reveal_rpm(0.3, 2000), 3000)
         self.assertAlmostEqual(reveal_rpm(0.58, 2000), float(RPM_REDLINE))
         self.assertAlmostEqual(reveal_rpm(1.0, 2000), 2000.0)
+
+    def test_boot_hides_lamps_until_reveal(self) -> None:
+        lamps, bulb = boot_strip_mode("sweep", 0.5)
+        self.assertEqual(lamps, {})
+        self.assertFalse(bulb)
+        lamps, bulb = boot_strip_mode("ready", 0.5)
+        self.assertEqual(lamps, {})
+        self.assertFalse(bulb)
+        lamps, bulb = boot_strip_mode("reveal", 0.4)
+        self.assertIsNone(lamps)
+        self.assertTrue(bulb)
+        lamps, bulb = boot_strip_mode("live", 1.0)
+        self.assertIsNone(lamps)
+        self.assertFalse(bulb)
 
 
 class LerpTests(unittest.TestCase):
@@ -285,6 +300,25 @@ class HeadlessDrawTests(unittest.TestCase):
         self.assertGreater(self.sample_near(strip, LAMP_RED, step=2, tol=40), 0)
         reveal = self._draw(face, "reveal", 0.40)
         self.assertGreater(self.count_warm(reveal, step=12), 20)
+
+    def test_sweep_does_not_show_live_high_beam(self) -> None:
+        from oem_icons import LAMP_BLUE
+        from _headless import region
+
+        face = DisplayState()
+        face.snap(sample_telem())
+        self.assertTrue(face.lamps.get("high_beam"))
+        sweep = self._draw(face, "sweep", 0.55)
+        strip = region(sweep, FACE.lamp_band)
+        self.assertEqual(self.sample_near(strip, LAMP_BLUE, step=2, tol=40), 0)
+
+    def test_bundled_cluster_fonts_render(self) -> None:
+        from gauge_ui import _FONTS
+
+        self.assertTrue((_FONTS / "Oxanium-Bold.ttf").is_file())
+        self.assertTrue((_FONTS / "BarlowCondensed-SemiBoldItalic.ttf").is_file())
+        img = self.fonts["ready"].render("READY", True, (232, 148, 28))
+        self.assertGreater(img.get_width(), 80)
 
 
 class SourceTests(unittest.TestCase):
