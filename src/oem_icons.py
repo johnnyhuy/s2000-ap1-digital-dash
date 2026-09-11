@@ -20,7 +20,7 @@ LAMP_RED = (226, 40, 32)
 LAMP_AMBER = (236, 148, 28)
 LAMP_GREEN = (40, 204, 92)
 LAMP_BLUE = (36, 96, 228)
-LAMP_GHOST = (46, 42, 38)
+LAMP_GHOST = (72, 66, 60)
 
 # Reject the old neon sweep / high-beam cyan
 NEON_CYAN = (72, 210, 230)
@@ -116,7 +116,16 @@ def lamp_states(
     return out
 
 
+_FONTS = Path(__file__).resolve().parents[1] / "assets" / "fonts"
+
+
 def _font(pygame, size: int, bold: bool = True):
+    bundled = _FONTS / "BarlowCondensed-Bold.ttf"
+    if bundled.is_file():
+        try:
+            return pygame.font.Font(str(bundled), size)
+        except (OSError, pygame.error):
+            pass
     return pygame.font.SysFont(
         ["DejaVu Sans", "FreeSans", "sans-serif"], size, bold=bold
     )
@@ -277,11 +286,11 @@ _DRAWERS = {
     "immobilizer": _draw_key,
     "seatbelt": _draw_seatbelt,
     "door": _draw_door,
-    "abs": lambda pygame, w, h: _draw_text_block(pygame, ("ABS",), w, h, 16),
-    "brake": lambda pygame, w, h: _draw_text_block(pygame, ("BRAKE",), w, h, 15),
-    "eps": lambda pygame, w, h: _draw_text_block(pygame, ("EPS",), w, h, 16),
-    "srs": lambda pygame, w, h: _draw_text_block(pygame, ("SRS",), w, h, 16),
-    "maint": lambda pygame, w, h: _draw_text_block(pygame, ("MAINT", "REQ'D"), w, h, 12),
+    "abs": lambda pygame, w, h: _draw_text_block(pygame, ("ABS",), w, h, 18),
+    "brake": lambda pygame, w, h: _draw_text_block(pygame, ("BRAKE",), w, h, 17),
+    "eps": lambda pygame, w, h: _draw_text_block(pygame, ("EPS",), w, h, 18),
+    "srs": lambda pygame, w, h: _draw_text_block(pygame, ("SRS",), w, h, 18),
+    "maint": lambda pygame, w, h: _draw_text_block(pygame, ("MAINT", "REQ'D"), w, h, 13),
 }
 
 

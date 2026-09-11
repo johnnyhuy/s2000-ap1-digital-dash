@@ -187,8 +187,8 @@ export function followDisplay(
   tripOrigin: number,
 ): DisplayState {
   return {
-    rpm: expSmooth(current.rpm, target.rpm, dt, 0.055),
-    speed_kmh: expSmooth(current.speed_kmh, target.speed_kmh, dt, 0.09),
+    rpm: expSmooth(current.rpm, target.rpm, dt, 0.08),
+    speed_kmh: expSmooth(current.speed_kmh, target.speed_kmh, dt, 0.11),
     fuel_pct: expSmooth(current.fuel_pct, target.fuel_pct, dt, 0.35),
     ect_c: expSmooth(current.ect_c, target.ect_c, dt, 0.4),
     batt_v: expSmooth(current.batt_v, target.batt_v, dt, 0.22),

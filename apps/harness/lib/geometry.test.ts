@@ -14,6 +14,9 @@ import {
   faceGeom,
   tachBandPath,
   tachTickPath,
+  tachArchXY,
+  tachNumXY,
+  TACH_NUM_INSET,
 } from "./geometry.ts";
 
 function near(got: number, want: number, delta: number) {
@@ -47,6 +50,19 @@ describe("face geometry", () => {
     assert.ok(ap2.fuel.x > ap2.speed.x);
     near(ap2.temp.x / ap2.module.w, AP2_TEMP_X_PCT, 0.01);
     assert.notEqual(ap2.temp.y, faceGeom("ap1").temp.y);
+  });
+
+  it("drops tach numerals into the well, extra at 0 and 9", () => {
+    const mid = tachNumXY(0.5);
+    const arch = tachArchXY(0.5);
+    assert.ok(mid.y > arch.y);
+    assert.ok(Math.abs(mid.x - arch.x) < 6);
+    const left = tachNumXY(0);
+    const leftArch = tachArchXY(0);
+    assert.ok(left.y > leftArch.y);
+    assert.ok(left.y - leftArch.y > TACH_NUM_INSET * 0.4);
+    const right = tachNumXY(1);
+    assert.ok(right.y > tachArchXY(1).y);
   });
 
   it("uses six thin AP1 temp ticks and slanted tach paths", () => {

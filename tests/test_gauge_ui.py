@@ -193,6 +193,11 @@ class FaceGeomTests(unittest.TestCase):
         # Clear of the printed band and the major ticks that sit on it
         self.assertGreater(TACH_NUM_INSET, TACH_BAND_OUTER)
         self.assertGreater(TACH_NUM_INSET, TACH_TICK_MAJOR[1] + 16)
+        left = tach_num_xy(0.0)
+        left_arch = tach_arch_xy(0.0)
+        self.assertGreater(left[1], left_arch[1])
+        self.assertGreater(left[1] - left_arch[1], TACH_NUM_INSET * 0.4)
+        self.assertGreater(tach_num_xy(1.0)[1], tach_arch_xy(1.0)[1])
 
     def test_module_is_flat_bottom_and_stepped(self) -> None:
         bl, br = hood_bottom_corners(FACE)
