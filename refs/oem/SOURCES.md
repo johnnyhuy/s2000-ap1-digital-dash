@@ -71,4 +71,4 @@ CC BY 2.0” caption. Do not strip credit from composites.
 - Odo is **6 integer digits**; trip is **xxx.x**; label **TRIP A**
 - TEMP is a **horizontal C–H bar left of the speedo** (6 ticks). FUEL is a **horizontal E–F bar right of the speedo**. Vertical side stacks are erroneous.
 - Bezel buttons are **round** − / + and SEL / TRIP, plus `PUSH CANCEL` and `mph · km/h`
-- Lit colour is warm amber with bloom; unlit LCD segments stay as dim ghosts
+- Tach ticks and TEMP/FUEL are warm amber with bloom; speed/odo 7-seg is **red LCD**; unlit segments stay as dim ghosts
