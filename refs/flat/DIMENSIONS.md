@@ -36,8 +36,8 @@ Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
 | TEMP icon | thermometer above **C** |
 | FUEL icon | pump above **F** |
 | Lamp / hardware strip | y ≈ **80.5%** |
-| Tach 0–9 | thin ticks **normal to the parabola** (not upright bricks / not a circular fill); numerals outside the ticks |
-| Redline | thick blocks **8–9** (five blocks) |
+| Tach 0–9 | printed amber band + thin ticks **normal to the parabola** (not upright bricks / not a circular fill); cream needle; white numerals outside the ticks (including 8 and 9) |
+| Redline | printed red zone **8–9** with five thick blocks |
 
 Hardware strip, left → right:
 

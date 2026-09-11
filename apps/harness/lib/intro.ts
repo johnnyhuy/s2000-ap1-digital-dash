@@ -23,9 +23,14 @@ export function introPhaseAt(t: number): { phase: IntroPhase; local: number } {
   return { phase: "live", local: 1 };
 }
 
+export function smoothstep(t: number): number {
+  const x = t < 0 ? 0 : t > 1 ? 1 : t;
+  return x * x * (3 - 2 * x);
+}
+
 /** Self-test: 0 → redline, then settle onto live RPM. */
 export function revealRpm(localT: number, liveRpm: number): number {
   const t = localT < 0 ? 0 : localT > 1 ? 1 : localT;
-  if (t < 0.58) return RPM_REDLINE * (t / 0.58);
-  return RPM_REDLINE + (liveRpm - RPM_REDLINE) * ((t - 0.58) / 0.42);
+  if (t < 0.58) return RPM_REDLINE * smoothstep(t / 0.58);
+  return RPM_REDLINE + (liveRpm - RPM_REDLINE) * smoothstep((t - 0.58) / 0.42);
 }
