@@ -312,6 +312,18 @@ class HeadlessDrawTests(unittest.TestCase):
         strip = region(sweep, FACE.lamp_band)
         self.assertEqual(self.sample_near(strip, LAMP_BLUE, step=2, tol=40), 0)
 
+    def test_live_speedo_is_red_lcd(self) -> None:
+        from gauge_ui import RED_LCD
+        from _headless import region
+
+        face = DisplayState()
+        face.snap(sample_telem())
+        frame = self._draw(face, "live", 1.0)
+        cx, cy = FACE.speed_c
+        well = region(frame, (cx - 140, cy - 70, 280, 140))
+        self.assertGreater(self.sample_near(well, RED_LCD, step=3, tol=48), 8)
+        self.assertEqual(self.sample_near(well, (236, 152, 32), step=3, tol=28), 0)
+
     def test_bundled_cluster_fonts_render(self) -> None:
         from gauge_ui import _FONTS
 

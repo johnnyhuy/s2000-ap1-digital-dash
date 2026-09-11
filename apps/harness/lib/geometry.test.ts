@@ -12,6 +12,7 @@ import {
   TEMP_Y_PCT,
   buildFaceGeom,
   faceGeom,
+  tachBandPath,
   tachTickPath,
 } from "./geometry.ts";
 
@@ -53,5 +54,8 @@ describe("face geometry", () => {
     const d = tachTickPath(0.05, 2, 16);
     assert.match(d, /^M /);
     assert.ok(d.includes("L "));
+    const band = tachBandPath(0, 0.5, 1, 16);
+    assert.match(band, /^M /);
+    assert.ok(band.includes("Z"));
   });
 });

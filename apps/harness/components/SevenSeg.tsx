@@ -47,10 +47,11 @@ export function SevenSeg({
   text,
   ghost = "188",
   digitH = 42,
-  color = "#ffb02e",
-  ghostColor = "#281a0a",
+  color = "#e02018",
+  ghostColor = "#2a0808",
   x = 0,
   y = 0,
+  italic = 0.05,
 }: {
   text: string;
   ghost?: string;
@@ -59,36 +60,49 @@ export function SevenSeg({
   ghostColor?: string;
   x?: number;
   y?: number;
+  italic?: number;
 }) {
   const dw = Math.max(8, digitH * 0.62);
   const gap = Math.max(2, dw / 6);
   const chars = text.split("");
   const gchars = ghost.padEnd(chars.length, "8").slice(0, chars.length).split("");
-  let cursor = 0;
+  const xs = chars.reduce<number[]>((acc) => {
+    const prev = acc.length === 0 ? 0 : acc[acc.length - 1] + (chars[acc.length - 1] === "." ? dw / 5 : dw + gap);
+    acc.push(prev);
+    return acc;
+  }, []);
   const nodes = chars.map((ch, i) => {
     if (ch === ".") {
-      const cx = cursor + 3;
-      cursor += dw / 5;
-      return <circle key={`d${i}`} cx={cx} cy={digitH - 4} r={Math.max(1.6, digitH / 14)} fill={color} />;
+      return (
+        <circle
+          key={`d${i}`}
+          cx={xs[i] + 3}
+          cy={digitH - 3}
+          r={Math.max(2.2, digitH / 11)}
+          fill={color}
+          className="seg-lit seg-red"
+        />
+      );
     }
     const paths = digitPaths(dw, digitH);
     const lit = new Set((DIGITS[ch] ?? "").split(""));
     const ghostLit = new Set((DIGITS[gchars[i]] ?? "abcdefg").split(""));
-    const ox = cursor;
-    cursor += dw + gap;
     return (
-      <g key={`g${i}`} transform={`translate(${ox} 0)`}>
+      <g key={`g${i}`} transform={`translate(${xs[i]} 0)`}>
         {Object.entries(paths).map(([name, d]) => (
           <path key={name} d={d} fill={ghostLit.has(name) ? ghostColor : "none"} />
         ))}
         {Object.entries(paths).map(([name, d]) =>
-          lit.has(name) ? <path key={`l${name}`} d={d} fill={color} className="seg-lit" /> : null,
+          lit.has(name) ? (
+            <path key={`l${name}`} d={d} fill={color} className="seg-lit seg-red" />
+          ) : null,
         )}
       </g>
     );
   });
+  const skew = (-italic * 55).toFixed(2);
   return (
-    <g transform={`translate(${x} ${y})`} aria-hidden>
+    <g transform={`translate(${x} ${y}) skewX(${skew})`} className="seven-seg" aria-hidden>
       {nodes}
     </g>
   );

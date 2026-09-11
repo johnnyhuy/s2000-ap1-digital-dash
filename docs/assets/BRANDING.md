@@ -17,6 +17,7 @@ Product name in docs and chrome is **S2000 Digital Dash** (AP1 + AP2 faces).
 The live GitHub repo is `johnnyhuy/s2000-digital-dash`. See the root README.
 
 Cluster type is **Oxanium** (READY / chrome), **Barlow Condensed** italic
-(tach numerals), and **Share Tech Mono** (LCD labels). Faces live under
+(tach numerals, C/H E/F), and **Share Tech Mono** (LCD labels). Speed and
+odo are **red 7-seg**, matching the AP1 photo. Faces live under
 `assets/fonts/` (SIL OFL). The web harness loads the same families from
 Google Fonts. DejaVu remains the pygame fallback when those files are absent.
