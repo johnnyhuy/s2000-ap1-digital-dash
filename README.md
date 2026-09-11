@@ -43,7 +43,7 @@
 
 ### Face styles (AP1 default, AP2 selectable)
 
-Amber-on-black LCD in a **hooded arched cowl**. Flat 2.35:1 elevation — no fake 3D skew.
+Red 7-seg speed/odo on an **amber tach** in a hooded arched cowl. Flat 2.35:1 elevation — no fake 3D skew.
 
 - **AP1** (default): locked **horizontal TEMP left / FUEL right** flanking the speed/odo. Proportions in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md). Tach ticks are thin bars **normal to the arch**.
 - **AP2**: interpretive stacked arched TEMP / FUEL on the right, plus a clock row. Uses [`refs/oem/ap2/`](refs/oem/ap2/) as reference — **not** a pixel-perfect plate.
@@ -138,7 +138,7 @@ uv sync --extra dev
 
 ## Web cluster harness (no Pi)
 
-Shareable Next.js demo of the amber OEM-geometry face, driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn) and the same sweep → READY → reveal boot as the Pi UI. Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track.
+Shareable Next.js demo of the OEM-geometry face (red 7-seg, amber tach), driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn) and the same sweep → READY → reveal boot as the Pi UI. Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track.
 
 ```bash
 cd apps/harness
