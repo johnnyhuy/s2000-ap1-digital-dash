@@ -23,6 +23,7 @@ from gauge_ui import (  # noqa: E402
     TEMP_SEGS,
     TEMP_W_PCT,
     tach_arch_xy,
+    tach_band_poly,
     DisplayState,
     PHASE_READY_S,
     PHASE_REVEAL_S,
@@ -41,6 +42,7 @@ from gauge_ui import (  # noqa: E402
     intro_phase_at,
     lerp,
     parse_args,
+    smoothstep,
     reveal_rpm,
     sample_telem,
 )
@@ -107,6 +109,12 @@ class LerpTests(unittest.TestCase):
 
     def test_lerp_midpoint(self) -> None:
         self.assertAlmostEqual(lerp(0.0, 10.0, 0.5), 5.0)
+
+    def test_smoothstep_ends(self) -> None:
+        self.assertAlmostEqual(smoothstep(0.0), 0.0)
+        self.assertAlmostEqual(smoothstep(1.0), 1.0)
+        self.assertGreater(smoothstep(0.5), 0.49)
+        self.assertLess(smoothstep(0.25), 0.25)
 
     def test_fracs(self) -> None:
         self.assertEqual(ect_frac(40.0), 0.0)
@@ -207,6 +215,12 @@ class FaceGeomTests(unittest.TestCase):
 
     def test_six_oem_temp_bars(self) -> None:
         self.assertEqual(TEMP_SEGS, 6)
+
+    def test_tach_band_is_a_closed_polygon(self) -> None:
+        pts = tach_band_poly(0.0, 0.5, 1.0, 16)
+        self.assertGreater(len(pts), 16)
+        xs = [p[0] for p in pts]
+        self.assertLess(min(xs), max(xs))
 
     def test_tach_arch_is_parabola_not_a_drop(self) -> None:
         x0, y0 = tach_arch_xy(0.0)

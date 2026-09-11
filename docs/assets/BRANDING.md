@@ -16,8 +16,9 @@ Same mark is copied to `apps/harness/public/docs/assets/` for the web demo.
 Product name in docs and chrome is **S2000 Digital Dash** (AP1 + AP2 faces).
 The live GitHub repo is `johnnyhuy/s2000-digital-dash`. See the root README.
 
-Cluster type is **Oxanium** (READY / chrome), **Barlow Condensed** italic
-(tach numerals, C/H E/F), and **Share Tech Mono** (LCD labels). Speed and
-odo are **red 7-seg**, matching the AP1 photo. Faces live under
-`assets/fonts/` (SIL OFL). The web harness loads the same families from
-Google Fonts. DejaVu remains the pygame fallback when those files are absent.
+Cluster type is **Barlow Condensed Bold** (READY, C/H, E/F, bezel, LCD
+labels) and **Barlow Condensed** italic (tach numerals). **Share Tech Mono**
+is the harness JSON / protocol face. Speed and odo are **red 7-seg**, matching
+the AP1 photo. Faces live under `assets/fonts/` (SIL OFL). The web harness
+loads the same families from Google Fonts; Oxanium stays on the masthead only.
+DejaVu remains the pygame fallback when those files are absent.

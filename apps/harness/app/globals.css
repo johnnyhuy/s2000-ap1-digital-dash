@@ -4,15 +4,15 @@
   --cabin: #080809;
   --panel: #101012;
   --line: #2a2620;
-  --amber: #eca824;
-  --amber-dim: #8a6418;
-  --paper: #e6e2d6;
+  --amber: #e88418;
+  --amber-dim: #8a4e10;
+  --paper: #f0ece4;
   --muted: #8a8478;
-  --danger: #d6241e;
-  --lcd-red: #e02018;
+  --danger: #dc201c;
+  --lcd-red: #e81c16;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-share-tech), var(--font-geist-mono), ui-monospace, monospace;
-  --font-cluster: var(--font-oxanium), var(--font-geist-sans), ui-sans-serif, sans-serif;
+  --font-cluster: var(--font-barlow), var(--font-oxanium), var(--font-geist-sans), ui-sans-serif, sans-serif;
   --font-tach: var(--font-barlow), var(--font-cluster);
 }
 
@@ -89,9 +89,9 @@ body {
 
 .masthead h1 {
   margin: 0;
-  font-family: var(--font-cluster);
+  font-family: var(--font-oxanium), var(--font-cluster);
   font-size: 1.35rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: 650;
 }
 
@@ -137,7 +137,9 @@ body {
 }
 
 .cluster-stage > svg text.lcd-label {
-  font-family: var(--font-mono);
+  font-family: var(--font-cluster);
+  font-style: normal;
+  letter-spacing: 0.06em;
 }
 
 .ready-word {
@@ -146,32 +148,36 @@ body {
 }
 
 .seg-lit {
-  filter: drop-shadow(0 0 3.5px rgba(255, 176, 46, 0.78));
-  transition: fill 90ms linear, filter 90ms linear;
+  filter: drop-shadow(0 0 3.2px rgba(255, 168, 36, 0.82));
+  transition: fill 120ms ease-out, filter 120ms ease-out, opacity 120ms ease-out;
 }
 
 .seg-lit.seg-red {
-  filter: drop-shadow(0 0 5px rgba(224, 32, 24, 0.82));
+  filter: drop-shadow(0 0 5.5px rgba(232, 28, 22, 0.88));
 }
 
 .seg-ghost {
-  transition: fill 90ms linear;
+  transition: fill 140ms ease-out;
 }
 
 .needle {
-  filter: drop-shadow(0 0 7px rgba(255, 213, 106, 0.9));
+  filter: drop-shadow(0 0 8px rgba(255, 200, 96, 0.95));
 }
 
 .needle-hot {
-  filter: drop-shadow(0 0 8px rgba(224, 32, 24, 0.95));
+  filter: drop-shadow(0 0 9px rgba(232, 28, 22, 0.98));
 }
 
 .sweep-bead {
-  filter: drop-shadow(0 0 16px #ffd56a);
+  filter: drop-shadow(0 0 14px #ffc050);
+}
+
+.ready-word {
+  filter: drop-shadow(0 0 18px rgba(232, 132, 24, 0.45));
 }
 
 .ready-card {
-  animation: ready-in 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: ready-in 0.62s cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: 50% 40%;
 }
 
@@ -201,9 +207,10 @@ body {
 
 .bezel-left {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.35rem;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.18rem;
 }
 
 .round-pair {
@@ -233,8 +240,8 @@ body {
   gap: 0.25rem;
   margin: 0;
   color: #d8d4c8;
-  font-size: 0.48rem;
-  letter-spacing: 0.04em;
+  font-size: 0.42rem;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   font-family: var(--font-cluster);
 }
@@ -290,14 +297,14 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  opacity: 0.28;
+  opacity: 0.26;
   flex: 0 0 auto;
-  color: #4a4640;
-  transition: opacity 90ms linear, filter 90ms linear, color 90ms linear;
+  color: #3a3632;
+  transition: opacity 110ms ease-out, filter 110ms ease-out, color 110ms ease-out;
 }
 
 .telltale-icon {
-  height: 18px;
+  height: 20px;
   background: currentColor;
   mask-size: contain;
   mask-repeat: no-repeat;
@@ -328,7 +335,17 @@ body {
 
 .telltale-on {
   opacity: 1;
-  filter: drop-shadow(0 0 6px var(--lamp)) drop-shadow(0 0 1px var(--lamp));
+  filter: drop-shadow(0 0 7px var(--lamp)) drop-shadow(0 0 1.5px var(--lamp));
+  animation: lamp-strike 0.38s ease-out;
+}
+
+@keyframes lamp-strike {
+  from {
+    filter: drop-shadow(0 0 14px var(--lamp)) brightness(1.35);
+  }
+  to {
+    filter: drop-shadow(0 0 7px var(--lamp)) drop-shadow(0 0 1.5px var(--lamp));
+  }
 }
 
 .oval {
@@ -382,10 +399,12 @@ body {
   border: 1px solid #3a342c;
   background: #181614;
   color: var(--paper);
-  border-radius: 999px;
-  padding: 0.45rem 0.95rem;
+  border-radius: 4px;
+  padding: 0.42rem 0.9rem;
   font: inherit;
-  font-size: 0.88rem;
+  font-family: var(--font-cluster);
+  font-size: 0.84rem;
+  letter-spacing: 0.04em;
   cursor: pointer;
 }
 
@@ -482,7 +501,8 @@ body {
   .telltale-on,
   .sweep-bead,
   .needle,
-  .needle-hot {
+  .needle-hot,
+  .ready-word {
     filter: none;
   }
 
@@ -492,7 +512,12 @@ body {
     transition: none;
   }
 
-  .ready-card {
+  .ready-card,
+  .telltale-on {
     animation: none;
+  }
+
+  .ready-word {
+    filter: none;
   }
 }

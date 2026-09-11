@@ -85,18 +85,18 @@ SVGS: dict[str, str] = {
     ),
     "oil": wrap(
         "oil",
-        """  <path fill="#fff" d="M11 21h24v16H11z"/>
-  <path fill="#fff" d="M8 23c0-3 1.8-5 4.6-5H16v12H9.6C8.4 30 8 28.4 8 26.2z"/>
-  <path fill="#fff" d="M35 21 50 8.4l4 3.6-10.4 9V37h-8.6z"/>
-  <path fill="#fff" d="M50.4 16.8c0 3.6 2.6 6.4 4.8 6.4s4.8-2.8 4.8-6.4c0-2.8-2.2-5.2-4.8-7.8-2.6 2.6-4.8 5-4.8 7.8z"/>
+        """  <path fill="#fff" d="M10 22.5c0-2.8 2-5 5.2-5H18v16H12.4C10.8 33.5 10 31.6 10 29.2z"/>
+  <path fill="#fff" d="M18 20h16.5v18H18z"/>
+  <path fill="#fff" d="M34.5 20 51 7.2l3.6 3.4-11.2 9.2V38h-9z"/>
+  <path fill="#fff" d="M50.2 15.4c0 3.8 2.8 6.8 5.2 6.8s5.2-3 5.2-6.8c0-3-2.4-5.6-5.2-8.4-2.8 2.8-5.2 5.4-5.2 8.4z"/>
 """,
         label="Oil pressure telltale",
     ),
     "cel": wrap(
         "cel",
-        """  <path fill="#fff" d="M10 21h7l3.4-8h12.4l2.4 8H52l4-5h5v8h3v13h-3v8H10v-8H5V29h5z"/>
-  <path fill="#0a0a0a" d="M18 27.2h28v5.2H18z"/>
-  <path fill="#fff" d="M20.2 28.4h3.2v3H20.2zm5.2 0h3.2v3H25.4zm5.2 0h3.2v3H30.6zm5.2 0h3.2v3H35.8zm5.2 0h3.2v3H41z"/>
+        """  <path fill="#fff" d="M9 20.5h7.2l3.2-7.6h13.2l2.2 7.6H52l4.2-4.8h4.8v7.2h2.6v12.6h-2.6v7.6H9v-7.6H4.2V28.2H9z"/>
+  <path fill="#0a0a0a" d="M17.6 26.6h28.8v5.6H17.6z"/>
+  <path fill="#fff" d="M20 28h3.4v3H20zm5.4 0h3.4v3h-3.4zm5.4 0h3.4v3h-3.4zm5.4 0h3.4v3h-3.4zm5.4 0h3.4v3h-3.4z"/>
 """,
         label="Check engine telltale",
     ),
@@ -137,10 +137,10 @@ SVGS: dict[str, str] = {
     ),
     "door": wrap(
         "door",
-        """  <path fill="#fff" d="M24 6h16l7 7.6v26.8L40 48H24l-7-7.6V13.6z"/>
-  <rect x="27.6" y="11.2" width="8.8" height="6" rx="0.6" fill="#0a0a0a"/>
-  <path fill="#fff" d="M17 21.2 4.4 27.4l3 4.6 12.2-5.6z"/>
-  <path fill="#fff" d="M47 21.2 59.6 27.4l-3 4.6-12.2-5.6z"/>
+        """  <path fill="#fff" d="M23.5 5.5h17l7.2 7.4v27.2L40.5 48h-17L16.3 40.1V12.9z"/>
+  <rect x="27.2" y="11" width="9.4" height="6.2" rx="0.7" fill="#0a0a0a"/>
+  <path fill="#fff" d="M16.4 21 3.4 27.4l3.2 4.8 12.6-5.8z"/>
+  <path fill="#fff" d="M47.6 21 60.6 27.4l-3.2 4.8-12.6-5.8z"/>
 """,
         label="Door-open telltale",
     ),

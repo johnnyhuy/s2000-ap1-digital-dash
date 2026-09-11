@@ -8,6 +8,7 @@ import {
   introDurationS,
   introPhaseAt,
   revealRpm,
+  smoothstep,
 } from "./intro.ts";
 
 describe("boot intro", () => {
@@ -23,5 +24,12 @@ describe("boot intro", () => {
     assert.ok(revealRpm(0.3, 2000) > 3000);
     assert.equal(revealRpm(0.58, 2000), RPM_REDLINE);
     assert.ok(Math.abs(revealRpm(1, 2000) - 2000) < 1e-6);
+  });
+
+  it("eases sweep with smoothstep", () => {
+    assert.equal(smoothstep(0), 0);
+    assert.equal(smoothstep(1), 1);
+    assert.ok(smoothstep(0.25) < 0.25);
+    assert.ok(smoothstep(0.75) > 0.75);
   });
 });

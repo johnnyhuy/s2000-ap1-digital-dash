@@ -45,7 +45,7 @@
 
 Red 7-seg speed/odo on an **amber tach** in a hooded arched cowl. Flat 2.35:1 elevation — no fake 3D skew.
 
-- **AP1** (default): locked **horizontal TEMP left / FUEL right** flanking the speed/odo. Proportions in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md). Tach ticks are thin bars **normal to the arch**.
+- **AP1** (default): locked **horizontal TEMP left / FUEL right** flanking the speed/odo. Proportions in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md). Tach is a **printed amber band** with ticks **normal to the arch** and a cream needle.
 - **AP2**: interpretive stacked arched TEMP / FUEL on the right, plus a clock row. Uses [`refs/oem/ap2/`](refs/oem/ap2/) as reference — **not** a pixel-perfect plate.
 
 Toggle in the [web harness](apps/harness/) or `python src/gauge_ui.py --style ap2` (keys `1` / `2` live). Protocol fields stay frozen.

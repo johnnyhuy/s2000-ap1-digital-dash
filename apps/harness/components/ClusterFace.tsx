@@ -19,23 +19,23 @@ import {
 } from "@/lib/geometry";
 import { SevenSeg } from "./SevenSeg";
 import { DEFAULT_FACE_STYLE, type FaceStyle } from "@/lib/faceStyle";
-import { type IntroPhase, revealRpm } from "@/lib/intro";
+import { type IntroPhase, revealRpm, smoothstep } from "@/lib/intro";
 import { BATT_LOW_V, ECT_HOT_C, FUEL_LOW_PCT, RPM_REDLINE } from "@/lib/protocol";
 import type { DisplayState } from "@/lib/mockDrive";
 import { ectFrac, fuelFrac } from "@/lib/mockDrive";
 import { HardwareBezel } from "./Telltales";
 
-const AMBER = "#e8941c";
-const AMBER_HOT = "#ffb02e";
-const AMBER_GHOST = "#3a2810";
-const AMBER_WASH = "#2e200c";
-const RED = "#d6241e";
-const RED_LCD = "#e02018";
-const WHITE = "#e6e2d6";
-const CREAM = "#d4cfc4";
-const DIM = "#6a6256";
-const TICK_MAJOR_DIM = "#b0a898";
-const TICK_MINOR_DIM = "#7a5420";
+const AMBER = "#e88418";
+const AMBER_HOT = "#ffa824";
+const AMBER_GHOST = "#301c0a";
+const AMBER_BAND = "#763a0c";
+const RED = "#dc201c";
+const RED_LCD = "#e81c16";
+const WHITE = "#f4f0e8";
+const CREAM = "#e2dcd0";
+const DIM = "#6c6252";
+const TICK_MINOR_DIM = "#d69630";
+const REDLINE_PRINT = "#c42c20";
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -66,18 +66,20 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
   const n = tachArchNormal(frac, geom);
   const px = -n.y;
   const py = n.x;
-  const tipX = p.x - n.x * 16;
-  const tipY = p.y - n.y * 16;
+  const tipX = p.x - n.x * 22;
+  const tipY = p.y - n.y * 22;
+  const tailX = p.x + n.x * 5;
+  const tailY = p.y + n.y * 5;
   const hot = frac >= 8 / 9;
   const col = hot ? RED : CREAM;
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <circle cx={p.x} cy={p.y} r={3.4} fill={hot ? RED : AMBER_HOT} />
+      <circle cx={p.x} cy={p.y} r={4.2} fill={hot ? RED : AMBER_HOT} />
       <polygon
-        points={`${tipX},${tipY} ${p.x + px * 3.6 + n.x * 2.2},${p.y + py * 3.6 + n.y * 2.2} ${p.x - px * 3.6 + n.x * 2.2},${p.y - py * 3.6 + n.y * 2.2}`}
+        points={`${tipX},${tipY} ${p.x + px * 2.4 + n.x * 3},${p.y + py * 2.4 + n.y * 3} ${tailX},${tailY} ${p.x - px * 2.4 + n.x * 3},${p.y - py * 2.4 + n.y * 3}`}
         fill={col}
       />
-      <circle cx={p.x} cy={p.y} r={1.7} fill={col} />
+      <circle cx={p.x} cy={p.y} r={1.6} fill={col} />
     </g>
   );
 }
@@ -92,24 +94,21 @@ function TachSegments({
   sweepT?: number;
 }) {
   const redFrom = 8 / 9;
-  const fillTo = sweepT ?? litFrac;
-  const band = tachBandPath(0, 1, 1.2, 18, geom);
+  const needleFrac = sweepT ?? litFrac;
   const segs = [];
   for (let i = 0; i <= 36; i += 1) {
     const frac = i / 36;
     if (frac >= redFrom - 1e-6) continue;
     const major = i % 4 === 0;
-    const trail = sweepT !== undefined && frac <= sweepT + 1e-6 && sweepT - frac <= 0.18;
-    const reached = sweepT !== undefined ? trail : frac <= fillTo + 1e-6;
-    const w = major ? 2.4 : 1.4;
-    const len = major ? 18 : 11;
-    let fill = major ? TICK_MAJOR_DIM : TICK_MINOR_DIM;
-    if (reached) fill = major ? WHITE : lerpHex(AMBER, AMBER_HOT, frac);
+    const reached = frac <= needleFrac + 1e-6;
+    const w = major ? 2.2 : 1.2;
+    const len = major ? 17 : 10;
+    const fill = major ? WHITE : reached ? lerpHex(AMBER, AMBER_HOT, frac) : TICK_MINOR_DIM;
     segs.push(
       <path
         key={`s${i}`}
         className={reached ? "seg-lit" : "seg-ghost"}
-        d={tachTickPath(frac, w, len, geom, 3)}
+        d={tachTickPath(frac, w, len, geom, 2.4)}
         fill={fill}
         stroke="none"
       />,
@@ -120,22 +119,30 @@ function TachSegments({
     const t0 = redFrom + (1 - redFrom) * (i / REDLINE_BLOCKS);
     const t1 = redFrom + (1 - redFrom) * ((i + 1) / REDLINE_BLOCKS);
     const mid = (t0 + t1) * 0.5;
-    const trail = sweepT !== undefined && mid <= sweepT + 1e-6 && sweepT - mid <= 0.18;
-    const reached = sweepT !== undefined ? trail : mid <= fillTo + 1e-6;
+    const reached = mid <= needleFrac + 1e-6;
     reds.push(
       <path
         key={`r${i}`}
         className={reached ? "seg-lit seg-red" : "seg-ghost"}
-        d={tachTickPath(mid, 5.2, 26, geom, 0)}
-        fill={reached ? RED : "#5a2018"}
+        d={tachTickPath(mid, 5.0, 24, geom, 0)}
+        fill={reached ? RED : REDLINE_PRINT}
         stroke="none"
       />,
     );
   }
-  const tip = sweepT ?? (litFrac > 0.002 ? litFrac : null);
+  const washTo = Math.min(needleFrac, redFrom);
+  const wash = needleFrac > 0.012 ? tachBandPath(0, washTo, 0.6, 20, geom) : "";
+  const washRed = needleFrac > redFrom ? tachBandPath(redFrom, needleFrac, 0.6, 24, geom) : "";
+  const trail =
+    sweepT !== undefined ? tachBandPath(Math.max(0, sweepT - 0.14), Math.max(sweepT, 0.02), 0.4, 22, geom) : "";
+  const tip = needleFrac > 0.002 ? needleFrac : null;
   return (
     <g aria-hidden>
-      <path d={band} fill={AMBER_WASH} stroke="none" opacity={0.9} />
+      <path d={tachBandPath(0, redFrom, 0.6, 20, geom)} fill={AMBER_BAND} stroke="none" />
+      <path d={tachBandPath(redFrom, 1, 0.6, 24, geom)} fill="#5c1610" stroke="none" />
+      {wash ? <path d={wash} fill={AMBER_HOT} opacity={0.42} stroke="none" /> : null}
+      {washRed ? <path className="seg-lit seg-red" d={washRed} fill={RED} opacity={0.55} stroke="none" /> : null}
+      {trail ? <path className="sweep-bead" d={trail} fill={AMBER_HOT} opacity={0.85} stroke="none" /> : null}
       {segs}
       {reds}
       {tip !== null ? <TachPointer frac={tip} geom={geom} /> : null}
@@ -149,7 +156,6 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
-        const hot = i >= 8;
         const frac = i / 9;
         const p = tachArchXY(frac, geom);
         const n = tachArchNormal(frac, geom);
@@ -162,7 +168,7 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
             fontSize={15}
             fontWeight={600}
             fontStyle="italic"
-            fill={dim ? (hot ? "#6a2018" : DIM) : hot ? RED : WHITE}
+            fill={dim ? DIM : WHITE}
             textAnchor="middle"
             dominantBaseline="middle"
           >
@@ -171,11 +177,11 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
         );
       })}
       <text
-        x={unit.x + un.x * 16 + 6}
-        y={unit.y + un.y * 16 + 4}
+        x={unit.x + un.x * 30 + 4}
+        y={unit.y + un.y * 30 + 4}
         fontSize={8}
         fontWeight={600}
-        fill={dim ? "#3a3632" : DIM}
+        fill={dim ? DIM : WHITE}
         textAnchor="middle"
       >
         x1000r/min
@@ -253,6 +259,28 @@ function ArchedSideGauge({
   hotEnd: boolean;
 }) {
   const lit = Math.round(frac * segs);
+  const tCount = 18;
+  const band = [];
+  const depth = 12;
+  for (let i = 0; i <= tCount; i += 1) {
+    const t = i / tCount;
+    const a = sideArchPoint(box, t);
+    const b = sideArchPoint(box, Math.min(1, t + 1 / tCount));
+    const nx = b.y - a.y;
+    const ny = a.x - b.x;
+    const len = Math.hypot(nx, ny) || 1;
+    band.push({ a, n: { x: (nx / len) * depth, y: (ny / len) * depth } });
+  }
+  const outer = band.map((p) => `${p.a.x},${p.a.y}`);
+  const inner = band.map((p) => `${p.a.x + p.n.x},${p.a.y + p.n.y}`).reverse();
+  const ghostPath = `M ${outer.join(" L ")} L ${inner.join(" L ")} Z`;
+  const litCount = Math.max(2, Math.round(frac * tCount));
+  const litOuter = band.slice(0, litCount + 1).map((p) => `${p.a.x},${p.a.y}`);
+  const litInner = band
+    .slice(0, litCount + 1)
+    .map((p) => `${p.a.x + p.n.x},${p.a.y + p.n.y}`)
+    .reverse();
+  const litPath = frac > 0.02 ? `M ${litOuter.join(" L ")} L ${litInner.join(" L ")} Z` : "";
   const ticks = [];
   for (let i = 0; i < segs; i += 1) {
     const t0 = (i + 0.16) / segs;
@@ -281,6 +309,8 @@ function ArchedSideGauge({
   const r = sideArchPoint(box, 1);
   return (
     <g>
+      <path d={ghostPath} fill={AMBER_GHOST} stroke="none" />
+      {litPath ? <path className="seg-lit" d={litPath} fill={AMBER} stroke="none" opacity={0.9} /> : null}
       {ticks}
       <text className="tach-num" x={l.x - 10} y={l.y + 4} fontSize={11} fontWeight={600} fill={left.fill} textAnchor="middle">
         {left.text}
@@ -305,11 +335,11 @@ function ReadyCard({ face, geom }: { face: DisplayState; geom: FaceGeom }) {
       <text x={cx} y={geom.lcd.y + 48} textAnchor="middle" fontSize={11} fill={DIM} letterSpacing="0.18em">
         S2000  DIGITAL  DASH
       </text>
-      <text x={cx} y={geom.speed.y + 8} textAnchor="middle" fontSize={42} fontWeight={700} fill={AMBER} className="ready-word">
+      <text x={cx} y={geom.speed.y + 8} textAnchor="middle" fontSize={44} fontWeight={700} fill={AMBER_HOT} className="ready-word">
         READY
       </text>
-      <text x={cx} y={geom.speed.y + 36} textAnchor="middle" fontSize={10} fill={DIM}>
-        IGNITION ON  ·  SYSTEMS OK
+      <text x={cx} y={geom.speed.y + 36} textAnchor="middle" fontSize={10} fill={DIM} letterSpacing="0.08em">
+        IGNITION ON   SYSTEMS OK
       </text>
       {chips.map(([name, val], i) => {
         const x = cx - 210 + i * 140;
@@ -355,7 +385,8 @@ export function ClusterFace({
   const ap2 = style === "ap2";
   const styleName = ap2 ? "AP2" : "AP1";
   const bulbCheck = phase === "reveal" && phaseT < 0.55;
-  const sweep = phase === "sweep" ? tachArchXY(phaseT, geom) : null;
+  const sweepT = phase === "sweep" ? smoothstep(phaseT) : undefined;
+  const sweep = sweepT !== undefined ? tachArchXY(sweepT, geom) : null;
   const barFracEct = liveLike ? ectFrac(face.ect_c) : 0;
   const barFracFuel = liveLike ? fuelFrac(face.fuel_pct) : 0;
 
@@ -395,7 +426,7 @@ export function ClusterFace({
 
           {phase !== "ready" ? (
             <>
-              <TachSegments litFrac={litFrac} geom={geom} sweepT={phase === "sweep" ? phaseT : undefined} />
+              <TachSegments litFrac={litFrac} geom={geom} sweepT={sweepT} />
               <TachNumbers geom={geom} dim={phase === "sweep"} />
             </>
           ) : null}
@@ -415,17 +446,17 @@ export function ClusterFace({
 
           {liveLike ? (
             <>
-              <LcdWindow x={sc.x - 88} y={sc.y - 42} w={186} h={64} />
+              <LcdWindow x={sc.x - 92} y={sc.y - 44} w={196} h={68} />
               <SevenSeg
-                x={sc.x - 64}
-                y={sc.y - 38}
+                x={sc.x - 68}
+                y={sc.y - 40}
                 text={String(speed).padStart(3, " ")}
                 ghost="188"
-                digitH={54}
+                digitH={58}
                 color={RED_LCD}
                 ghostColor="#2a0808"
               />
-              <text x={sc.x + 58} y={sc.y} fontSize={11} fontWeight={700} fill={RED_LCD} className="lcd-label">
+              <text x={sc.x + 62} y={sc.y + 2} fontSize={11} fontWeight={700} fill={RED_LCD} className="lcd-label">
                 km/h
               </text>
               {ap2 ? (
@@ -433,46 +464,34 @@ export function ClusterFace({
                   {FACE_CLOCK}
                 </text>
               ) : null}
-              <LcdWindow x={odo.x - 158} y={odo.y - 14} w={148} h={28} />
-              <LcdWindow x={odo.x + 12} y={odo.y - 14} w={156} h={28} />
-              <text
-                x={odo.x - 150}
-                y={odo.y + 4}
-                textAnchor="start"
-                fontSize={9}
-                fontWeight={700}
-                fill={DIM}
-                className="lcd-label"
-              >
-                ODO
-              </text>
+              <LcdWindow x={odo.x - 168} y={odo.y - 20} w={336} h={40} />
               <SevenSeg
-                x={odo.x - 118}
+                x={odo.x - 132}
                 y={odo.y - 12}
                 text={odoKm}
                 ghost="888888"
-                digitH={18}
+                digitH={22}
                 color={RED_LCD}
                 ghostColor="#2a0808"
                 italic={0.04}
               />
               <text
-                x={odo.x + 20}
-                y={odo.y + 4}
-                textAnchor="start"
-                fontSize={9}
+                x={odo.x + 108}
+                y={odo.y - 8}
+                textAnchor="middle"
+                fontSize={7.5}
                 fontWeight={700}
-                fill={DIM}
+                fill={RED_LCD}
                 className="lcd-label"
               >
                 TRIP A
               </text>
               <SevenSeg
-                x={odo.x + 68}
-                y={odo.y - 12}
+                x={odo.x + 78}
+                y={odo.y + 0}
                 text={trip}
                 ghost="888.8"
-                digitH={18}
+                digitH={16}
                 color={RED_LCD}
                 ghostColor="#2a0808"
                 italic={0.04}
