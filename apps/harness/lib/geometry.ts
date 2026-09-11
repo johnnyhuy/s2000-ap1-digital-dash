@@ -20,12 +20,12 @@ export const LAMP_Y_PCT = 0.805;
 export const LCD_INSET_X_PCT = 0.01;
 export const LCD_TOP_PCT = 0.055;
 export const LCD_BOTTOM_PCT = 0.76;
-export const TEMP_X_PCT = 0.075;
-export const TEMP_Y_PCT = 0.72;
-export const TEMP_W_PCT = 0.18;
-export const FUEL_X_PCT = 0.745;
-export const FUEL_Y_PCT = 0.72;
-export const BAR_H_PCT = 0.03;
+export const TEMP_X_PCT = 0.08;
+export const TEMP_Y_PCT = 0.505;
+export const TEMP_W_PCT = 0.16;
+export const FUEL_X_PCT = 0.76;
+export const FUEL_Y_PCT = 0.505;
+export const BAR_H_PCT = 0.026;
 export const SPEED_X_PCT = 0.5;
 export const SPEED_Y_PCT = 0.4;
 export const ODO_Y_PCT = 0.5;
@@ -34,18 +34,18 @@ export const TACH_PEAK_Y_PCT = 0.12;
 export const TACH_INSET_X_PCT = 0.09;
 
 /** AP2 interpretive side-gauge lock (not a measured plate). */
-export const AP2_SPEED_X_PCT = 0.42;
-export const AP2_ODO_Y_PCT = 0.54;
-export const AP2_TEMP_X_PCT = 0.62;
-export const AP2_TEMP_Y_PCT = 0.3;
-export const AP2_FUEL_Y_PCT = 0.5;
-export const AP2_SIDE_W_PCT = 0.28;
-export const AP2_SIDE_H_PCT = 0.155;
+export const AP2_SPEED_X_PCT = 0.34;
+export const AP2_ODO_Y_PCT = 0.52;
+export const AP2_TEMP_X_PCT = 0.63;
+export const AP2_TEMP_Y_PCT = 0.34;
+export const AP2_FUEL_Y_PCT = 0.52;
+export const AP2_SIDE_W_PCT = 0.3;
+export const AP2_SIDE_H_PCT = 0.16;
 
 export const TEMP_SEGS = 6;
 export const FUEL_SEGS = 16;
-export const AP2_TEMP_SEGS = 8;
-export const AP2_FUEL_SEGS = 10;
+export const AP2_TEMP_SEGS = 12;
+export const AP2_FUEL_SEGS = 14;
 export const REDLINE_BLOCKS = 5;
 export const TACH_FILL_STEPS = 72;
 export const TACH_MAJORS = 10;
@@ -106,7 +106,7 @@ export function buildFaceGeom(style: FaceStyle = DEFAULT_FACE_STYLE): FaceGeom {
   const lcdPeak = y + h * LCD_TOP_PCT;
   const lcdBottom = y + h * LCD_BOTTOM_PCT;
   const spring = y + h * ARCH_RISE_PCT;
-  const barH = Math.max(10, h * BAR_H_PCT);
+  const barH = Math.max(11, h * BAR_H_PCT);
   const ap2 = style === "ap2";
 
   const speedXPct = ap2 ? AP2_SPEED_X_PCT : SPEED_X_PCT;
@@ -150,8 +150,8 @@ export function buildFaceGeom(style: FaceStyle = DEFAULT_FACE_STYLE): FaceGeom {
     temp,
     fuel,
     speed: { x: cx, y: speedY },
-    odo: { x: cx, y: odoY },
-    clock: { x: cx, y: odoY - (ap2 ? 28 : 0) },
+    odo: { x: cx, y: ap2 ? speedY + 72 : odoY },
+    clock: { x: cx, y: ap2 ? speedY + 36 : odoY },
     tachCx: cx,
     tachCy: tachCy,
     tachROuter: tachR,

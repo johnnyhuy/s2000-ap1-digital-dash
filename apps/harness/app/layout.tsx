@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Share_Tech_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Oxanium, Share_Tech_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,6 +18,12 @@ const shareTech = Share_Tech_Mono({
   subsets: ["latin"],
 });
 
+const oxanium = Oxanium({
+  variable: "--font-oxanium",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "S2000 Digital Dash — unofficial DIY",
   description:
@@ -29,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-AU"
-      className={`${geistSans.variable} ${geistMono.variable} ${shareTech.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${shareTech.variable} ${oxanium.variable} h-full antialiased`}
     >
       <body className="min-h-full">{children}</body>
     </html>

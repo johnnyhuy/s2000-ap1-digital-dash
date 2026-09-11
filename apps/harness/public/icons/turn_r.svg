@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" width="64" height="48" role="img" aria-label="Right turn telltale">
+  <title>Right turn telltale</title>
+  <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
+       White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
+  <path fill="#fff" d="M18 9v9H6v12h12v9l35-15z"/>
+</svg>

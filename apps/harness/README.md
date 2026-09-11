@@ -21,7 +21,7 @@ npm run build
 npm test
 ```
 
-Play / pause, **AP1 / AP2** face presets, and drive presets: **Idle**, **Cruise**, **VTEC**, **Warn**. OEM refs from `public/refs/` (AP1 lock + AP2 caution photo).
+Play / pause, **AP1 / AP2** face presets, and drive presets: **Idle**, **Cruise**, **VTEC**, **Warn**. Space skips the ID.4-style boot (sweep → READY → reveal). Telltale SVGs in `public/icons/` match `assets/icons/`.
 
 ## Vercel
 

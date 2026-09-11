@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ClusterFace } from "./ClusterFace";
-import { ReferencePanel } from "./ReferencePanel";
 import {
   FACE_STYLES,
   FACE_STYLE_HINTS,
@@ -10,6 +9,7 @@ import {
   parseFaceStyle,
   type FaceStyle,
 } from "@/lib/faceStyle";
+import { introDurationS, introPhaseAt, type IntroPhase } from "@/lib/intro";
 import {
   SCENARIO_LABELS,
   SCENARIOS,
@@ -30,19 +30,27 @@ function styleFromSearch(): FaceStyle {
   return parseFaceStyle(new URLSearchParams(window.location.search).get("style"));
 }
 
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 export function HarnessApp() {
   const [playing, setPlaying] = useState(true);
   const [scenario, setScenario] = useState<Scenario>("cruise");
   const [faceStyle, setFaceStyle] = useState<FaceStyle>("ap1");
-  const [showRefs, setShowRefs] = useState(true);
   const [face, setFace] = useState<DisplayState>(() =>
     snapDisplay(frameAt(0, START_ODO_KM, "cruise"), START_ODO_KM),
   );
   const [raw, setRaw] = useState<Telemetry>(() => frameAt(0, START_ODO_KM, "cruise"));
+  const [phase, setPhase] = useState<IntroPhase>("sweep");
+  const [phaseT, setPhaseT] = useState(0);
 
   const playingRef = useRef(playing);
   const scenarioRef = useRef(scenario);
   const tRef = useRef(0);
+  const bootRef = useRef(0);
+  const skippedRef = useRef(false);
   const odoRef = useRef(START_ODO_KM);
   const tripOriginRef = useRef(START_ODO_KM);
   const faceRef = useRef(face);
@@ -50,6 +58,11 @@ export function HarnessApp() {
 
   useEffect(() => {
     setFaceStyle(styleFromSearch());
+    if (prefersReducedMotion()) {
+      skippedRef.current = true;
+      setPhase("live");
+      setPhaseT(1);
+    }
   }, []);
 
   useEffect(() => {
@@ -61,6 +74,19 @@ export function HarnessApp() {
   }, [scenario]);
 
   useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.code !== "Space" || event.repeat) return;
+      if (skippedRef.current || bootRef.current >= introDurationS()) return;
+      event.preventDefault();
+      skippedRef.current = true;
+      setPhase("live");
+      setPhaseT(1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
     let raf = 0;
     let last = performance.now();
     let acc = 0;
@@ -70,6 +96,7 @@ export function HarnessApp() {
       if (playingRef.current) {
         tRef.current += dt;
         odoRef.current = integrateOdo(odoRef.current, rawRef.current.speed_kmh, dt);
+        if (!skippedRef.current) bootRef.current += dt;
       }
       acc += dt;
       const step = 1 / HZ_FEEL;
@@ -82,6 +109,14 @@ export function HarnessApp() {
         rawRef.current = target;
         setFace(next);
         setRaw(target);
+        if (skippedRef.current) {
+          setPhase("live");
+          setPhaseT(1);
+        } else {
+          const intro = introPhaseAt(bootRef.current);
+          setPhase(intro.phase);
+          setPhaseT(intro.local);
+        }
       }
       raf = requestAnimationFrame(tick);
     };
@@ -106,13 +141,19 @@ export function HarnessApp() {
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   }, []);
 
+  const skipIntro = useCallback(() => {
+    skippedRef.current = true;
+    setPhase("live");
+    setPhaseT(1);
+  }, []);
+
   const json = telemetryToDict(raw);
+  const booting = phase !== "live";
 
   return (
     <div className="harness">
-      <section className="stage" data-refs={showRefs ? "on" : "off"}>
-        <ClusterFace face={face} style={faceStyle} />
-        {showRefs ? <ReferencePanel style={faceStyle} /> : null}
+      <section className="stage">
+        <ClusterFace face={face} style={faceStyle} phase={phase} phaseT={phaseT} />
       </section>
 
       <section className="desk" aria-label="Harness controls">
@@ -125,6 +166,11 @@ export function HarnessApp() {
           >
             {playing ? "Pause" : "Play"}
           </button>
+          {booting ? (
+            <button type="button" className="ghost" onClick={skipIntro}>
+              Skip boot
+            </button>
+          ) : null}
           <div className="presets" role="group" aria-label="Face style">
             {FACE_STYLES.map((id) => (
               <button
@@ -152,9 +198,6 @@ export function HarnessApp() {
               </button>
             ))}
           </div>
-          <button type="button" className="ghost" onClick={() => setShowRefs((v) => !v)}>
-            {showRefs ? "Hide OEM refs" : "Show OEM refs"}
-          </button>
         </div>
 
         <div className="desk-meta">
@@ -163,12 +206,14 @@ export function HarnessApp() {
             <code>rpm speed_kmh fuel_pct ect_c batt_v odo_km lamps</code>
           </p>
           <p>
-            {playing ? "Live" : "Paused"} · {FACE_STYLE_LABELS[faceStyle]} ·{" "}
-            {SCENARIO_LABELS[scenario]} · {Math.round(face.rpm)} r/min ·{" "}
-            {Math.round(face.speed_kmh)} km/h
+            {playing ? "Live" : "Paused"} · {phase} · {FACE_STYLE_LABELS[faceStyle]} ·{" "}
+            {SCENARIO_LABELS[scenario]} · {Math.round(face.rpm)} r/min · {Math.round(face.speed_kmh)} km/h
           </p>
         </div>
-        <p className="desk-hint">{FACE_STYLE_HINTS[faceStyle]}</p>
+        <p className="desk-hint">
+          {FACE_STYLE_HINTS[faceStyle]}
+          {booting ? " · Space skips boot" : ""}
+        </p>
 
         <pre className="json" tabIndex={0} aria-label="Current protocol JSON">
           {JSON.stringify(json, null, 2)}

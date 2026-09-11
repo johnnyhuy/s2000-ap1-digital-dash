@@ -4,11 +4,7 @@ export default function Home() {
   return (
     <div className="shell">
       <p className="disclaimer" role="note">
-        <strong>Unofficial DIY — no affiliation.</strong> This is an enthusiast
-        bench demo and is <strong>not affiliated with, endorsed by, or associated
-        with Honda Motor Co., Ltd.</strong> Honda, S2000, AP1, AP2 and related marks
-        are trademarks of their respective owners. The on-screen odometer is
-        display-only; keep the OEM cluster plugged for the legal odometer.
+        Unofficial DIY · not Honda · odometer is display-only
       </p>
 
       <header className="masthead">

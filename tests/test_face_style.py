@@ -49,6 +49,8 @@ class GeomTests(unittest.TestCase):
         self.assertLess(g.temp[1], g.fuel[1])
         self.assertGreater(g.temp[0], g.speed_c[0])
         self.assertGreater(g.fuel[0], g.speed_c[0])
+        self.assertGreater(g.clock_c[1], g.speed_c[1])
+        self.assertGreater(g.odo_c[1], g.clock_c[1])
         self.assertNotEqual(g.temp[1], FACE.temp[1])
 
     def test_tach_ticks_are_arc_normal_not_upright(self) -> None:

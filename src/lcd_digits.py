@@ -207,12 +207,12 @@ def blit_digits(
 def lcd_window(pygame, dest, rect: tuple[int, int, int, int], wash, edge) -> None:
     """Faint rectangular LCD well with a light screen-door wash."""
     x, y, w, h = rect
-    pygame.draw.rect(dest, wash, pygame.Rect(x, y, w, h), border_radius=3)
-    pygame.draw.rect(dest, edge, pygame.Rect(x, y, w, h), width=1, border_radius=3)
-    # Screen-door: very sparse vertical lines (period LCD polariser)
+    pygame.draw.rect(dest, wash, pygame.Rect(x, y, w, h), border_radius=4)
+    pygame.draw.rect(dest, edge, pygame.Rect(x, y, w, h), width=1, border_radius=4)
+    # Screen-door: sparse vertical lines (period LCD polariser)
     door = pygame.Surface((w, h), pygame.SRCALPHA)
-    for i in range(0, w, 3):
-        pygame.draw.line(door, (255, 180, 60, 10), (i, 0), (i, h))
+    for i in range(0, w, 4):
+        pygame.draw.line(door, (255, 176, 46, 8), (i, 0), (i, h))
     dest.blit(door, (x, y))
 
 
