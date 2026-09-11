@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from face_style import DEFAULT_FACE_STYLE, FaceStyle, parse_face_style
 from lcd_digits import blit_digits, lcd_window
 from oem_icons import (
+    LAMP_GAP,
     LAMP_GHOST,
     blit_glow,
     icon_surface,
@@ -92,15 +93,15 @@ BAR_H_PCT = 0.012           # OEM AP1 ticks are thin horizontal dashes
 SPEED_X_PCT, SPEED_Y_PCT = 0.50, 0.40
 ODO_Y_PCT = 0.50            # directly under the speed (OEM lock)
 # AP2 interpretive side-gauges (not a measured plate)
-AP2_SPEED_X_PCT = 0.42
-AP2_ODO_Y_PCT = 0.54
-AP2_TEMP_X_PCT = 0.62
-AP2_TEMP_Y_PCT = 0.30
-AP2_FUEL_Y_PCT = 0.50
-AP2_SIDE_W_PCT = 0.28
-AP2_SIDE_H_PCT = 0.155
-AP2_TEMP_SEGS = 8
-AP2_FUEL_SEGS = 10
+AP2_SPEED_X_PCT = 0.36
+AP2_ODO_Y_PCT = 0.52
+AP2_TEMP_X_PCT = 0.68
+AP2_TEMP_Y_PCT = 0.26
+AP2_FUEL_Y_PCT = 0.46
+AP2_SIDE_W_PCT = 0.27
+AP2_SIDE_H_PCT = 0.17
+AP2_TEMP_SEGS = 12
+AP2_FUEL_SEGS = 14
 TACH_END_Y_PCT = 0.64
 TACH_PEAK_Y_PCT = 0.12
 TACH_INSET_X_PCT = 0.090
@@ -253,7 +254,9 @@ def build_face_geom(
     gap_r = trip_blank[0] - 16
     mid = (gap_l + gap_r) // 2
     lamp_band = (mid - pack_w // 2, band_y, pack_w, band_h)
-    odo_c = (cx, my + _pct(mh * odo_y_pct))
+    speed_y = my + _pct(mh * SPEED_Y_PCT)
+    odo_c = (cx, speed_y + 72 if ap2 else my + _pct(mh * odo_y_pct))
+    clock_c = (cx, speed_y + 36 if ap2 else odo_c[1])
 
     return FaceGeom(
         style=parsed.value,
@@ -269,9 +272,9 @@ def build_face_geom(
         notch_bot_y=notch_bot_y,
         temp=temp,
         fuel=fuel,
-        speed_c=(cx, my + _pct(mh * SPEED_Y_PCT)),
+        speed_c=(cx, speed_y),
         odo_c=odo_c,
-        clock_c=(cx, odo_c[1] - (36 if ap2 else 0)),
+        clock_c=clock_c,
         tach_cx=cx,
         tach_cy=int(round(tach_cy)),
         tach_r_outer=tach_r_outer,
@@ -873,7 +876,7 @@ def draw_tach_numbers(pygame, fonts, surf, dim: bool = False, g: FaceGeom | None
     g = _geom(g)
     for i in range(10):
         hot = i >= 8
-        col = (RED if hot else AMBER) if not dim else (RED_DIM if hot else AMBER_DIM)
+        col = (RED if hot else WHITE) if not dim else (RED_DIM if hot else DIM)
         frac = i / 9.0
         x, y = tach_arch_xy(frac, g)
         nx, ny = tach_arch_normal(frac, g)
@@ -1039,7 +1042,7 @@ def draw_speed(pygame, fonts, surf, speed: float, g: FaceGeom | None = None) -> 
     digits = f"{value:d}".rjust(3)
     cx, cy = g.speed_c
     win = (cx - 168, cy - 70, 300, 132)
-    lcd_window(pygame, surf, win, (18, 11, 5), (56, 36, 14))
+    lcd_window(pygame, surf, win, (12, 8, 3), (38, 26, 12))
     box = blit_digits(
         pygame,
         surf,
@@ -1078,7 +1081,7 @@ def draw_odo_row(
     if g.style == FaceStyle.AP2.value:
         blit_text(surf, fonts["readout"], _clock_text(), DIM, g.clock_c, "center")
     win = (cx - 200, y - 28, 400, 56)
-    lcd_window(pygame, surf, win, (14, 9, 4), (44, 30, 12))
+    lcd_window(pygame, surf, win, (10, 7, 3), (32, 22, 10))
     blit_text(surf, fonts["micro"], "ODO", DIM, (cx - 184, y + 2), "midleft")
     blit_digits(
         pygame,
@@ -1157,19 +1160,19 @@ def draw_hardware_strip(
         bulb_check=bulb_check,
         batt_low=face.batt_v < BATT_LOW_V,
     )
-    total = sum(item.width for item in lamps)
+    total = sum(item.width for item in lamps) + LAMP_GAP * max(0, len(lamps) - 1)
     x = bx + max(8, (bw - total) // 2)
     cy = by + bh // 2
-    icon_h = max(20, bh - 8)
+    icon_h = max(14, min(26, bh - 12))
     for item in lamps:
         cx = x + item.width // 2
         col = item.color if item.lit else LAMP_GHOST
-        sprite = icon_surface(pygame, item.kind, col, icon_h, max_width=item.width - 4)
+        sprite = icon_surface(pygame, item.kind, col, icon_h, max_width=item.width - 2)
         if item.lit:
-            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.32, scale=1.06)
+            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.42, scale=1.12)
         else:
             surf.blit(sprite, sprite.get_rect(center=(cx, cy)))
-        x += item.width
+        x += item.width + LAMP_GAP
 
     _round_btn(pygame, fonts, surf, g.trip_blank, "CLOCK" if g.style == FaceStyle.AP2.value else "SEL")
     _round_btn(pygame, fonts, surf, g.trip, "TRIP")
@@ -1319,7 +1322,7 @@ def build_fonts(pygame) -> dict:
     return {
         "speed": _font(pygame, 132, bold=True, mono=True),
         "ready": _font(pygame, 78, bold=True),
-        "tick": _font(pygame, 26, bold=True),
+        "tick": _font(pygame, 30, bold=True),
         "label": _font(pygame, 22),
         "readout": _font(pygame, 26, bold=True, mono=True),
         "tiny": _font(pygame, 18, bold=True),

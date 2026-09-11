@@ -20,7 +20,7 @@ LAMP_RED = (214, 34, 30)
 LAMP_AMBER = (228, 138, 26)
 LAMP_GREEN = (44, 196, 88)
 LAMP_BLUE = (28, 86, 214)
-LAMP_GHOST = (40, 36, 32)
+LAMP_GHOST = (26, 24, 22)
 
 # Reject the old neon sweep / high-beam cyan
 NEON_CYAN = (72, 210, 230)
@@ -71,8 +71,12 @@ LAMPS: tuple[LampDef, ...] = tuple(
 )
 
 
+LAMP_GAP = 8
+
+
 def lamp_strip_inner_width(pad: int = 16) -> int:
-    return sum(lamp.width for lamp in LAMPS) + pad
+    gaps = LAMP_GAP * max(0, len(LAMPS) - 1)
+    return sum(lamp.width for lamp in LAMPS) + gaps + pad
 
 
 def lamp_color_for(kind: str) -> tuple[int, int, int]:

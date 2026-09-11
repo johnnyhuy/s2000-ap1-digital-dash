@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" width="64" height="48" role="img" aria-label="Door-open telltale">
+  <title>Door-open telltale</title>
+  <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
+       White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
+  <path fill="#fff" d="M25 7h14l6.4 7.2v25.6L39 47H25l-6.4-7.2V14.2z"/>
+  <rect x="28.4" y="11" width="7.2" height="5.2" fill="#000"/>
+  <path fill="#fff" d="M18.6 20.4 7.2 26.2l2.4 4.2 11.2-5.4z"/>
+  <path fill="#fff" d="M45.4 20.4 56.8 26.2l-2.4 4.2-11.2-5.4z"/>
+</svg>

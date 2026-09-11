@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 48" width="96" height="48" role="img" aria-label="BRAKE telltale">
+  <title>BRAKE telltale</title>
+  <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
+       White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
+  <text x="48" y="31" text-anchor="middle" fill="#fff" font-family="DejaVu Sans, Liberation Sans, Arial Narrow, sans-serif" font-size="15" font-weight="700" letter-spacing="0.8">BRAKE</text>
+</svg>

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test lib/protocol.test.ts lib/mockDrive.test.ts lib/faceStyle.test.ts lib/geometry.test.ts"
+    "test": "node --experimental-strip-types --test lib/protocol.test.ts lib/mockDrive.test.ts lib/faceStyle.test.ts lib/geometry.test.ts lib/intro.test.ts"
   },
   "dependencies": {
     "next": "16.3.4",

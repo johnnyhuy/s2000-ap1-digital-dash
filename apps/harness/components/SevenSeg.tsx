@@ -46,32 +46,36 @@ function digitPaths(w: number, h: number): Record<string, string> {
 export function SevenSeg({
   text,
   ghost = "188",
-  digitH = 72,
+  digitH = 42,
   color = "#ffb02e",
   ghostColor = "#281a0a",
+  x = 0,
+  y = 0,
 }: {
   text: string;
   ghost?: string;
   digitH?: number;
   color?: string;
   ghostColor?: string;
+  x?: number;
+  y?: number;
 }) {
   const dw = Math.max(8, digitH * 0.62);
   const gap = Math.max(2, dw / 6);
   const chars = text.split("");
   const gchars = ghost.padEnd(chars.length, "8").slice(0, chars.length).split("");
-  let x = 0;
+  let cursor = 0;
   const nodes = chars.map((ch, i) => {
     if (ch === ".") {
-      const cx = x + 3;
-      x += dw / 5;
+      const cx = cursor + 3;
+      cursor += dw / 5;
       return <circle key={`d${i}`} cx={cx} cy={digitH - 4} r={Math.max(1.6, digitH / 14)} fill={color} />;
     }
     const paths = digitPaths(dw, digitH);
     const lit = new Set((DIGITS[ch] ?? "").split(""));
     const ghostLit = new Set((DIGITS[gchars[i]] ?? "abcdefg").split(""));
-    const ox = x;
-    x += dw + gap;
+    const ox = cursor;
+    cursor += dw + gap;
     return (
       <g key={`g${i}`} transform={`translate(${ox} 0)`}>
         {Object.entries(paths).map(([name, d]) => (
@@ -84,8 +88,8 @@ export function SevenSeg({
     );
   });
   return (
-    <svg width={x} height={digitH} viewBox={`0 0 ${x} ${digitH}`} aria-hidden overflow="visible">
+    <g transform={`translate(${x} ${y})`} aria-hidden>
       {nodes}
-    </svg>
+    </g>
   );
 }

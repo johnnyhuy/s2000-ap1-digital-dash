@@ -1,8 +1,8 @@
 {
-  "harness_cruise": "0000000007e01ff8381c63ce03c07bde03c000007ffefffefffe000000000000",
-  "harness_live": "0000000007e01ff8381c63ce03c07bde03c000007ffefffefffe000000000000",
+  "harness_cruise": "0000000007e01ff8381c61ce01c079de03c000007ffefffefffe000000000000",
+  "harness_live": "0000000007e01ff8381c61ce01c079de03c000007ffefffefffe000000000000",
   "harness_ready": "0000000007e01ff83ffc7ffe7ffe7ffe7ffe7ffe7ffeffffffff000000000000",
   "harness_reveal": "0000000007e01ff83ffc7ffe7ffe7ffe7ffe7ffe7ffefffffffe000000000000",
-  "harness_selftest": "0000000007e01ff8381c218401c07bde000000007ffe7ffefffe000000000000",
+  "harness_selftest": "0000000007e01ff8381c218401c079de000000007ffe7ffefffe000000000000",
   "harness_sweep": "0000000007e01ff83ffc7ffe7ffe7ffe7ffe7ffe7ffeffffffff000000000000"
 }
