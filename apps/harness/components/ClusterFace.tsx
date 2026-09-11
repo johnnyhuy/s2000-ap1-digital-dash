@@ -27,15 +27,22 @@ import { HardwareBezel } from "./Telltales";
 
 const AMBER = "#f08c1c";
 const AMBER_HOT = "#ffb030";
-const AMBER_GHOST = "#2a1808";
-const AMBER_BAND = "#b05812";
+const AMBER_GHOST = "#261608";
+const AMBER_BAND_LO = "#c67020";
+const AMBER_BAND_HI = "#8c3c0c";
 const RED = "#e0241c";
 const RED_LCD = "#ff261c";
 const WHITE = "#f8f2e8";
-const CREAM = "#eee6d6";
-const DIM = "#766a58";
-const TICK_MINOR_DIM = "#d68e2a";
-const REDLINE_PRINT = "#ba2620";
+const CREAM = "#f2ead8";
+const DIM = "#6e6454";
+const TICK_MINOR_DIM = "#a86c20";
+const REDLINE_PRINT = "#a82018";
+const TACH_BAND_OUTER = 16;
+const TACH_NUM_INSET = 26;
+const TACH_TICK_MAJOR = { w: 1.35, len: 11.5 };
+const TACH_TICK_MINOR = { w: 0.75, len: 6.8 };
+const TACH_NEEDLE_TIP = -2.2;
+const TACH_NEEDLE_TAIL = 32;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -66,20 +73,28 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
   const n = tachArchNormal(frac, geom);
   const px = -n.y;
   const py = n.x;
-  const tipX = p.x - n.x * 24;
-  const tipY = p.y - n.y * 24;
-  const tailX = p.x + n.x * 5.5;
-  const tailY = p.y + n.y * 5.5;
+  const tipX = p.x + n.x * TACH_NEEDLE_TIP;
+  const tipY = p.y + n.y * TACH_NEEDLE_TIP;
+  const tailX = p.x + n.x * TACH_NEEDLE_TAIL;
+  const tailY = p.y + n.y * TACH_NEEDLE_TAIL;
+  const hubX = p.x + n.x * 6.2;
+  const hubY = p.y + n.y * 6.2;
+  const midX = p.x + n.x * 3.2;
+  const midY = p.y + n.y * 3.2;
   const hot = frac >= 8 / 9;
   const col = hot ? RED : CREAM;
+  const glow = hot ? RED : AMBER_HOT;
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <circle cx={p.x} cy={p.y} r={3.4} fill={hot ? RED : AMBER_HOT} />
+      <line x1={tipX} y1={tipY} x2={tailX} y2={tailY} stroke={glow} strokeWidth={2.4} strokeLinecap="round" />
+      <line x1={tipX} y1={tipY} x2={tailX} y2={tailY} stroke={col} strokeWidth={1.45} strokeLinecap="round" />
       <polygon
-        points={`${tipX},${tipY} ${p.x + px * 1.7 + n.x * 2.6},${p.y + py * 1.7 + n.y * 2.6} ${tailX},${tailY} ${p.x - px * 1.7 + n.x * 2.6},${p.y - py * 1.7 + n.y * 2.6}`}
+        points={`${tipX},${tipY} ${midX + px * 1.7},${midY + py * 1.7} ${midX - px * 1.7},${midY - py * 1.7}`}
         fill={col}
       />
-      <circle cx={p.x} cy={p.y} r={1.15} fill={col} />
+      <circle cx={hubX} cy={hubY} r={2.4} fill={glow} />
+      <circle cx={hubX} cy={hubY} r={1.2} fill={col} />
+      <circle cx={hubX} cy={hubY} r={0.45} fill="#140e08" />
     </g>
   );
 }
@@ -101,14 +116,13 @@ function TachSegments({
     if (frac >= redFrom - 1e-6) continue;
     const major = i % 4 === 0;
     const reached = frac <= needleFrac + 1e-6;
-    const w = major ? 2.2 : 1.2;
-    const len = major ? 17 : 10;
+    const tick = major ? TACH_TICK_MAJOR : TACH_TICK_MINOR;
     const fill = major ? WHITE : reached ? lerpHex(AMBER, AMBER_HOT, frac) : TICK_MINOR_DIM;
     segs.push(
       <path
         key={`s${i}`}
         className={reached ? "seg-lit" : "seg-ghost"}
-        d={tachTickPath(frac, w, len, geom, 2.4)}
+        d={tachTickPath(frac, tick.w, tick.len, geom, 1.1)}
         fill={fill}
         stroke="none"
       />,
@@ -124,25 +138,41 @@ function TachSegments({
       <path
         key={`r${i}`}
         className={reached ? "seg-lit seg-red" : "seg-ghost"}
-        d={tachTickPath(mid, 5.0, 24, geom, 0)}
+        d={tachTickPath(mid, 3.6, TACH_BAND_OUTER - 1.2, geom, 0.6)}
         fill={reached ? RED : REDLINE_PRINT}
         stroke="none"
       />,
     );
   }
   const washTo = Math.min(needleFrac, redFrom);
-  const wash = needleFrac > 0.012 ? tachBandPath(0, washTo, 0.6, 20, geom) : "";
-  const washRed = needleFrac > redFrom ? tachBandPath(redFrom, needleFrac, 0.6, 24, geom) : "";
+  const wash = needleFrac > 0.012 ? tachBandPath(0, washTo, 0.25, TACH_BAND_OUTER, geom) : "";
+  const washRed = needleFrac > redFrom ? tachBandPath(redFrom, needleFrac, 0.25, TACH_BAND_OUTER + 1, geom) : "";
   const trail =
-    sweepT !== undefined ? tachBandPath(Math.max(0, sweepT - 0.14), Math.max(sweepT, 0.02), 0.4, 22, geom) : "";
+    sweepT !== undefined
+      ? tachBandPath(Math.max(0, sweepT - 0.07), Math.max(sweepT, 0.012), 0.25, TACH_BAND_OUTER, geom)
+      : "";
   const tip = needleFrac > 0.002 ? needleFrac : null;
+  const printed = [];
+  const slices = 12;
+  for (let i = 0; i < slices; i += 1) {
+    const t0 = (i / slices) * redFrom;
+    const t1 = ((i + 1) / slices) * redFrom;
+    printed.push(
+      <path
+        key={`band${i}`}
+        d={tachBandPath(t0, t1, 0.25, TACH_BAND_OUTER, geom, 10)}
+        fill={lerpHex(AMBER_BAND_LO, AMBER_BAND_HI, i / (slices - 1))}
+        stroke="none"
+      />,
+    );
+  }
   return (
     <g aria-hidden>
-      <path d={tachBandPath(0, redFrom, 0.6, 20, geom)} fill={AMBER_BAND} stroke="none" />
-      <path d={tachBandPath(redFrom, 1, 0.6, 24, geom)} fill="#5c1610" stroke="none" />
-      {wash ? <path d={wash} fill={AMBER_HOT} opacity={0.42} stroke="none" /> : null}
-      {washRed ? <path className="seg-lit seg-red" d={washRed} fill={RED} opacity={0.55} stroke="none" /> : null}
-      {trail ? <path className="sweep-bead" d={trail} fill={AMBER_HOT} opacity={0.85} stroke="none" /> : null}
+      {printed}
+      <path d={tachBandPath(redFrom, 1, 0.25, TACH_BAND_OUTER + 1, geom)} fill="#5c1410" stroke="none" />
+      {wash ? <path d={wash} fill={AMBER_HOT} opacity={0.22} stroke="none" /> : null}
+      {washRed ? <path className="seg-lit seg-red" d={washRed} fill={RED} opacity={0.34} stroke="none" /> : null}
+      {trail ? <path className="sweep-bead" d={trail} fill={AMBER_HOT} opacity={0.62} stroke="none" /> : null}
       {segs}
       {reds}
       {tip !== null ? <TachPointer frac={tip} geom={geom} /> : null}
@@ -151,7 +181,8 @@ function TachSegments({
 }
 
 function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
-  const unit = tachArchXY(0.05, geom);
+  const unit = tachArchXY(0.11, geom);
+  const un = tachArchNormal(0.11, geom);
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
@@ -162,8 +193,8 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
           <text
             key={i}
             className="tach-num"
-            x={p.x - n.x * 20}
-            y={p.y - n.y * 20}
+            x={p.x + n.x * TACH_NUM_INSET}
+            y={p.y + n.y * TACH_NUM_INSET}
             fontSize={14.5}
             fontWeight={600}
             fontStyle="italic"
@@ -176,10 +207,11 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
         );
       })}
       <text
-        x={unit.x + 8}
-        y={unit.y + 36}
-        fontSize={7.5}
-        fontWeight={600}
+        className="unit-label"
+        x={unit.x + un.x * (TACH_NUM_INSET + 10) + 18}
+        y={unit.y + un.y * (TACH_NUM_INSET + 8)}
+        fontSize={6.5}
+        fontWeight={700}
         fill={dim ? DIM : WHITE}
         textAnchor="middle"
       >
@@ -415,12 +447,12 @@ export function ClusterFace({
           <path d={hoodPath(geom)} fill="#161412" stroke="#3a342e" strokeWidth="1" />
           {ap2 ? null : <polyline points={lip} fill="none" stroke="#6a6258" strokeWidth="2.1" />}
           <path d={lcdPath(geom)} fill="#090302" stroke="none" />
-          <path d={lcdPath(geom)} fill="#5a320c" fillOpacity="0.16" />
+          <path d={lcdPath(geom)} fill="#24140a" fillOpacity="0.08" />
           <polyline
             points={archPoly(lcd.x + 10, lcd.x + lcd.w - 10, lcdPeakY + 1.4, lcdSpringY - 5)}
             fill="none"
             stroke={CREAM}
-            strokeWidth="1.35"
+            strokeWidth="1.1"
           />
 
           {phase !== "ready" ? (
@@ -435,7 +467,7 @@ export function ClusterFace({
               className="sweep-bead"
               cx={sweep.x}
               cy={sweep.y}
-              r={9}
+              r={3.2}
               fill="#ffd56a"
               filter="url(#amber-bloom)"
             />
@@ -454,6 +486,7 @@ export function ClusterFace({
                 digitH={58}
                 color={RED_LCD}
                 ghostColor="#340808"
+                italic={0.08}
               />
               <text x={sc.x + 62} y={sc.y + 2} fontSize={11} fontWeight={700} fill={RED_LCD} className="lcd-label">
                 km/h
@@ -538,15 +571,15 @@ export function ClusterFace({
               </>
             ) : (
               <>
-                <text className="tach-num" x={temp.x - 14} y={temp.y + temp.h * 0.85} fontSize={11} fontWeight={600} fill={AMBER} textAnchor="middle">
+                <text className="unit-label" x={temp.x - 14} y={temp.y + temp.h * 0.85} fontSize={11} fontWeight={700} fill={AMBER} textAnchor="middle">
                   C
                 </text>
                 <text
-                  className="tach-num"
+                  className="unit-label"
                   x={temp.x + temp.w + 14}
                   y={temp.y + temp.h * 0.85}
                   fontSize={11}
-                  fontWeight={600}
+                  fontWeight={700}
                   fill={hot ? RED : AMBER}
                   textAnchor="middle"
                 >
@@ -561,17 +594,17 @@ export function ClusterFace({
                 <SegBar {...temp} frac={barFracEct} segs={TEMP_SEGS} warnLow={false} hotEnd={hot} />
 
                 <text
-                  className="tach-num"
+                  className="unit-label"
                   x={fuel.x - 14}
                   y={fuel.y + fuel.h * 0.85}
                   fontSize={11}
-                  fontWeight={600}
+                  fontWeight={700}
                   fill={lowFuel ? RED : AMBER}
                   textAnchor="middle"
                 >
                   E
                 </text>
-                <text className="tach-num" x={fuel.x + fuel.w + 14} y={fuel.y + fuel.h * 0.85} fontSize={11} fontWeight={600} fill={AMBER} textAnchor="middle">
+                <text className="unit-label" x={fuel.x + fuel.w + 14} y={fuel.y + fuel.h * 0.85} fontSize={11} fontWeight={700} fill={AMBER} textAnchor="middle">
                   F
                 </text>
                 <g

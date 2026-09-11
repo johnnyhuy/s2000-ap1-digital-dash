@@ -20,7 +20,7 @@ LAMP_RED = (226, 40, 32)
 LAMP_AMBER = (236, 148, 28)
 LAMP_GREEN = (40, 204, 92)
 LAMP_BLUE = (36, 96, 228)
-LAMP_GHOST = (28, 26, 24)
+LAMP_GHOST = (46, 42, 38)
 
 # Reject the old neon sweep / high-beam cyan
 NEON_CYAN = (72, 210, 230)
@@ -128,7 +128,7 @@ def tint_white(pygame, surf, color: tuple[int, int, int]):
     return out
 
 
-def blit_glow(pygame, dest, src, center: tuple[int, int], strength: float = 0.58, scale: float = 1.22) -> None:
+def blit_glow(pygame, dest, src, center: tuple[int, int], strength: float = 0.48, scale: float = 1.16) -> None:
     """Soft bloom: a larger, faded copy under the sharp sprite."""
     gw = max(2, int(src.get_width() * scale))
     gh = max(2, int(src.get_height() * scale))
@@ -206,10 +206,10 @@ def _draw_battery(pygame, w: int, h: int):
 
 
 def _draw_oil(pygame, w: int, h: int):
+    """Filled oil-can silhouette + drop (OEM plate, not a hollow outline)."""
     s = _blank(pygame, w, h)
     cx, cy = w // 2 - 2, h // 2 + 2
     pygame.draw.rect(s, (255, 255, 255), (cx - 16, cy - 8, 26, 18), border_radius=1)
-    s.fill((0, 0, 0, 0), pygame.Rect(cx - 11, cy - 4, 16, 10))
     pygame.draw.polygon(
         s,
         (255, 255, 255),

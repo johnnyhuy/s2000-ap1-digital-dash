@@ -20,10 +20,15 @@ from gauge_ui import (  # noqa: E402
     NOTCH_BOT_PCT,
     NOTCH_TOP_PCT,
     REDLINE_BLOCKS,
+    TACH_BAND_OUTER,
+    TACH_NUM_INSET,
+    TACH_TICK_MAJOR,
     TEMP_SEGS,
     TEMP_W_PCT,
+    tach_arch_normal,
     tach_arch_xy,
     tach_band_poly,
+    tach_num_xy,
     DisplayState,
     PHASE_READY_S,
     PHASE_REVEAL_S,
@@ -177,6 +182,17 @@ class FaceGeomTests(unittest.TestCase):
         # Flank the speed/odo band — not a vertical side stack, not AP2 arches
         self.assertLess(abs(ty - FACE.odo_c[1]), 40)
         self.assertLess(th, 16)
+
+    def test_tach_numerals_sit_inside_the_well(self) -> None:
+        nx, ny = tach_arch_normal(0.5)
+        self.assertGreater(ny, 0.5)
+        ax, ay = tach_arch_xy(0.5)
+        px, py = tach_num_xy(0.5)
+        self.assertGreater(py, ay)
+        self.assertLess(abs(px - ax), 8)
+        # Clear of the printed band and the major ticks that sit on it
+        self.assertGreater(TACH_NUM_INSET, TACH_BAND_OUTER)
+        self.assertGreater(TACH_NUM_INSET, TACH_TICK_MAJOR[1] + 16)
 
     def test_module_is_flat_bottom_and_stepped(self) -> None:
         bl, br = hood_bottom_corners(FACE)
