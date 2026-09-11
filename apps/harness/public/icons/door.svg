@@ -3,8 +3,9 @@
   <title>Door-open telltale</title>
   <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
        White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
-  <path fill="#fff" d="M23.5 5.5h17l7.2 7.4v27.2L40.5 48h-17L16.3 40.1V12.9z"/>
-  <rect x="27.2" y="11" width="9.4" height="6.2" rx="0.7" fill="#0a0a0a"/>
-  <path fill="#fff" d="M16.4 21 3.4 27.4l3.2 4.8 12.6-5.8z"/>
-  <path fill="#fff" d="M47.6 21 60.6 27.4l-3.2 4.8-12.6-5.8z"/>
+  <g fill="#fff">
+    <path fill-rule="evenodd" d="M25.4 4.6h13.2c1.2 0 2.4 0.6 3.2 1.6l4.8 6.4v26.2c0 1.2-0.6 2.4-1.6 3.2L38.6 47.4H25.4l-6.4-5.4c-1-0.8-1.6-2-1.6-3.2V12.6c0-1.2 0.6-2.4 1.6-3.2z M28.2 10.8h7.6v6.4h-7.6z"/>
+    <path d="M17.6 21.2 4.2 27.8l3.6 5.4 12-6z"/>
+    <path d="M46.4 21.2 59.8 27.8l-3.6 5.4-12-6z"/>
+  </g>
 </svg>

@@ -3,5 +3,5 @@
   <title>SRS telltale</title>
   <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
        White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
-  <text x="32" y="31" text-anchor="middle" fill="#fff" font-family="DejaVu Sans, Liberation Sans, Arial Narrow, sans-serif" font-size="16" font-weight="700" letter-spacing="0.6">SRS</text>
+  <text x="32" y="31" text-anchor="middle" fill="#fff" font-family="DejaVu Sans, Liberation Sans, Arial Narrow, sans-serif" font-size="17" font-weight="700" letter-spacing="0.8">SRS</text>
 </svg>

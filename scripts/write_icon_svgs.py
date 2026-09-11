@@ -10,10 +10,12 @@ from the Car Spy AP1 frame and the self-test lamp-strip descriptions).
 
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEST = ROOT / "assets" / "icons"
+HARNESS = ROOT / "apps" / "harness" / "public" / "icons"
 
 HEADER = '''<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {vb_w} {vb_h}" width="{vb_w}" height="{vb_h}" role="img" aria-label="{label}">
@@ -39,114 +41,109 @@ WORD = (
 SVGS: dict[str, str] = {
     "turn_l": wrap(
         "turn_l",
-        '  <path fill="#fff" d="M44 8 8 24l36 16v-9h14V17H44z"/>\n',
+        '  <path fill="#fff" d="M46 8.5 7 24l39 15.5v-8.2h13.5V16.7H46z"/>\n',
         label="Left turn telltale",
     ),
     "turn_r": wrap(
         "turn_r",
-        '  <path fill="#fff" d="M20 8v9H6v14h14v9l36-16z"/>\n',
+        '  <path fill="#fff" d="M18 8.5v8.2H4.5v14.6H18v8.2L57 24z"/>\n',
         label="Right turn telltale",
     ),
     "high_beam": wrap(
         "high_beam",
-        """  <path fill="#fff" d="M38 10c12 0 18.5 8.2 18.5 14S50 38 38 38h-6V10h6z"/>
-  <path stroke="#fff" stroke-width="2.6" stroke-linecap="square" fill="none"
-        d="M6 14.5h24M4 19.5h26M4 24.5h26M4 29.5h26M6 34.5h24"/>
+        """  <path fill="#fff" d="M38 10c12.4 0 19.2 8.1 19.2 14S50.4 38 38 38h-6.4V10H38z"/>
+  <path fill="#fff" d="M6 13.2h23.5v2.7H6zm-2 5.2h25.5v2.7H4zm0 5.2h25.5v2.7H4zm0 5.2h25.5v2.7H4zm2 5.2h23.5v2.7H6z"/>
 """,
         label="High beam telltale",
     ),
     "abs": wrap(
         "abs",
-        WORD.format(x=32, y=31, size=16, track="0.6", label="ABS"),
+        WORD.format(x=32, y=31, size=17, track="0.8", label="ABS"),
         label="ABS telltale",
     ),
     "brake": wrap(
         "brake",
-        WORD.format(x=48, y=31, size=15, track="0.8", label="BRAKE"),
+        WORD.format(x=48, y=31, size=16, track="1.0", label="BRAKE"),
         vb_w=96,
         label="BRAKE telltale",
     ),
     "battery": wrap(
         "battery",
-        """  <defs>
-    <mask id="batt">
-      <rect width="64" height="48" fill="black"/>
-      <rect x="14" y="16" width="36" height="22" rx="1.2" fill="white"/>
-      <rect x="20" y="11" width="8" height="6" rx="0.4" fill="white"/>
-      <rect x="36" y="11" width="8" height="6" rx="0.4" fill="white"/>
-      <rect x="19" y="25.2" width="9" height="2.8" fill="black"/>
-      <rect x="36" y="25.2" width="9" height="2.8" fill="black"/>
-      <rect x="39.1" y="21.2" width="2.8" height="10.8" fill="black"/>
-    </mask>
-  </defs>
-  <rect width="64" height="48" fill="#fff" mask="url(#batt)"/>
+        """  <g fill="#fff">
+    <rect x="21.5" y="10.5" width="8.2" height="5.6" rx="0.6"/>
+    <rect x="34.3" y="10.5" width="8.2" height="5.6" rx="0.6"/>
+    <path fill-rule="evenodd" d="M13.5 16.2h37v22.2h-37z M16.4 19.1h31.2v16.4H16.4z"/>
+    <rect x="19.6" y="25.6" width="10.2" height="2.7"/>
+    <rect x="23.3" y="21.6" width="2.8" height="10.7"/>
+    <rect x="34.2" y="25.6" width="10.2" height="2.7"/>
+  </g>
 """,
         label="Battery telltale",
     ),
     "oil": wrap(
         "oil",
-        """  <path fill="#fff" d="M10 22.5c0-2.8 2-5 5.2-5H18v16H12.4C10.8 33.5 10 31.6 10 29.2z"/>
-  <path fill="#fff" d="M18 20h16.5v18H18z"/>
-  <path fill="#fff" d="M34.5 20 51 7.2l3.6 3.4-11.2 9.2V38h-9z"/>
-  <path fill="#fff" d="M50.2 15.4c0 3.8 2.8 6.8 5.2 6.8s5.2-3 5.2-6.8c0-3-2.4-5.6-5.2-8.4-2.8 2.8-5.2 5.4-5.2 8.4z"/>
+        """  <g fill="#fff">
+    <path d="M9.5 23.2c0-3.2 2.3-5.8 6.1-5.8H19v18.2h-5.8c-2.2 0-3.7-2.5-3.7-6.2z"/>
+    <path fill-rule="evenodd" d="M19 19.4h18.2v19.4H19z M22.2 22.8h11.8v12.4H22.2z"/>
+    <path d="M37.2 19.4 53.6 6.2l4.1 3.9-11.3 9.1v19.6H37.2z"/>
+    <path d="M51.8 16.2c0 4 2.9 7.1 5.6 7.1s5.6-3.1 5.6-7.1c0-3.2-2.6-6.1-5.6-9.2-3 3.1-5.6 6-5.6 9.2z"/>
+  </g>
 """,
         label="Oil pressure telltale",
     ),
     "cel": wrap(
         "cel",
-        """  <path fill="#fff" d="M9 20.5h7.2l3.2-7.6h13.2l2.2 7.6H52l4.2-4.8h4.8v7.2h2.6v12.6h-2.6v7.6H9v-7.6H4.2V28.2H9z"/>
-  <path fill="#0a0a0a" d="M17.6 26.6h28.8v5.6H17.6z"/>
-  <path fill="#fff" d="M20 28h3.4v3H20zm5.4 0h3.4v3h-3.4zm5.4 0h3.4v3h-3.4zm5.4 0h3.4v3h-3.4zm5.4 0h3.4v3h-3.4z"/>
+        """  <g fill="#fff">
+    <path fill-rule="evenodd" d="M8.2 20.4h7.4l3.3-7.8h14.2l2.3 7.8H50.6l4.6-5.2h5.2v7.6h2.6v13.2h-2.6v8.2H8.2v-8.2H3.4V29.2h4.8z M17.4 26.2h29.4v7.4H17.4z"/>
+    <path d="M19.6 27.6h3.2v4.6h-3.2zm5.4 0h3.2v4.6h-3.2zm5.4 0h3.2v4.6h-3.2zm5.4 0h3.2v4.6h-3.2zm5.4 0h3.2v4.6h-3.2z"/>
+  </g>
 """,
         label="Check engine telltale",
     ),
     "immobilizer": wrap(
         "immobilizer",
-        """  <defs>
-    <mask id="key">
-      <rect width="64" height="48" fill="black"/>
-      <circle cx="18" cy="24" r="10" fill="white"/>
-      <rect x="26" y="20.8" width="26" height="6.4" fill="white"/>
-      <rect x="41.2" y="27" width="3.6" height="7.2" fill="white"/>
-      <rect x="47.2" y="27" width="3.6" height="10" fill="white"/>
-      <circle cx="18" cy="24" r="4" fill="black"/>
-    </mask>
-  </defs>
-  <rect width="64" height="48" fill="#fff" mask="url(#key)"/>
+        """  <g fill="#fff">
+    <path fill-rule="evenodd" d="M18 13.2a10.8 10.8 0 1 0 0.01 0zm0 5.2a5.6 5.6 0 1 0 0.01 0z"/>
+    <rect x="26.2" y="20.8" width="26.6" height="6.6" rx="0.8"/>
+    <rect x="41.4" y="27.2" width="3.8" height="7.4" rx="0.4"/>
+    <rect x="47.6" y="27.2" width="3.8" height="10.2" rx="0.4"/>
+  </g>
 """,
         label="Immobilizer key telltale",
     ),
     "maint": wrap(
         "maint",
-        WORD.format(x=32, y=21, size=12.5, track="0.2", label="MAINT")
-        + WORD.format(x=32, y=36, size=12.5, track="0.05", label="REQ'D"),
+        WORD.format(x=32, y="20.5", size=13, track="0.35", label="MAINT")
+        + WORD.format(x=32, y="36.5", size=13, track="0.15", label="REQ'D"),
         label="MAINT REQ'D telltale",
     ),
     "eps": wrap(
         "eps",
-        WORD.format(x=32, y=31, size=16, track="0.6", label="EPS"),
+        WORD.format(x=32, y=31, size=17, track="0.8", label="EPS"),
         label="EPS telltale",
     ),
     "seatbelt": wrap(
         "seatbelt",
-        """  <circle cx="32" cy="10" r="6.6" fill="#fff"/>
-  <path fill="#fff" d="M18 20.4c0-2.4 4.2-4.6 14-4.6s14 2.2 14 4.6V42H18z"/>
-  <path fill="#0a0a0a" d="M21.2 19 44 42h-8.4L19.6 24.2z"/>
+        """  <g fill="#fff">
+    <circle cx="32" cy="9.4" r="6.5"/>
+    <path fill-rule="evenodd" d="M17.6 19.8c0-2.5 4.5-5 14.4-5s14.4 2.5 14.4 5V43.2H17.6z M20.2 18.4 45.4 43.2h-9.2L18.8 24.6z"/>
+  </g>
 """,
         label="Seatbelt telltale",
     ),
     "door": wrap(
         "door",
-        """  <path fill="#fff" d="M23.5 5.5h17l7.2 7.4v27.2L40.5 48h-17L16.3 40.1V12.9z"/>
-  <rect x="27.2" y="11" width="9.4" height="6.2" rx="0.7" fill="#0a0a0a"/>
-  <path fill="#fff" d="M16.4 21 3.4 27.4l3.2 4.8 12.6-5.8z"/>
-  <path fill="#fff" d="M47.6 21 60.6 27.4l-3.2 4.8-12.6-5.8z"/>
+        """  <g fill="#fff">
+    <path fill-rule="evenodd" d="M25.4 4.6h13.2c1.2 0 2.4 0.6 3.2 1.6l4.8 6.4v26.2c0 1.2-0.6 2.4-1.6 3.2L38.6 47.4H25.4l-6.4-5.4c-1-0.8-1.6-2-1.6-3.2V12.6c0-1.2 0.6-2.4 1.6-3.2z M28.2 10.8h7.6v6.4h-7.6z"/>
+    <path d="M17.6 21.2 4.2 27.8l3.6 5.4 12-6z"/>
+    <path d="M46.4 21.2 59.8 27.8l-3.6 5.4-12-6z"/>
+  </g>
 """,
         label="Door-open telltale",
     ),
     "srs": wrap(
         "srs",
-        WORD.format(x=32, y=31, size=16, track="0.6", label="SRS"),
+        WORD.format(x=32, y=31, size=17, track="0.8", label="SRS"),
         label="SRS telltale",
     ),
 }
@@ -155,64 +152,73 @@ ATLAS = '''<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 72" width="980" height="72" role="img" aria-label="AP1 OEM lamp atlas">
   <title>AP1 OEM lamp atlas — self-test order</title>
   <rect width="980" height="72" fill="#0a0a0a"/>
-  <g transform="translate(8,16)" fill="#2cc458"><path d="M34 6 6 24l28 18v-10h10V16H34z"/></g>
-  <g transform="translate(52,16)" fill="#1c56d6">
+  <g transform="translate(8,16)" fill="#28c85c"><path d="M34 6 6 24l28 18v-10h10V16H34z"/></g>
+  <g transform="translate(52,16)" fill="#2460e4">
     <path d="M28 8c9 0 14 6.4 14 10.4S37 28.8 28 28.8h-4V8h4z"/>
-    <path d="M4 11h18M2 15.2h20M2 19.2h20M2 23.2h20M4 27.2h18" stroke="#1c56d6" stroke-width="2" fill="none"/>
+    <path d="M4 11h18M2 15.2h20M2 19.2h20M2 23.2h20M4 27.2h18" stroke="#2460e4" stroke-width="2.2" fill="none"/>
   </g>
-  <text x="130" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#e48a1a">ABS</text>
-  <text x="210" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#d6221e">BRAKE</text>
-  <g transform="translate(268,18)" fill="#d6221e">
-    <rect x="4" y="8" width="30" height="16" rx="1"/>
-    <rect x="8" y="4" width="6" height="5"/>
-    <rect x="22" y="4" width="6" height="5"/>
-    <rect x="8" y="14" width="7" height="2.2" fill="#0a0a0a"/>
-    <rect x="22" y="14" width="7" height="2.2" fill="#0a0a0a"/>
-    <rect x="24.4" y="11" width="2.2" height="8.2" fill="#0a0a0a"/>
+  <text x="130" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#ec941c">ABS</text>
+  <text x="210" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#e22820">BRAKE</text>
+  <g transform="translate(268,16)" fill="#e22820">
+    <rect x="6" y="2" width="6" height="4" rx="0.4"/>
+    <rect x="16" y="2" width="6" height="4" rx="0.4"/>
+    <path fill-rule="evenodd" d="M2 8h24v16H2z M4 10.4h20v11.2H4z"/>
+    <rect x="6" y="15" width="6" height="2"/>
+    <rect x="15" y="15" width="6" height="2"/>
+    <rect x="17.2" y="12.4" width="1.8" height="7.2"/>
   </g>
-  <g transform="translate(316,16)" fill="#d6221e">
-    <path d="M4 12h16l8-7 2.4 2.6-6 5.4V28H4z"/>
-    <path d="M28 10c0 2.4 1.8 4.4 3.2 4.4s3.2-2 3.2-4.4c0-1.8-1.4-3.4-3.2-5-1.8 1.6-3.2 3.2-3.2 5z"/>
+  <g transform="translate(316,14)" fill="#e22820">
+    <path d="M3 14h4.2c2.2 0 3.6 1.4 3.6 3.4S9.4 21 7.2 21H3z"/>
+    <path fill-rule="evenodd" d="M10 11h12v16H10z M12.2 13.6h7.6v10.8h-7.6z"/>
+    <path d="M22 11 34 4.2l2.4 2.6-8.2 6.6V27H22z"/>
+    <path d="M32.4 10.2c0 2.6 1.8 4.6 3.4 4.6s3.4-2 3.4-4.6c0-2-1.6-3.8-3.4-5.6-1.8 1.8-3.4 3.6-3.4 5.6z"/>
   </g>
-  <g transform="translate(360,14)" fill="#e48a1a">
+  <g transform="translate(360,14)" fill="#ec941c">
     <path d="M4 16h5l2.4-5.2h7l1.6 5.2h12l2.6-3.4H38v5.4h2.4v9H38V36H4v-4H1.2v-8.2H4z"/>
-    <text x="20" y="26" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6" font-weight="800" fill="#0a0a0a">CHECK</text>
+    <rect x="12" y="20" width="20" height="5.6" fill="#0a0a0a"/>
+    <text x="22" y="25" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="6" font-weight="800" fill="#ec941c">CHECK</text>
   </g>
-  <g transform="translate(414,18)" fill="#2cc458">
-    <circle cx="10" cy="16" r="8"/>
-    <circle cx="10" cy="16" r="3.2" fill="#0a0a0a"/>
-    <rect x="16" y="13.2" width="18" height="5.4"/>
-    <rect x="27" y="18.4" width="2.8" height="6"/>
-    <rect x="31.4" y="18.4" width="2.8" height="8"/>
+  <g transform="translate(414,16)" fill="#28c85c">
+    <path fill-rule="evenodd" d="M10 6.2a8.4 8.4 0 1 0 .01 0zm0 4.2a4.2 4.2 0 1 0 .01 0z"/>
+    <rect x="16" y="13" width="18" height="5.2" rx="0.5"/>
+    <rect x="27" y="18" width="2.8" height="6"/>
+    <rect x="31.6" y="18" width="2.8" height="8.2"/>
   </g>
-  <text x="500" y="32" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#e48a1a">MAINT</text>
-  <text x="500" y="48" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#e48a1a">REQ'D</text>
-  <text x="568" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#e48a1a">EPS</text>
-  <g transform="translate(600,12)" fill="#d6221e">
-    <circle cx="22" cy="10" r="5.4"/>
-    <path d="M12 20c0-2 3-3.4 10-3.4s10 1.4 10 3.4v14H12z"/>
-    <path d="M15 18 32 40h-6.4L14 24z" fill="#0a0a0a"/>
+  <text x="500" y="32" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#ec941c">MAINT</text>
+  <text x="500" y="48" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#ec941c">REQ'D</text>
+  <text x="568" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#ec941c">EPS</text>
+  <g transform="translate(600,10)" fill="#e22820">
+    <circle cx="22" cy="8.6" r="5.5"/>
+    <path fill-rule="evenodd" d="M11 18.4c0-2 3.2-3.6 11-3.6s11 1.6 11 3.6V40H11z M13.4 17.2 33.6 40h-7.4L12.2 22.4z"/>
   </g>
-  <g transform="translate(652,10)" fill="#d6221e">
-    <path d="M20 8h12l5 6v22l-5 6H20l-5-6V14z"/>
-    <path d="M15 20 6 25.2l1.8 3.2 9-4.4z"/>
-    <path d="M37 20l9 5.2-1.8 3.2-9-4.4z"/>
+  <g transform="translate(652,8)" fill="#e22820">
+    <path fill-rule="evenodd" d="M18.4 6h13.2l5.6 6.2v24.4L31.6 43H18.4l-5.6-6.4V12.2z M21.6 12h6.8v5H21.6z"/>
+    <path d="M13 20 4.2 25.4l2.2 3.4 8.6-4.6z"/>
+    <path d="M37 20l8.8 5.4-2.2 3.4-8.6-4.6z"/>
   </g>
-  <text x="760" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#d6221e">SRS</text>
-  <g transform="translate(800,16)" fill="#2cc458"><path d="M10 6v9H0v12h10v9l28-15z"/></g>
+  <text x="760" y="44" text-anchor="middle" font-family="DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#e22820">SRS</text>
+  <g transform="translate(800,16)" fill="#28c85c"><path d="M10 6v9H0v12h10v9l28-15z"/></g>
 </svg>
 '''
 
 
 def main() -> None:
     DEST.mkdir(parents=True, exist_ok=True)
+    written: list[Path] = []
     for name, svg in SVGS.items():
         path = DEST / f"{name}.svg"
         path.write_text(svg, encoding="utf-8")
+        written.append(path)
         print(path.relative_to(ROOT))
     atlas = DEST / "atlas.svg"
     atlas.write_text(ATLAS, encoding="utf-8")
+    written.append(atlas)
     print(atlas.relative_to(ROOT))
+    if HARNESS.is_dir():
+        for path in written:
+            dest = HARNESS / path.name
+            shutil.copy2(path, dest)
+            print(dest.relative_to(ROOT))
 
 
 if __name__ == "__main__":

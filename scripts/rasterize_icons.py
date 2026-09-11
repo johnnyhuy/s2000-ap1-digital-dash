@@ -6,6 +6,7 @@ Prefer this over pygame drawers so the committed PNG matches the SVG plate.
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -37,10 +38,30 @@ def rasterize(kind: str, height: int = 96) -> Path:
     png = ASSETS / f"{kind}.png"
     if not svg.is_file():
         raise FileNotFoundError(svg)
-    subprocess.run(
-        ["rsvg-convert", "-h", str(height), str(svg), "-o", str(png)],
-        check=True,
-    )
+    rsvg = shutil.which("rsvg-convert")
+    magick = shutil.which("magick") or shutil.which("convert")
+    if rsvg:
+        subprocess.run(
+            [rsvg, "-h", str(height), str(svg), "-o", str(png)],
+            check=True,
+        )
+    elif magick:
+        subprocess.run(
+            [
+                magick,
+                "-background",
+                "none",
+                "-density",
+                "192",
+                f"SVG:{svg}",
+                "-resize",
+                f"x{height}",
+                str(png),
+            ],
+            check=True,
+        )
+    else:
+        raise FileNotFoundError("rsvg-convert or ImageMagick convert")
     return png
 
 
