@@ -82,7 +82,7 @@ class IntroTests(unittest.TestCase):
     def test_reveal_rpm_hits_redline_then_settles(self) -> None:
         self.assertAlmostEqual(reveal_rpm(0.0, 2000), 0.0)
         self.assertGreater(reveal_rpm(0.3, 2000), 3000)
-        self.assertAlmostEqual(reveal_rpm(0.58, 2000), float(RPM_REDLINE))
+        self.assertGreater(reveal_rpm(0.55, 2000), float(RPM_REDLINE))
         self.assertAlmostEqual(reveal_rpm(1.0, 2000), 2000.0)
 
     def test_boot_hides_lamps_until_reveal(self) -> None:

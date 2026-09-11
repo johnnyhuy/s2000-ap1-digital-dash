@@ -25,17 +25,17 @@ import type { DisplayState } from "@/lib/mockDrive";
 import { ectFrac, fuelFrac } from "@/lib/mockDrive";
 import { HardwareBezel } from "./Telltales";
 
-const AMBER = "#e88418";
-const AMBER_HOT = "#ffa824";
-const AMBER_GHOST = "#301c0a";
-const AMBER_BAND = "#763a0c";
-const RED = "#dc201c";
-const RED_LCD = "#e81c16";
-const WHITE = "#f4f0e8";
-const CREAM = "#e2dcd0";
-const DIM = "#6c6252";
-const TICK_MINOR_DIM = "#d69630";
-const REDLINE_PRINT = "#c42c20";
+const AMBER = "#f08c1c";
+const AMBER_HOT = "#ffb030";
+const AMBER_GHOST = "#2a1808";
+const AMBER_BAND = "#b05812";
+const RED = "#e0241c";
+const RED_LCD = "#ff261c";
+const WHITE = "#f8f2e8";
+const CREAM = "#eee6d6";
+const DIM = "#766a58";
+const TICK_MINOR_DIM = "#d68e2a";
+const REDLINE_PRINT = "#ba2620";
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -55,7 +55,7 @@ function lerpHex(a: string, b: string, t: number): string {
 function LcdWindow({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
   return (
     <g className="lcd-window">
-      <rect x={x} y={y} width={w} height={h} rx={3} fill="#0c0504" stroke="#4a1814" strokeWidth={0.75} />
+      <rect x={x} y={y} width={w} height={h} rx={3} fill="#0a0302" stroke="#5a1812" strokeWidth={0.8} />
       <rect x={x} y={y} width={w} height={h} rx={3} fill="url(#lcd-door)" />
     </g>
   );
@@ -66,20 +66,20 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
   const n = tachArchNormal(frac, geom);
   const px = -n.y;
   const py = n.x;
-  const tipX = p.x - n.x * 22;
-  const tipY = p.y - n.y * 22;
-  const tailX = p.x + n.x * 5;
-  const tailY = p.y + n.y * 5;
+  const tipX = p.x - n.x * 24;
+  const tipY = p.y - n.y * 24;
+  const tailX = p.x + n.x * 5.5;
+  const tailY = p.y + n.y * 5.5;
   const hot = frac >= 8 / 9;
   const col = hot ? RED : CREAM;
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <circle cx={p.x} cy={p.y} r={4.2} fill={hot ? RED : AMBER_HOT} />
+      <circle cx={p.x} cy={p.y} r={3.4} fill={hot ? RED : AMBER_HOT} />
       <polygon
-        points={`${tipX},${tipY} ${p.x + px * 2.4 + n.x * 3},${p.y + py * 2.4 + n.y * 3} ${tailX},${tailY} ${p.x - px * 2.4 + n.x * 3},${p.y - py * 2.4 + n.y * 3}`}
+        points={`${tipX},${tipY} ${p.x + px * 1.7 + n.x * 2.6},${p.y + py * 1.7 + n.y * 2.6} ${tailX},${tailY} ${p.x - px * 1.7 + n.x * 2.6},${p.y - py * 1.7 + n.y * 2.6}`}
         fill={col}
       />
-      <circle cx={p.x} cy={p.y} r={1.6} fill={col} />
+      <circle cx={p.x} cy={p.y} r={1.15} fill={col} />
     </g>
   );
 }
@@ -151,8 +151,7 @@ function TachSegments({
 }
 
 function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
-  const unit = tachArchXY(0.08, geom);
-  const un = tachArchNormal(0.08, geom);
+  const unit = tachArchXY(0.05, geom);
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
@@ -163,9 +162,9 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
           <text
             key={i}
             className="tach-num"
-            x={p.x - n.x * 18}
-            y={p.y - n.y * 18}
-            fontSize={15}
+            x={p.x - n.x * 20}
+            y={p.y - n.y * 20}
+            fontSize={14.5}
             fontWeight={600}
             fontStyle="italic"
             fill={dim ? DIM : WHITE}
@@ -177,14 +176,14 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
         );
       })}
       <text
-        x={unit.x + un.x * 30 + 4}
-        y={unit.y + un.y * 30 + 4}
-        fontSize={8}
+        x={unit.x + 8}
+        y={unit.y + 36}
+        fontSize={7.5}
         fontWeight={600}
         fill={dim ? DIM : WHITE}
         textAnchor="middle"
       >
-        x1000r/min
+        ×1000 r/min
       </text>
     </g>
   );
@@ -332,13 +331,13 @@ function ReadyCard({ face, geom }: { face: DisplayState; geom: FaceGeom }) {
   ];
   return (
     <g className="ready-card">
-      <text x={cx} y={geom.lcd.y + 48} textAnchor="middle" fontSize={11} fill={DIM} letterSpacing="0.18em">
+      <text x={cx} y={geom.lcd.y + 48} textAnchor="middle" fontSize={11} fill={DIM} letterSpacing="0.22em">
         S2000  DIGITAL  DASH
       </text>
-      <text x={cx} y={geom.speed.y + 8} textAnchor="middle" fontSize={44} fontWeight={700} fill={AMBER_HOT} className="ready-word">
+      <text x={cx} y={geom.speed.y + 8} textAnchor="middle" fontSize={46} fontWeight={700} fill={AMBER_HOT} className="ready-word">
         READY
       </text>
-      <text x={cx} y={geom.speed.y + 36} textAnchor="middle" fontSize={10} fill={DIM} letterSpacing="0.08em">
+      <text x={cx} y={geom.speed.y + 36} textAnchor="middle" fontSize={10} fill={DIM} letterSpacing="0.12em">
         IGNITION ON   SYSTEMS OK
       </text>
       {chips.map(([name, val], i) => {
@@ -413,10 +412,10 @@ export function ClusterFace({
               <rect width="1" height="8" fill="rgba(255,48,32,0.1)" />
             </pattern>
           </defs>
-          <path d={hoodPath(geom)} fill="#1a1918" stroke="#2a2622" strokeWidth="1" />
-          {ap2 ? null : <polyline points={lip} fill="none" stroke="#3a342e" strokeWidth="2.2" />}
-          <path d={lcdPath(geom)} fill="#070403" stroke="none" />
-          <path d={lcdPath(geom)} fill="#482c0c" fillOpacity="0.14" />
+          <path d={hoodPath(geom)} fill="#161412" stroke="#3a342e" strokeWidth="1" />
+          {ap2 ? null : <polyline points={lip} fill="none" stroke="#6a6258" strokeWidth="2.1" />}
+          <path d={lcdPath(geom)} fill="#090302" stroke="none" />
+          <path d={lcdPath(geom)} fill="#5a320c" fillOpacity="0.16" />
           <polyline
             points={archPoly(lcd.x + 10, lcd.x + lcd.w - 10, lcdPeakY + 1.4, lcdSpringY - 5)}
             fill="none"
@@ -454,7 +453,7 @@ export function ClusterFace({
                 ghost="188"
                 digitH={58}
                 color={RED_LCD}
-                ghostColor="#2a0808"
+                ghostColor="#340808"
               />
               <text x={sc.x + 62} y={sc.y + 2} fontSize={11} fontWeight={700} fill={RED_LCD} className="lcd-label">
                 km/h
@@ -472,7 +471,7 @@ export function ClusterFace({
                 ghost="888888"
                 digitH={22}
                 color={RED_LCD}
-                ghostColor="#2a0808"
+                ghostColor="#340808"
                 italic={0.04}
               />
               <text
@@ -493,7 +492,7 @@ export function ClusterFace({
                 ghost="888.8"
                 digitH={16}
                 color={RED_LCD}
-                ghostColor="#2a0808"
+                ghostColor="#340808"
                 italic={0.04}
               />
               {battWarn ? (

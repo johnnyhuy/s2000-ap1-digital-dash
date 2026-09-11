@@ -48,34 +48,34 @@ from protocol import (
 W, H = 1920, 1080
 
 # Cabin around the module — flat orthographic, no fake 3D skew
-CABIN = (8, 8, 9)
-COWL = (18, 17, 16)
-COWL_HIGH = (44, 40, 36)
-COWL_EDGE = (58, 52, 46)
-WELL = (8, 6, 4)
-LCD = (6, 4, 2)
-AMBER = (232, 132, 24)
-AMBER_HOT = (255, 168, 36)
-AMBER_DIM = (92, 52, 14)
-AMBER_GHOST = (48, 28, 10)
-AMBER_WASH = (92, 48, 10)
-AMBER_BAND = (118, 58, 12)
-RED = (220, 32, 28)
-RED_DIM = (78, 16, 14)
+CABIN = (6, 6, 7)
+COWL = (22, 20, 18)
+COWL_HIGH = (98, 90, 80)
+COWL_EDGE = (70, 64, 56)
+WELL = (9, 6, 4)
+LCD = (7, 3, 2)
+AMBER = (240, 140, 28)
+AMBER_HOT = (255, 176, 48)
+AMBER_DIM = (102, 54, 12)
+AMBER_GHOST = (42, 24, 8)
+AMBER_WASH = (118, 58, 12)
+AMBER_BAND = (176, 88, 18)
+RED = (224, 36, 28)
+RED_DIM = (82, 16, 14)
 RED_GHOST = (42, 14, 12)
-RED_LCD = (232, 28, 22)
-RED_LCD_GHOST = (42, 8, 8)
-WHITE = (244, 240, 232)
-CREAM = (226, 220, 208)
-DIM = (108, 98, 82)
-MUTED = (42, 38, 34)
-ORANGE = (236, 108, 24)
-TICK_MAJOR_DIM = (232, 226, 214)
-TICK_MINOR_DIM = (214, 150, 48)
-REDLINE_PRINT = (196, 44, 32)
-BEZEL_BTN = (118, 118, 116)
-BEZEL_BAND = (14, 15, 16)
-BEZEL_BAND_EDGE = (32, 34, 36)
+RED_LCD = (255, 38, 28)
+RED_LCD_GHOST = (52, 10, 8)
+WHITE = (248, 242, 232)
+CREAM = (238, 230, 214)
+DIM = (118, 106, 88)
+MUTED = (48, 44, 38)
+ORANGE = (240, 116, 28)
+TICK_MAJOR_DIM = (240, 234, 220)
+TICK_MINOR_DIM = (214, 142, 42)
+REDLINE_PRINT = (186, 38, 28)
+BEZEL_BTN = (138, 138, 134)
+BEZEL_BAND = (12, 13, 14)
+BEZEL_BAND_EDGE = (38, 40, 42)
 
 # --- locked % layout (see refs/flat/DIMENSIONS.md) ---------------------------
 # Module as % of the 1920×1080 canvas; height from OEM 2.35:1 elevation
@@ -545,11 +545,14 @@ def boot_strip_mode(phase: str, phase_t: float) -> tuple[dict[str, bool] | None,
 
 
 def reveal_rpm(local_t: float, live_rpm: float) -> float:
-    """Self-test: 0 → redline, then settle onto live RPM."""
+    """Self-test: 0 → slight redline overshoot, then settle onto live RPM."""
     t = clamp(local_t, 0.0, 1.0)
-    if t < 0.58:
-        return RPM_REDLINE * smoothstep(t / 0.58)
-    return lerp(float(RPM_REDLINE), live_rpm, smoothstep((t - 0.58) / 0.42))
+    peak = float(RPM_REDLINE) * 1.03
+    if t < 0.52:
+        return peak * smoothstep(t / 0.52)
+    if t < 0.62:
+        return peak
+    return lerp(peak, live_rpm, smoothstep((t - 0.62) / 0.38))
 
 
 @dataclass
@@ -824,7 +827,7 @@ def draw_cowl(pygame, surf, sweep_t: float | None = None, g: FaceGeom | None = N
     pygame.draw.polygon(surf, LCD, aperture)
     # Night-idle amber wash so printed tach ticks sit on a warm well
     wash = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
-    pygame.draw.polygon(wash, (72, 44, 12, 42), aperture)
+    pygame.draw.polygon(wash, (88, 48, 10, 52), aperture)
     surf.blit(wash, (0, 0))
     inner = arch_points(
         g.lcd[0] + 14,
@@ -894,10 +897,10 @@ def draw_tach_segments(
     red_band = tach_band_poly(red_from, 1.0, 0.6, 48, g)
     if amber_band:
         pygame.draw.polygon(surf, AMBER_BAND, amber_band)
-        pygame.draw.polygon(bloom, (*AMBER, 64), amber_band)
+        pygame.draw.polygon(bloom, (*AMBER, 78), amber_band)
     if red_band:
-        pygame.draw.polygon(surf, (92, 22, 16), red_band)
-        pygame.draw.polygon(bloom, (*RED, 72), red_band)
+        pygame.draw.polygon(surf, (110, 24, 18), red_band)
+        pygame.draw.polygon(bloom, (*RED, 84), red_band)
 
     wash_to = clamp(lit_frac, 0.0, 1.0)
     if wash_to > 0.012:
@@ -951,20 +954,20 @@ def _draw_tach_pointer(pygame, surf, frac: float, g: FaceGeom) -> None:
     tx, ty = tach_arch_xy(frac, g)
     nx, ny = tach_arch_normal(frac, g)
     px, py = -ny, nx
-    tip = (tx - nx * 28, ty - ny * 28)
-    tail = (tx + nx * 6, ty + ny * 6)
+    tip = (tx - nx * 30, ty - ny * 30)
+    tail = (tx + nx * 7, ty + ny * 7)
     tri = [
         (int(tip[0]), int(tip[1])),
-        (int(tx + px * 3.1 + nx * 4), int(ty + py * 3.1 + ny * 4)),
+        (int(tx + px * 2.15 + nx * 3.4), int(ty + py * 2.15 + ny * 3.4)),
         (int(tail[0]), int(tail[1])),
-        (int(tx - px * 3.1 + nx * 4), int(ty - py * 3.1 + ny * 4)),
+        (int(tx - px * 2.15 + nx * 3.4), int(ty - py * 2.15 + ny * 3.4)),
     ]
     col = CREAM if frac < red_from else RED
     glow = AMBER_HOT if frac < red_from else RED
-    pygame.draw.circle(surf, glow, (int(tx), int(ty)), 7)
+    pygame.draw.circle(surf, glow, (int(tx), int(ty)), 6)
     pygame.draw.polygon(surf, col, tri)
-    pygame.draw.circle(surf, glow, (int(tx), int(ty)), 4)
-    pygame.draw.circle(surf, col, (int(tx), int(ty)), 2)
+    pygame.draw.circle(surf, glow, (int(tx), int(ty)), 3)
+    pygame.draw.circle(surf, col, (int(tx), int(ty)), 1)
 
 
 def draw_welcome_sweep(pygame, surf, sweep_t: float, g: FaceGeom | None = None) -> None:
@@ -1003,17 +1006,16 @@ def draw_tach_numbers(pygame, fonts, surf, dim: bool = False, g: FaceGeom | None
         frac = i / 9.0
         x, y = tach_arch_xy(frac, g)
         nx, ny = tach_arch_normal(frac, g)
-        pos = (int(x - nx * 22), int(y - ny * 22))
+        pos = (int(x - nx * 26), int(y - ny * 26))
         img = fonts["tick"].render(str(i), True, col)
         surf.blit(img, img.get_rect(center=pos))
-    lx, ly = tach_arch_xy(0.07, g)
-    nx, ny = tach_arch_normal(0.07, g)
+    lx, ly = tach_arch_xy(0.05, g)
     blit_text(
         surf,
         fonts["micro"],
-        "x1000r/min",
+        "×1000 r/min",
         WHITE if not dim else DIM,
-        (int(lx + nx * 52), int(ly + ny * 52)),
+        (int(lx + 10), int(ly + 46)),
         "center",
     )
 
@@ -1201,7 +1203,7 @@ def draw_speed(pygame, fonts, surf, speed: float, g: FaceGeom | None = None) -> 
     digits = f"{value:d}".rjust(3)
     cx, cy = g.speed_c
     win = (cx - 150, cy - 62, 270, 118)
-    lcd_window(pygame, surf, win, (12, 4, 3), (56, 22, 18), door=(255, 48, 32, 14))
+    lcd_window(pygame, surf, win, (10, 3, 2), (72, 22, 16), door=(255, 42, 28, 18))
     box = blit_digits(
         pygame,
         surf,
@@ -1240,7 +1242,7 @@ def draw_odo_row(
     if g.style == FaceStyle.AP2.value:
         blit_text(surf, fonts["readout"], _clock_text(), DIM, g.clock_c, "center")
     win = (cx - 210, y - 30, 420, 60)
-    lcd_window(pygame, surf, win, (12, 4, 3), (48, 18, 16), door=(255, 48, 32, 12))
+    lcd_window(pygame, surf, win, (10, 3, 2), (64, 20, 16), door=(255, 42, 28, 16))
     blit_digits(
         pygame,
         surf,
@@ -1273,8 +1275,10 @@ def draw_odo_row(
 def _round_btn(pygame, fonts, surf, rect, label: str, label_col=WHITE) -> None:
     """One circular OEM bezel button — never a merged −/+ pill."""
     x, y, w, h = rect
+    pygame.draw.ellipse(surf, (22, 22, 22), pygame.Rect(x, y + 2, w, h))
     pygame.draw.ellipse(surf, BEZEL_BTN, pygame.Rect(x, y, w, h))
-    pygame.draw.ellipse(surf, (88, 88, 86), pygame.Rect(x, y, w, h), width=1)
+    pygame.draw.ellipse(surf, (188, 188, 182), pygame.Rect(x + 3, y + 2, max(6, w - 8), max(4, h // 3)), width=1)
+    pygame.draw.ellipse(surf, (72, 72, 70), pygame.Rect(x, y, w, h), width=1)
     blit_text(surf, fonts["lamp"], label, label_col, (x + w // 2, y + h // 2), "center")
 
 
@@ -1329,7 +1333,7 @@ def draw_hardware_strip(
         col = item.color if item.lit else LAMP_GHOST
         sprite = icon_surface(pygame, item.kind, col, icon_h, max_width=item.width - 2)
         if item.lit:
-            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.62, scale=1.22)
+            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.72, scale=1.28)
         else:
             surf.blit(sprite, sprite.get_rect(center=(cx, cy)))
         x += item.width + LAMP_GAP
@@ -1487,7 +1491,7 @@ def build_fonts(pygame) -> dict:
     return {
         "speed": _font(pygame, 132, bold=True, mono=True),
         "ready": _font(pygame, 82, bold=True),
-        "tick": _font(pygame, 34, italic=True),
+        "tick": _font(pygame, 32, italic=True),
         "label": _font(pygame, 22, bold=True),
         "readout": _font(pygame, 26, bold=True, mono=True),
         "tiny": _font(pygame, 18, italic=True),

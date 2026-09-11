@@ -48,7 +48,7 @@ export function SevenSeg({
   ghost = "188",
   digitH = 42,
   color = "#e02018",
-  ghostColor = "#2a0808",
+  ghostColor = "#340808",
   x = 0,
   y = 0,
   italic = 0.05,

@@ -28,9 +28,11 @@ export function smoothstep(t: number): number {
   return x * x * (3 - 2 * x);
 }
 
-/** Self-test: 0 → redline, then settle onto live RPM. */
+/** Self-test: 0 → slight redline overshoot, then settle onto live RPM. */
 export function revealRpm(localT: number, liveRpm: number): number {
   const t = localT < 0 ? 0 : localT > 1 ? 1 : localT;
-  if (t < 0.58) return RPM_REDLINE * smoothstep(t / 0.58);
-  return RPM_REDLINE + (liveRpm - RPM_REDLINE) * smoothstep((t - 0.58) / 0.42);
+  const peak = RPM_REDLINE * 1.03;
+  if (t < 0.52) return peak * smoothstep(t / 0.52);
+  if (t < 0.62) return peak;
+  return peak + (liveRpm - peak) * smoothstep((t - 0.62) / 0.38);
 }
