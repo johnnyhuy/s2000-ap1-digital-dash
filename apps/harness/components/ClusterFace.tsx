@@ -24,7 +24,7 @@ import type { DisplayState } from "@/lib/mockDrive";
 import { ectFrac, fuelFrac } from "@/lib/mockDrive";
 import { HardwareBezel } from "./Telltales";
 
-const AMBER = "#ec9820";
+const AMBER = "#e8941c";
 const AMBER_HOT = "#ffb02e";
 const AMBER_GHOST = "#3a2810";
 const AMBER_WASH = "#2e200c";
@@ -47,7 +47,34 @@ function lerpHex(a: string, b: string, t: number): string {
   return `rgb(${Math.round(lerp(ar, br, t))},${Math.round(lerp(ag, bg, t))},${Math.round(lerp(ab, bb, t))})`;
 }
 
-function TachSegments({ litFrac, geom }: { litFrac: number; geom: FaceGeom }) {
+function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
+  const p = tachArchXY(frac, geom);
+  const n = tachArchNormal(frac, geom);
+  const px = -n.y;
+  const py = n.x;
+  const tipX = p.x - n.x * 8;
+  const tipY = p.y - n.y * 8;
+  const hot = frac >= 8 / 9;
+  return (
+    <g className={hot ? "seg-lit seg-red" : "seg-lit"}>
+      <circle cx={p.x} cy={p.y} r={2.4} fill={hot ? RED : AMBER_HOT} />
+      <polygon
+        points={`${tipX},${tipY} ${p.x + px * 4.5 + n.x},${p.y + py * 4.5 + n.y} ${p.x - px * 4.5 + n.x},${p.y - py * 4.5 + n.y}`}
+        fill={hot ? RED : AMBER_HOT}
+      />
+    </g>
+  );
+}
+
+function TachSegments({
+  litFrac,
+  geom,
+  sweepT,
+}: {
+  litFrac: number;
+  geom: FaceGeom;
+  sweepT?: number;
+}) {
   const redFrom = 8 / 9;
   const minors = 36;
   const wash = [];
@@ -61,7 +88,8 @@ function TachSegments({ litFrac, geom }: { litFrac: number; geom: FaceGeom }) {
     const frac = i / minors;
     if (frac >= redFrom - 1e-6) continue;
     const major = i % 4 === 0;
-    const on = frac <= litFrac + 1e-6;
+    const trail = sweepT !== undefined && frac <= sweepT + 1e-6 && sweepT - frac <= 0.18;
+    const on = sweepT !== undefined ? trail : frac <= litFrac + 1e-6;
     const w = major ? 2.6 : 1.6;
     const len = major ? 22 : 14;
     segs.push(
@@ -79,29 +107,32 @@ function TachSegments({ litFrac, geom }: { litFrac: number; geom: FaceGeom }) {
     const t0 = redFrom + (1 - redFrom) * (i / REDLINE_BLOCKS);
     const t1 = redFrom + (1 - redFrom) * ((i + 1) / REDLINE_BLOCKS);
     const mid = (t0 + t1) * 0.5;
-    const on = mid <= litFrac + 1e-6;
+    const trail = sweepT !== undefined && mid <= sweepT + 1e-6 && sweepT - mid <= 0.18;
+    const on = sweepT !== undefined ? trail : mid <= litFrac + 1e-6;
     reds.push(
       <path
         key={`r${i}`}
         className={on ? "seg-lit seg-red" : "seg-ghost"}
-        d={tachTickPath(mid, 4.8, 28, geom, 0)}
+        d={tachTickPath(mid, 5.4, 30, geom, 0)}
         fill={on ? RED : "#4a1814"}
         stroke="none"
       />,
     );
   }
+  const tip = sweepT ?? (litFrac > 0.002 ? litFrac : null);
   return (
     <g aria-hidden>
       {wash}
       {segs}
       {reds}
+      {tip !== null ? <TachPointer frac={tip} geom={geom} /> : null}
     </g>
   );
 }
 
 function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
-  const unit = tachArchXY(0.03, geom);
-  const un = tachArchNormal(0.03, geom);
+  const unit = tachArchXY(0.08, geom);
+  const un = tachArchNormal(0.08, geom);
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
@@ -126,9 +157,9 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
         );
       })}
       <text
-        x={unit.x - un.x * 8 + 36}
-        y={unit.y - un.y * 8 + 16}
-        fontSize={9}
+        x={unit.x + un.x * 16 + 6}
+        y={unit.y + un.y * 16 + 4}
+        fontSize={8}
         fontWeight={600}
         fill={dim ? "#3a3632" : DIM}
         textAnchor="middle"
@@ -340,7 +371,7 @@ export function ClusterFace({
 
           {phase !== "ready" ? (
             <>
-              <TachSegments litFrac={litFrac} geom={geom} />
+              <TachSegments litFrac={litFrac} geom={geom} sweepT={phase === "sweep" ? phaseT : undefined} />
               <TachNumbers geom={geom} dim={phase === "sweep"} />
             </>
           ) : null}
@@ -515,8 +546,8 @@ export function ClusterFace({
           ) : null}
         </svg>
         <HardwareBezel
-          lamps={face.lamps}
-          battV={face.batt_v}
+          lamps={phase === "sweep" || phase === "ready" ? {} : face.lamps}
+          battV={phase === "sweep" || phase === "ready" ? 14 : face.batt_v}
           selLabel={ap2 ? "CLOCK" : "SEL"}
           bulbCheck={bulbCheck}
         />

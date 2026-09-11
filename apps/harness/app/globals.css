@@ -155,13 +155,14 @@ body {
 }
 
 .ready-card {
-  animation: ready-in 0.45s ease-out;
+  animation: ready-in 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: 50% 40%;
 }
 
 @keyframes ready-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px) scale(0.98);
   }
   to {
     opacity: 1;
@@ -261,9 +262,9 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  opacity: 0.42;
+  opacity: 0.28;
   flex: 0 0 auto;
-  color: #6a645c;
+  color: #4a4640;
   transition: opacity 90ms linear, filter 90ms linear, color 90ms linear;
 }
 
@@ -293,13 +294,13 @@ body {
 
 .telltale-word-line {
   display: block;
-  font-size: 0.42rem;
+  font-size: 0.46rem;
   letter-spacing: 0.06em;
 }
 
 .telltale-on {
   opacity: 1;
-  filter: drop-shadow(0 0 6px var(--lamp));
+  filter: drop-shadow(0 0 7px var(--lamp));
 }
 
 .oval {
