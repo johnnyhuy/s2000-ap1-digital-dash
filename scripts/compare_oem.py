@@ -57,9 +57,8 @@ def _render(pygame, fonts, draw_frame, DisplayState, telem, phase: str, local_t:
 
     face = DisplayState()
     face.snap(telem)
-    if phase != "live":
-        face.trip_origin = telem.odo_km - 128.4
-        face.trip_km = 128.4
+    face.trip_origin = telem.odo_km - 128.4
+    face.trip_km = 128.4
     canvas = pygame.Surface((W, H))
     draw_frame(pygame, fonts, canvas, face, phase, local_t)
     return canvas
