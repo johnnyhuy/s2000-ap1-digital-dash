@@ -1,7 +1,7 @@
 """E2E: mock ESP32 → protocol parse → dummy-SDL cluster frames.
 
-Structural invariants only (dimensions, amber LCD, phase diffs, lamp
-colours). No brittle pixel hashes — font/AA can drift across hosts.
+Structural invariants only (dimensions, red speed LCD, amber tach, phase
+diffs, lamp colours). No brittle pixel hashes — font/AA can drift across hosts.
 """
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 from gauge_ui import (  # noqa: E402
     AMBER,
     FACE,
+    RED_LCD,
     SMOKE_PHASES,
     W,
     H,
@@ -139,7 +140,10 @@ class E2EPipelineTests(unittest.TestCase):
                     pygame.image.tobytes(live, "RGB"),
                     pygame.image.tobytes(sweep, "RGB"),
                 )
-                self.assertGreater(sample_near(live, AMBER, step=12, tol=48), 20)
+                self.assertGreater(sample_near(live, AMBER, step=12, tol=48), 8)
+                cx, cy = FACE.speed_c
+                well = live.subsurface((cx - 140, cy - 70, 280, 140))
+                self.assertGreater(sample_near(well, RED_LCD, step=3, tol=48), 8)
             finally:
                 pygame.quit()
 

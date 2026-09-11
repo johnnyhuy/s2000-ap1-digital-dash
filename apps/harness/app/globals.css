@@ -9,9 +9,11 @@
   --paper: #e6e2d6;
   --muted: #8a8478;
   --danger: #d6241e;
+  --lcd-red: #e02018;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-share-tech), var(--font-geist-mono), ui-monospace, monospace;
   --font-cluster: var(--font-oxanium), var(--font-geist-sans), ui-sans-serif, sans-serif;
+  --font-tach: var(--font-barlow), var(--font-cluster);
 }
 
 @theme inline {
@@ -128,6 +130,12 @@ body {
   font-family: var(--font-cluster);
 }
 
+.cluster-stage > svg text.tach-num {
+  font-family: var(--font-tach);
+  font-style: italic;
+  font-weight: 600;
+}
+
 .cluster-stage > svg text.lcd-label {
   font-family: var(--font-mono);
 }
@@ -138,20 +146,28 @@ body {
 }
 
 .seg-lit {
-  filter: drop-shadow(0 0 4px rgba(236, 152, 32, 0.72));
-  transition: fill 80ms linear, filter 80ms linear;
+  filter: drop-shadow(0 0 3.5px rgba(255, 176, 46, 0.78));
+  transition: fill 90ms linear, filter 90ms linear;
 }
 
 .seg-lit.seg-red {
-  filter: drop-shadow(0 0 5px rgba(214, 36, 30, 0.7));
+  filter: drop-shadow(0 0 5px rgba(224, 32, 24, 0.82));
 }
 
 .seg-ghost {
-  transition: fill 80ms linear;
+  transition: fill 90ms linear;
+}
+
+.needle {
+  filter: drop-shadow(0 0 7px rgba(255, 213, 106, 0.9));
+}
+
+.needle-hot {
+  filter: drop-shadow(0 0 8px rgba(224, 32, 24, 0.95));
 }
 
 .sweep-bead {
-  filter: drop-shadow(0 0 14px #ffd56a);
+  filter: drop-shadow(0 0 16px #ffd56a);
 }
 
 .ready-card {
@@ -224,23 +240,35 @@ body {
 }
 
 .dial {
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
   border: 1.5px solid #d8d4c8;
   border-radius: 50%;
   position: relative;
-  flex: 0 0 11px;
+  flex: 0 0 12px;
+}
+
+.dial::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5.5px;
+  height: 1.4px;
+  background: #d8d4c8;
+  transform: translate(-12%, -80%) rotate(-38deg);
 }
 
 .dial::after {
   content: "";
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 5px;
-  height: 1.5px;
-  background: #d8d4c8;
-  transform: translate(-10%, -80%) rotate(-40deg);
+  right: -5px;
+  bottom: -1px;
+  width: 6px;
+  height: 6px;
+  background:
+    linear-gradient(45deg, transparent 42%, #d8d4c8 42%, #d8d4c8 58%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, #d8d4c8 42%, #d8d4c8 58%, transparent 58%);
 }
 
 .lamp-strip {
@@ -269,7 +297,7 @@ body {
 }
 
 .telltale-icon {
-  height: 16px;
+  height: 18px;
   background: currentColor;
   mask-size: contain;
   mask-repeat: no-repeat;
@@ -300,7 +328,7 @@ body {
 
 .telltale-on {
   opacity: 1;
-  filter: drop-shadow(0 0 7px var(--lamp));
+  filter: drop-shadow(0 0 6px var(--lamp)) drop-shadow(0 0 1px var(--lamp));
 }
 
 .oval {
@@ -452,7 +480,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .seg-lit,
   .telltale-on,
-  .sweep-bead {
+  .sweep-bead,
+  .needle,
+  .needle-hot {
     filter: none;
   }
 

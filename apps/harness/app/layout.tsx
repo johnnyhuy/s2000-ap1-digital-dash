@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Oxanium, Share_Tech_Mono } from "next/font/google";
+import { Barlow_Condensed, Geist, Geist_Mono, Oxanium, Share_Tech_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,6 +24,13 @@ const oxanium = Oxanium({
   weight: ["500", "600", "700"],
 });
 
+const barlow = Barlow_Condensed({
+  variable: "--font-barlow",
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
   title: "S2000 Digital Dash — unofficial DIY",
   description:
@@ -35,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-AU"
-      className={`${geistSans.variable} ${geistMono.variable} ${shareTech.variable} ${oxanium.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${shareTech.variable} ${oxanium.variable} ${barlow.variable} h-full antialiased`}
     >
       <body className="min-h-full">{children}</body>
     </html>

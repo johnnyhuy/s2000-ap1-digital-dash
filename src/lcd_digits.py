@@ -1,6 +1,6 @@
-"""OEM-style 7-segment LCD digits with ghost segments and amber bloom.
+"""OEM-style 7-segment LCD digits with ghost segments and bloom.
 
-Used for the speedo and odo/trip windows. Protocol field names are
+Speed / odo windows are red LCD (AP1 photo). Protocol field names are
 unchanged — this is display-only.
 """
 from __future__ import annotations
@@ -204,16 +204,22 @@ def blit_digits(
     return (x0, y0, total_w, digit_h)
 
 
-def lcd_window(pygame, dest, rect: tuple[int, int, int, int], wash, edge) -> None:
-    """Faint rectangular LCD well with a light screen-door wash."""
+def lcd_window(
+    pygame,
+    dest,
+    rect: tuple[int, int, int, int],
+    wash,
+    edge,
+    door: tuple[int, int, int, int] = (255, 48, 32, 12),
+) -> None:
+    """Recessed rectangular LCD well with a light screen-door wash."""
     x, y, w, h = rect
     pygame.draw.rect(dest, wash, pygame.Rect(x, y, w, h), border_radius=4)
     pygame.draw.rect(dest, edge, pygame.Rect(x, y, w, h), width=1, border_radius=4)
-    # Screen-door: sparse vertical lines (period LCD polariser)
-    door = pygame.Surface((w, h), pygame.SRCALPHA)
+    polariser = pygame.Surface((w, h), pygame.SRCALPHA)
     for i in range(0, w, 4):
-        pygame.draw.line(door, (255, 176, 46, 8), (i, 0), (i, h))
-    dest.blit(door, (x, y))
+        pygame.draw.line(polariser, door, (i, 0), (i, h))
+    dest.blit(polariser, (x, y))
 
 
 def iter_lit_cells(text: str) -> Iterable[str]:

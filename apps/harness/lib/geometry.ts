@@ -294,6 +294,31 @@ export function tachTickPath(
   return `M ${pts.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join(" L ")} Z`;
 }
 
+export function tachBandPath(
+  frac0: number,
+  frac1: number,
+  inner: number,
+  outer: number,
+  geom: FaceGeom = FACE,
+  steps = 48,
+): string {
+  const t0 = frac0 < 0 ? 0 : frac0 > 1 ? 1 : frac0;
+  const t1 = frac1 < 0 ? 0 : frac1 > 1 ? 1 : frac1;
+  if (t1 <= t0 + 1e-4) return "";
+  const n = Math.max(8, Math.round(steps * (t1 - t0)));
+  const outerPts: string[] = [];
+  const innerPts: string[] = [];
+  for (let i = 0; i <= n; i += 1) {
+    const f = t0 + (t1 - t0) * (i / n);
+    const p = tachArchXY(f, geom);
+    const nrm = tachArchNormal(f, geom);
+    outerPts.push(`${(p.x + nrm.x * inner).toFixed(2)},${(p.y + nrm.y * inner).toFixed(2)}`);
+    innerPts.push(`${(p.x + nrm.x * outer).toFixed(2)},${(p.y + nrm.y * outer).toFixed(2)}`);
+  }
+  innerPts.reverse();
+  return `M ${outerPts.join(" L ")} L ${innerPts.join(" L ")} Z`;
+}
+
 /** Shallow rainbow (concave-down) along a side-gauge box — AP2 only. */
 export function sideArchPoint(
   box: { x: number; y: number; w: number; h: number },
