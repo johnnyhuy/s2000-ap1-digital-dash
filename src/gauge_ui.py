@@ -54,18 +54,18 @@ COWL_HIGH = (44, 40, 36)
 COWL_EDGE = (58, 52, 46)
 WELL = (8, 6, 4)
 LCD = (6, 4, 2)
-AMBER = (236, 152, 32)
-AMBER_HOT = (255, 176, 46)
-AMBER_DIM = (78, 50, 14)
-AMBER_GHOST = (40, 26, 10)
-AMBER_WASH = (52, 38, 12)
+AMBER = (232, 148, 28)
+AMBER_HOT = (255, 176, 40)
+AMBER_DIM = (86, 56, 16)
+AMBER_GHOST = (46, 30, 12)
+AMBER_WASH = (58, 40, 14)
 RED = (214, 36, 30)
 RED_DIM = (78, 16, 14)
 RED_GHOST = (42, 14, 12)
-WHITE = (230, 226, 214)
-DIM = (92, 84, 70)
+WHITE = (238, 232, 220)
+DIM = (98, 90, 74)
 MUTED = (42, 38, 34)
-ORANGE = (230, 132, 36)
+ORANGE = (232, 128, 32)
 BEZEL_BTN = (118, 118, 116)
 BEZEL_BAND = (14, 15, 16)
 BEZEL_BAND_EDGE = (32, 34, 36)
@@ -89,7 +89,7 @@ ARCH_N = 2.0                # parabola (u²)
 # AP1: thin horizontal bars flanking the speed/odo (not vertical stacks, not AP2 arches)
 TEMP_X_PCT, TEMP_Y_PCT, TEMP_W_PCT = 0.080, 0.505, 0.160
 FUEL_X_PCT, FUEL_Y_PCT, FUEL_W_PCT = 0.760, 0.505, 0.160
-BAR_H_PCT = 0.012           # OEM AP1 ticks are thin horizontal dashes
+BAR_H_PCT = 0.018           # OEM AP1 ticks are thin horizontal dashes
 SPEED_X_PCT, SPEED_Y_PCT = 0.50, 0.40
 ODO_Y_PCT = 0.50            # directly under the speed (OEM lock)
 # AP2 interpretive side-gauges (not a measured plate)
@@ -496,6 +496,15 @@ def intro_duration_s() -> float:
     return PHASE_SWEEP_S + PHASE_READY_S + PHASE_REVEAL_S
 
 
+def boot_strip_mode(phase: str, phase_t: float) -> tuple[dict[str, bool] | None, bool]:
+    """Hide drive lamps until reveal; bulb-check only in the first half of reveal."""
+    if phase in ("sweep", "ready"):
+        return {}, False
+    if phase == "reveal" and phase_t < 0.55:
+        return None, True
+    return None, False
+
+
 def reveal_rpm(local_t: float, live_rpm: float) -> float:
     """Self-test: 0 → redline, then settle onto live RPM."""
     t = clamp(local_t, 0.0, 1.0)
@@ -585,7 +594,28 @@ class SerialSource:
         return self._reader.poll()
 
 
-def _font(pygame, size: int, bold: bool = False, mono: bool = False):
+_FONTS = Path(__file__).resolve().parents[1] / "assets" / "fonts"
+
+
+def _font(
+    pygame,
+    size: int,
+    bold: bool = False,
+    mono: bool = False,
+    italic: bool = False,
+):
+    bundled = None
+    if mono:
+        bundled = _FONTS / "ShareTechMono-Regular.ttf"
+    elif italic:
+        bundled = _FONTS / "BarlowCondensed-SemiBoldItalic.ttf"
+    else:
+        bundled = _FONTS / ("Oxanium-Bold.ttf" if bold else "Oxanium-Bold.ttf")
+    if bundled is not None and bundled.is_file():
+        try:
+            return pygame.font.Font(str(bundled), size)
+        except (OSError, pygame.error):
+            pass
     names = (
         ("DejaVu Sans Mono", "FreeMono", "monospace")
         if mono
@@ -599,17 +629,6 @@ def blit_text(surf, font, text: str, color, pos, anchor: str = "topleft") -> Non
     rect = img.get_rect()
     setattr(rect, anchor, pos)
     surf.blit(img, rect)
-
-
-def _italic_shear(pygame, img, shear: float = 0.14):
-    """Lean glyphs right — OEM tach numerals are a slightly italic gothic."""
-    w, h = img.get_size()
-    extra = max(1, int(h * shear))
-    out = pygame.Surface((w + extra, h), pygame.SRCALPHA)
-    for y in range(h):
-        dx = int((h - 1 - y) * shear)
-        out.blit(img, (dx, y), pygame.Rect(0, y, w, 1))
-    return out
 
 
 def sample_telem() -> Telemetry:
@@ -777,13 +796,13 @@ def draw_cowl(pygame, surf, sweep_t: float | None = None, g: FaceGeom | None = N
             g.hood_peak_y + 10,
             g.spring_y - 2,
             n=g.arch_n,
-            steps=36,
+            steps=48,
         )
         t = clamp(sweep_t, 0.0, 1.0)
-        i = int(t * max(0, len(band) - 8))
-        chunk = band[i : i + 8]
+        i = int(t * max(0, len(band) - 10))
+        chunk = band[i : i + 10]
         if len(chunk) > 1:
-            pygame.draw.lines(surf, lerp_colour(AMBER, WHITE, t), False, chunk, 8)
+            pygame.draw.lines(surf, lerp_colour(AMBER, WHITE, 0.35 + 0.45 * t), False, chunk, 10)
 
 
 def _expand_poly(pts: list[tuple[int, int]], px: float) -> list[tuple[int, int]]:
@@ -849,7 +868,7 @@ def draw_tach_segments(
         t1 = red_from + (1.0 - red_from) * ((i + 1) / REDLINE_BLOCKS)
         mid = (t0 + t1) * 0.5
         on = mid <= lit_frac + 1e-6
-        pts = tach_tick_poly(mid, 7.5, 46, g, inset=0.0)
+        pts = tach_tick_poly(mid, 9.4, 48, g, inset=0.0)
         if on:
             _blit_seg_bloom(pygame, surf, bloom, pts, ORANGE if i < 4 else RED)
         else:
@@ -858,17 +877,50 @@ def draw_tach_segments(
     small = pygame.transform.smoothscale(bloom, (surf.get_width() // 3, surf.get_height() // 3))
     surf.blit(pygame.transform.smoothscale(small, surf.get_size()), (0, 0))
 
-    tip_frac = clamp(lit_frac, 0.0, 1.0)
-    tx, ty = tach_arch_xy(tip_frac, g)
-    nx, ny = tach_arch_normal(tip_frac, g)
+    if lit_frac > 0.002:
+        _draw_tach_pointer(pygame, surf, clamp(lit_frac, 0.0, 1.0), g)
+
+
+def _draw_tach_pointer(pygame, surf, frac: float, g: FaceGeom) -> None:
+    """Chevron sitting on the lit tip — reads as a needle, not a stray tick."""
+    red_from = 8.0 / 9.0
+    tx, ty = tach_arch_xy(frac, g)
+    nx, ny = tach_arch_normal(frac, g)
     px, py = -ny, nx
-    tip = (tx - nx * 10, ty - ny * 10)
+    tip = (tx - nx * 12, ty - ny * 12)
     tri = [
         (int(tip[0]), int(tip[1])),
-        (int(tx + px * 7), int(ty + py * 7)),
-        (int(tx - px * 7), int(ty - py * 7)),
+        (int(tx + px * 8 + nx * 2), int(ty + py * 8 + ny * 2)),
+        (int(tx - px * 8 + nx * 2), int(ty - py * 8 + ny * 2)),
     ]
-    pygame.draw.polygon(surf, AMBER_HOT if tip_frac < red_from else RED, tri)
+    col = AMBER_HOT if frac < red_from else RED
+    pygame.draw.circle(surf, col, (int(tx), int(ty)), 5)
+    pygame.draw.polygon(surf, col, tri)
+
+
+def draw_welcome_sweep(pygame, surf, sweep_t: float, g: FaceGeom | None = None) -> None:
+    """ID.4-style bead + trailing ticks along the tach arch."""
+    g = _geom(g)
+    t = clamp(sweep_t, 0.0, 1.0)
+    bloom = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
+    n = 36
+    for i in range(n + 1):
+        frac = i / n
+        dist = t - frac
+        if dist < 0 or dist > 0.20:
+            continue
+        strength = 1.0 - dist / 0.20
+        col = lerp_colour(AMBER, AMBER_HOT, strength)
+        pts = tach_tick_poly(frac, 2.4 + 2.8 * strength, 16 + 18 * strength, g, inset=1.0)
+        pygame.draw.polygon(bloom, (*col, int(50 + 160 * strength)), _expand_poly(pts, 3))
+        pygame.draw.polygon(surf, col, pts)
+    x, y = tach_arch_xy(t, g)
+    pygame.draw.circle(bloom, (255, 213, 106, 110), (int(x), int(y)), 20)
+    pygame.draw.circle(surf, (255, 224, 140), (int(x), int(y)), 8)
+    pygame.draw.circle(surf, WHITE, (int(x), int(y)), 3)
+    small = pygame.transform.smoothscale(bloom, (surf.get_width() // 3, surf.get_height() // 3))
+    surf.blit(pygame.transform.smoothscale(small, surf.get_size()), (0, 0))
+    _draw_tach_pointer(pygame, surf, t, g)
 
 
 def draw_tach_numbers(pygame, fonts, surf, dim: bool = False, g: FaceGeom | None = None) -> None:
@@ -880,17 +932,17 @@ def draw_tach_numbers(pygame, fonts, surf, dim: bool = False, g: FaceGeom | None
         frac = i / 9.0
         x, y = tach_arch_xy(frac, g)
         nx, ny = tach_arch_normal(frac, g)
-        pos = (int(x - nx * 22), int(y - ny * 22))
-        img = _italic_shear(pygame, fonts["tick"].render(str(i), True, col), 0.12)
+        pos = (int(x - nx * 24), int(y - ny * 24))
+        img = fonts["tick"].render(str(i), True, col)
         surf.blit(img, img.get_rect(center=pos))
-    lx, ly = tach_arch_xy(0.03, g)
-    nx, ny = tach_arch_normal(0.03, g)
+    lx, ly = tach_arch_xy(0.08, g)
+    nx, ny = tach_arch_normal(0.08, g)
     blit_text(
         surf,
         fonts["micro"],
         "x1000r/min",
         DIM if not dim else MUTED,
-        (int(lx - nx * 8 + 40), int(ly - ny * 8 + 18)),
+        (int(lx + nx * 26), int(ly + ny * 26)),
         "center",
     )
 
@@ -906,7 +958,7 @@ def _seg_bar(
 ) -> None:
     """Thin horizontal amber ticks — OEM AP1, not fat LCD blocks."""
     x, y, w, h = rect
-    tick_h = max(4, min(7, h))
+    tick_h = max(5, min(10, h))
     gap = max(4, int(w * 0.045))
     tick_w = max(10, int((w - gap * (segs - 1)) / segs * 0.72))
     stride = (w - tick_w) / max(1, segs - 1)
@@ -1041,8 +1093,8 @@ def draw_speed(pygame, fonts, surf, speed: float, g: FaceGeom | None = None) -> 
     value = int(round(clamp(speed, 0.0, 399.0)))
     digits = f"{value:d}".rjust(3)
     cx, cy = g.speed_c
-    win = (cx - 168, cy - 70, 300, 132)
-    lcd_window(pygame, surf, win, (12, 8, 3), (38, 26, 12))
+    win = (cx - 150, cy - 62, 270, 118)
+    lcd_window(pygame, surf, win, (10, 7, 3), (36, 24, 10))
     box = blit_digits(
         pygame,
         surf,
@@ -1092,7 +1144,7 @@ def draw_odo_row(
         color=AMBER,
         ghost=AMBER_GHOST,
         ghost_text="888888",
-        bloom=True,
+        bloom=False,
         italic=0.03,
     )
     blit_text(surf, fonts["micro"], "TRIP A", DIM, (cx + 48, y + 2), "midleft")
@@ -1105,7 +1157,7 @@ def draw_odo_row(
         color=AMBER,
         ghost=AMBER_GHOST,
         ghost_text="888.8",
-        bloom=True,
+        bloom=False,
         italic=0.03,
     )
     if batt_warn:
@@ -1141,6 +1193,7 @@ def draw_hardware_strip(
     surf,
     face: DisplayState,
     bulb_check: bool = False,
+    lamps: dict[str, bool] | None = None,
     g: FaceGeom | None = None,
 ) -> None:
     """Lower bezel: separate round − and +, telltales, SEL/CLOCK + TRIP."""
@@ -1155,21 +1208,22 @@ def draw_hardware_strip(
     blit_text(surf, fonts["lamp"], "PUSH CANCEL", WHITE, (dial_x + 78, dial_y), "center")
 
     bx, by, bw, bh = g.lamp_band
-    lamps = lamp_states(
-        face.lamps,
+    flags = face.lamps if lamps is None else lamps
+    lamps_on = lamp_states(
+        flags,
         bulb_check=bulb_check,
-        batt_low=face.batt_v < BATT_LOW_V,
+        batt_low=False if lamps is not None else face.batt_v < BATT_LOW_V,
     )
-    total = sum(item.width for item in lamps) + LAMP_GAP * max(0, len(lamps) - 1)
+    total = sum(item.width for item in lamps_on) + LAMP_GAP * max(0, len(lamps_on) - 1)
     x = bx + max(8, (bw - total) // 2)
     cy = by + bh // 2
-    icon_h = max(14, min(26, bh - 12))
-    for item in lamps:
+    icon_h = max(16, min(28, bh - 10))
+    for item in lamps_on:
         cx = x + item.width // 2
         col = item.color if item.lit else LAMP_GHOST
         sprite = icon_surface(pygame, item.kind, col, icon_h, max_width=item.width - 2)
         if item.lit:
-            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.42, scale=1.12)
+            blit_glow(pygame, surf, sprite, (cx, cy), strength=0.5, scale=1.14)
         else:
             surf.blit(sprite, sprite.get_rect(center=(cx, cy)))
         x += item.width + LAMP_GAP
@@ -1260,15 +1314,20 @@ def draw_frame(
     g = _geom(g)
     draw_cabin(pygame, surf)
     draw_cowl(pygame, surf, sweep_t=phase_t if phase == "sweep" else None, g=g)
+    lamps, bulb_check = boot_strip_mode(phase, phase_t)
     if phase == "sweep":
         draw_tach_segments(pygame, surf, 0.0, ghost=True, g=g)
+        draw_welcome_sweep(pygame, surf, phase_t, g=g)
         draw_tach_numbers(pygame, fonts, surf, dim=True, g=g)
         draw_temp_bar(pygame, fonts, surf, 0.0, False, g=g)
         draw_fuel_bar(pygame, fonts, surf, 0.0, False, g=g)
-        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False, g=g)
+        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False, lamps=lamps, g=g)
     elif phase == "ready":
-        draw_ready_card(fonts, surf, face, g=g)
-        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False, g=g)
+        card = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
+        draw_ready_card(fonts, card, face, g=g)
+        card.set_alpha(int(255 * clamp(phase_t * 3.2, 0.0, 1.0)))
+        surf.blit(card, (0, 0))
+        draw_hardware_strip(pygame, fonts, surf, face, bulb_check=False, lamps=lamps, g=g)
     elif phase == "reveal":
         draw_live_face(
             pygame,
@@ -1276,7 +1335,7 @@ def draw_frame(
             surf,
             face,
             rpm_override=reveal_rpm(phase_t, face.rpm),
-            bulb_check=phase_t < 0.55,
+            bulb_check=bulb_check,
             fade=clamp(phase_t * 1.4, 0.0, 1.0),
             g=g,
         )
@@ -1322,11 +1381,11 @@ def build_fonts(pygame) -> dict:
     return {
         "speed": _font(pygame, 132, bold=True, mono=True),
         "ready": _font(pygame, 78, bold=True),
-        "tick": _font(pygame, 30, bold=True),
-        "label": _font(pygame, 22),
+        "tick": _font(pygame, 32, italic=True),
+        "label": _font(pygame, 22, bold=True),
         "readout": _font(pygame, 26, bold=True, mono=True),
-        "tiny": _font(pygame, 18, bold=True),
-        "micro": _font(pygame, 15),
+        "tiny": _font(pygame, 18, italic=True),
+        "micro": _font(pygame, 15, bold=True),
         "lamp": _font(pygame, 14, bold=True),
     }
 

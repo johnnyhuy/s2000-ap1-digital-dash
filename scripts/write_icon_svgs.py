@@ -39,19 +39,19 @@ WORD = (
 SVGS: dict[str, str] = {
     "turn_l": wrap(
         "turn_l",
-        '  <path fill="#fff" d="M46 9 11 24l35 15v-9h12V18H46z"/>\n',
+        '  <path fill="#fff" d="M44 8 8 24l36 16v-9h14V17H44z"/>\n',
         label="Left turn telltale",
     ),
     "turn_r": wrap(
         "turn_r",
-        '  <path fill="#fff" d="M18 9v9H6v12h12v9l35-15z"/>\n',
+        '  <path fill="#fff" d="M20 8v9H6v14h14v9l36-16z"/>\n',
         label="Right turn telltale",
     ),
     "high_beam": wrap(
         "high_beam",
-        """  <path fill="#fff" d="M36 11c11.5 0 18 8 18 13s-6.5 13-18 13h-5V11h5z"/>
-  <path stroke="#fff" stroke-width="2.5" stroke-linecap="square" fill="none"
-        d="M8 15h22M6 20h24M6 24.5h24M6 29h24M8 34h22"/>
+        """  <path fill="#fff" d="M38 10c12 0 18.5 8.2 18.5 14S50 38 38 38h-6V10h6z"/>
+  <path stroke="#fff" stroke-width="2.6" stroke-linecap="square" fill="none"
+        d="M6 14.5h24M4 19.5h26M4 24.5h26M4 29.5h26M6 34.5h24"/>
 """,
         label="High beam telltale",
     ),
@@ -85,25 +85,18 @@ SVGS: dict[str, str] = {
     ),
     "oil": wrap(
         "oil",
-        """  <path fill="#fff" d="M12 22h22c1.4 0 3.2-1.1 7.2-6.2L48 9.6l3.2 3.4-6.6 7.2V36H12V22z"/>
-  <path fill="#fff" d="M10 24c0-3.2 1.6-5.2 4.2-5.2H16v8h-4.4C10.4 26.8 10 25.6 10 24z"/>
-  <path fill="#fff" d="M46.2 16.4c0 3.4 2.5 6.2 4.6 6.2s4.6-2.8 4.6-6.2c0-2.6-2-4.8-4.6-7.2-2.6 2.4-4.6 4.6-4.6 7.2z"/>
+        """  <path fill="#fff" d="M11 21h24v16H11z"/>
+  <path fill="#fff" d="M8 23c0-3 1.8-5 4.6-5H16v12H9.6C8.4 30 8 28.4 8 26.2z"/>
+  <path fill="#fff" d="M35 21 50 8.4l4 3.6-10.4 9V37h-8.6z"/>
+  <path fill="#fff" d="M50.4 16.8c0 3.6 2.6 6.4 4.8 6.4s4.8-2.8 4.8-6.4c0-2.8-2.2-5.2-4.8-7.8-2.6 2.6-4.8 5-4.8 7.8z"/>
 """,
         label="Oil pressure telltale",
     ),
     "cel": wrap(
         "cel",
-        """  <defs>
-    <mask id="cel">
-      <rect width="64" height="48" fill="black"/>
-      <path fill="white" d="M12 22h6l3.2-7h9.2l2.2 7h15.2l3.6-4.6H58v7.4h3.4v12.2H58V40H12v-5.2H7.2V25.6H12z"/>
-      <rect x="7" y="28" width="6" height="7" fill="white"/>
-      <text x="32" y="33.4" text-anchor="middle" fill="black"
-            font-family="DejaVu Sans, Liberation Sans, Arial Narrow, sans-serif"
-            font-size="7.2" font-weight="800" letter-spacing="0.55">CHECK</text>
-    </mask>
-  </defs>
-  <rect width="64" height="48" fill="#fff" mask="url(#cel)"/>
+        """  <path fill="#fff" d="M10 21h7l3.4-8h12.4l2.4 8H52l4-5h5v8h3v13h-3v8H10v-8H5V29h5z"/>
+  <path fill="#0a0a0a" d="M18 27.2h28v5.2H18z"/>
+  <path fill="#fff" d="M20.2 28.4h3.2v3H20.2zm5.2 0h3.2v3H25.4zm5.2 0h3.2v3H30.6zm5.2 0h3.2v3H35.8zm5.2 0h3.2v3H41z"/>
 """,
         label="Check engine telltale",
     ),
@@ -125,8 +118,8 @@ SVGS: dict[str, str] = {
     ),
     "maint": wrap(
         "maint",
-        WORD.format(x=32, y=22, size=11, track="0.35", label="MAINT")
-        + WORD.format(x=32, y=36, size=11, track="0.15", label="REQ'D"),
+        WORD.format(x=32, y=21, size=12.5, track="0.2", label="MAINT")
+        + WORD.format(x=32, y=36, size=12.5, track="0.05", label="REQ'D"),
         label="MAINT REQ'D telltale",
     ),
     "eps": wrap(
@@ -136,25 +129,18 @@ SVGS: dict[str, str] = {
     ),
     "seatbelt": wrap(
         "seatbelt",
-        """  <defs>
-    <mask id="belt">
-      <rect width="64" height="48" fill="black"/>
-      <circle cx="32" cy="11.5" r="6.4" fill="white"/>
-      <path fill="white" d="M20 20c0-2.2 3.6-4 12-4s12 1.8 12 4v7H20z"/>
-      <path fill="white" d="M19 27h26v16H19z"/>
-      <path fill="black" d="M22 20 42 42h-8L20 26z"/>
-    </mask>
-  </defs>
-  <rect width="64" height="48" fill="#fff" mask="url(#belt)"/>
+        """  <circle cx="32" cy="10" r="6.6" fill="#fff"/>
+  <path fill="#fff" d="M18 20.4c0-2.4 4.2-4.6 14-4.6s14 2.2 14 4.6V42H18z"/>
+  <path fill="#0a0a0a" d="M21.2 19 44 42h-8.4L19.6 24.2z"/>
 """,
         label="Seatbelt telltale",
     ),
     "door": wrap(
         "door",
-        """  <path fill="#fff" d="M25 7h14l6.4 7.2v25.6L39 47H25l-6.4-7.2V14.2z"/>
-  <rect x="28.4" y="11" width="7.2" height="5.2" fill="#000"/>
-  <path fill="#fff" d="M18.6 20.4 7.2 26.2l2.4 4.2 11.2-5.4z"/>
-  <path fill="#fff" d="M45.4 20.4 56.8 26.2l-2.4 4.2-11.2-5.4z"/>
+        """  <path fill="#fff" d="M24 6h16l7 7.6v26.8L40 48H24l-7-7.6V13.6z"/>
+  <rect x="27.6" y="11.2" width="8.8" height="6" rx="0.6" fill="#0a0a0a"/>
+  <path fill="#fff" d="M17 21.2 4.4 27.4l3 4.6 12.2-5.6z"/>
+  <path fill="#fff" d="M47 21.2 59.6 27.4l-3 4.6-12.2-5.6z"/>
 """,
         label="Door-open telltale",
     ),

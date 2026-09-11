@@ -30,20 +30,20 @@ ASSETS = Path(__file__).resolve().parents[1] / "assets" / "icons"
 # kind, lamps-dict key, colour, slot width (px at 1920×1080)
 # Signal pair first, then the self-test strip order, then right turn.
 _LAMP_ROWS: tuple[tuple[str, str, tuple[int, int, int], int], ...] = (
-    ("turn_l", "turn_l", LAMP_GREEN, 40),
-    ("high_beam", "high_beam", LAMP_BLUE, 44),
-    ("abs", "abs", LAMP_AMBER, 50),
-    ("brake", "brake", LAMP_RED, 72),
-    ("battery", "batt_warn", LAMP_RED, 40),
-    ("oil", "oil", LAMP_RED, 42),
-    ("cel", "cel", LAMP_AMBER, 50),
-    ("immobilizer", "immobilizer", LAMP_GREEN, 40),
-    ("maint", "maint", LAMP_AMBER, 54),
-    ("eps", "eps", LAMP_AMBER, 42),
-    ("seatbelt", "seatbelt", LAMP_RED, 36),
+    ("turn_l", "turn_l", LAMP_GREEN, 42),
+    ("high_beam", "high_beam", LAMP_BLUE, 46),
+    ("abs", "abs", LAMP_AMBER, 52),
+    ("brake", "brake", LAMP_RED, 76),
+    ("battery", "batt_warn", LAMP_RED, 42),
+    ("oil", "oil", LAMP_RED, 44),
+    ("cel", "cel", LAMP_AMBER, 54),
+    ("immobilizer", "immobilizer", LAMP_GREEN, 42),
+    ("maint", "maint", LAMP_AMBER, 56),
+    ("eps", "eps", LAMP_AMBER, 44),
+    ("seatbelt", "seatbelt", LAMP_RED, 38),
     ("door", "door", LAMP_RED, 46),
-    ("srs", "srs", LAMP_RED, 42),
-    ("turn_r", "turn_r", LAMP_GREEN, 40),
+    ("srs", "srs", LAMP_RED, 44),
+    ("turn_r", "turn_r", LAMP_GREEN, 42),
 )
 
 ICON_KINDS: tuple[str, ...] = tuple(row[0] for row in _LAMP_ROWS)
@@ -71,7 +71,7 @@ LAMPS: tuple[LampDef, ...] = tuple(
 )
 
 
-LAMP_GAP = 8
+LAMP_GAP = 6
 
 
 def lamp_strip_inner_width(pad: int = 16) -> int:
@@ -159,23 +159,23 @@ def _draw_turn(pygame, w: int, h: int, left: bool):
     cx, cy = w // 2, h // 2
     if left:
         pts = [
-            (cx + 12, cy - 11),
-            (cx - 14, cy),
-            (cx + 12, cy + 11),
-            (cx + 12, cy + 4),
-            (cx + 18, cy + 4),
-            (cx + 18, cy - 4),
-            (cx + 12, cy - 4),
+            (cx + 14, cy - 13),
+            (cx - 16, cy),
+            (cx + 14, cy + 13),
+            (cx + 14, cy + 5),
+            (cx + 22, cy + 5),
+            (cx + 22, cy - 5),
+            (cx + 14, cy - 5),
         ]
     else:
         pts = [
-            (cx - 12, cy - 11),
-            (cx + 14, cy),
-            (cx - 12, cy + 11),
-            (cx - 12, cy + 4),
-            (cx - 18, cy + 4),
-            (cx - 18, cy - 4),
-            (cx - 12, cy - 4),
+            (cx - 14, cy - 13),
+            (cx + 16, cy),
+            (cx - 14, cy + 13),
+            (cx - 14, cy + 5),
+            (cx - 22, cy + 5),
+            (cx - 22, cy - 5),
+            (cx - 14, cy - 5),
         ]
     pygame.draw.polygon(s, (255, 255, 255), pts)
     return s
@@ -208,29 +208,30 @@ def _draw_battery(pygame, w: int, h: int):
 def _draw_oil(pygame, w: int, h: int):
     s = _blank(pygame, w, h)
     cx, cy = w // 2 - 2, h // 2 + 2
-    pygame.draw.rect(s, (255, 255, 255), (cx - 14, cy - 6, 22, 13), border_radius=1)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 15, cy - 7, 24, 16), border_radius=1)
     pygame.draw.polygon(
         s,
         (255, 255, 255),
-        [(cx + 6, cy - 6), (cx + 18, cy - 16), (cx + 22, cy - 12), (cx + 8, cy - 1)],
+        [(cx + 7, cy - 7), (cx + 20, cy - 18), (cx + 25, cy - 13), (cx + 10, cy - 1)],
     )
-    pygame.draw.rect(s, (255, 255, 255), (cx - 17, cy - 4, 5, 8), border_radius=1)
-    pygame.draw.circle(s, (255, 255, 255), (cx + 18, cy - 4), 4)
-    pygame.draw.ellipse(s, (255, 255, 255), (cx + 16, cy - 1, 6, 8))
+    pygame.draw.rect(s, (255, 255, 255), (cx - 19, cy - 5, 6, 10), border_radius=1)
+    pygame.draw.circle(s, (255, 255, 255), (cx + 20, cy - 5), 5)
+    pygame.draw.ellipse(s, (255, 255, 255), (cx + 17, cy - 2, 7, 10))
     return s
 
 
 def _draw_cel(pygame, w: int, h: int):
-    """Filled engine block with CHECK cut-out — Honda AP1 CEL."""
+    """ISO engine block — CHECK is a grille so it stays readable at strip size."""
     s = _blank(pygame, w, h)
     cx, cy = w // 2, h // 2
-    pygame.draw.rect(s, (255, 255, 255), (cx - 16, cy - 6, 32, 14), border_radius=1)
-    pygame.draw.rect(s, (255, 255, 255), (cx - 7, cy - 13, 14, 8))
-    pygame.draw.rect(s, (255, 255, 255), (cx - 21, cy - 2, 6, 8))
-    pygame.draw.rect(s, (255, 255, 255), (cx + 15, cy - 2, 6, 8))
-    font = _font(pygame, 8)
-    img = font.render("CHECK", True, (0, 0, 0))
-    s.blit(img, img.get_rect(center=(cx, cy + 1)))
+    pygame.draw.rect(s, (255, 255, 255), (cx - 18, cy - 6, 36, 16), border_radius=1)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 8, cy - 14, 16, 9))
+    pygame.draw.rect(s, (255, 255, 255), (cx - 24, cy - 2, 7, 9))
+    pygame.draw.rect(s, (255, 255, 255), (cx + 17, cy - 2, 7, 9))
+    pygame.draw.rect(s, (255, 255, 255), (cx + 24, cy + 2, 5, 10))
+    for i in range(5):
+        pygame.draw.rect(s, (0, 0, 0, 0), (cx - 12 + i * 6, cy - 1, 3, 6))
+        s.fill((0, 0, 0, 0), pygame.Rect(cx - 12 + i * 6, cy - 1, 3, 6))
     return s
 
 
@@ -248,9 +249,9 @@ def _draw_key(pygame, w: int, h: int):
 def _draw_seatbelt(pygame, w: int, h: int):
     s = _blank(pygame, w, h)
     cx, cy = w // 2, h // 2 + 1
-    pygame.draw.circle(s, (255, 255, 255), (cx, cy - 11), 6)
-    pygame.draw.rect(s, (255, 255, 255), (cx - 10, cy - 5, 20, 20), border_radius=2)
-    pygame.draw.line(s, (0, 0, 0), (cx - 7, cy - 4), (cx + 8, cy + 13), 4)
+    pygame.draw.circle(s, (255, 255, 255), (cx, cy - 12), 7)
+    pygame.draw.rect(s, (255, 255, 255), (cx - 12, cy - 5, 24, 22), border_radius=2)
+    pygame.draw.line(s, (0, 0, 0), (cx - 9, cy - 5), (cx + 10, cy + 16), 5)
     return s
 
 
@@ -275,11 +276,11 @@ _DRAWERS = {
     "immobilizer": _draw_key,
     "seatbelt": _draw_seatbelt,
     "door": _draw_door,
-    "abs": lambda pygame, w, h: _draw_text_block(pygame, ("ABS",), w, h, 15),
-    "brake": lambda pygame, w, h: _draw_text_block(pygame, ("BRAKE",), w, h, 14),
-    "eps": lambda pygame, w, h: _draw_text_block(pygame, ("EPS",), w, h, 15),
-    "srs": lambda pygame, w, h: _draw_text_block(pygame, ("SRS",), w, h, 15),
-    "maint": lambda pygame, w, h: _draw_text_block(pygame, ("MAINT", "REQ'D"), w, h, 11),
+    "abs": lambda pygame, w, h: _draw_text_block(pygame, ("ABS",), w, h, 16),
+    "brake": lambda pygame, w, h: _draw_text_block(pygame, ("BRAKE",), w, h, 15),
+    "eps": lambda pygame, w, h: _draw_text_block(pygame, ("EPS",), w, h, 16),
+    "srs": lambda pygame, w, h: _draw_text_block(pygame, ("SRS",), w, h, 16),
+    "maint": lambda pygame, w, h: _draw_text_block(pygame, ("MAINT", "REQ'D"), w, h, 12),
 }
 
 
