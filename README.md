@@ -45,7 +45,7 @@
 
 Red 7-seg speed/odo on an **amber tach** in a hooded arched cowl. Flat 2.35:1 elevation — no fake 3D skew.
 
-- **AP1** (default): locked **horizontal TEMP left / FUEL right** flanking the speed/odo. Proportions in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md). Tach is a **printed amber band** with ticks **normal to the arch** and a cream needle.
+- **AP1** (default): locked **horizontal TEMP left / FUEL right** flanking the speed/odo. Proportions in [`refs/flat/DIMENSIONS.md`](refs/flat/DIMENSIONS.md). Tach is a **printed amber band** with ticks **normal to the arch** and a white chevron needle.
 - **AP2**: interpretive stacked arched TEMP / FUEL on the right, plus a clock row. Uses [`refs/oem/ap2/`](refs/oem/ap2/) as reference — **not** a pixel-perfect plate.
 
 Toggle in the [web harness](apps/harness/) or `python src/gauge_ui.py --style ap2` (keys `1` / `2` live). Protocol fields stay frozen.
@@ -138,10 +138,10 @@ uv sync --extra dev
 
 ## Web cluster harness (no Pi)
 
-Shareable Next.js demo of the OEM-geometry face (red 7-seg, printed amber tach, cream needle), driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn) and the same sweep → READY → reveal boot as the Pi UI. Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track. Tach numerals sit in the well; off lamps stay just above black. Cluster type is self-hosted Barlow Condensed; telltales are inline ISO pictograms.
+Shareable Next.js demo of the OEM-geometry face (red 7-seg, printed amber tach, white chevron needle), driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn) and the same sweep → READY → reveal boot as the Pi UI. Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track. Tach numerals sit in the well; off lamps stay just above black. Cluster type is self-hosted Barlow Condensed; telltales are inline ISO pictograms.
 
 <p align="center">
-  <img src="docs/assets/web-ap1-cruise.png" alt="Web AP1 cruise: 80 km/h, cream needle, coolant waves, ISO high beam" width="960" />
+  <img src="docs/assets/web-ap1-cruise.png" alt="Web AP1 cruise: 80 km/h, white needle, coolant waves, ISO high beam" width="960" />
 </p>
 <p align="center">
   <sub>Web AP1 cruise. Warn and AP2 stills: <a href="docs/assets/web-ap1-warn.png"><code>web-ap1-warn.png</code></a>, <a href="docs/assets/web-ap2-warn.png"><code>web-ap2-warn.png</code></a>.</sub>
