@@ -23,11 +23,12 @@ matching the AP1 photo. Faces live under `assets/fonts/` (SIL OFL). The web
 harness loads the same families from Google Fonts; Oxanium stays on the
 masthead only. DejaVu remains the pygame fallback when those files are absent.
 
-Printed tach amber grades `#e08c24` → `#b04810` toward redline, with a quiet
-live wash `#f49420`. LCD red is `#ff261c`. The LCD well is charcoal, not a
-brown overlay. Telltales: red `#e22820`, amber `#ec941c`, green `#28c85c`, ISO
-high-beam blue `#2460e4` (never neon cyan). Icons are white-on-transparent
-silhouettes under `assets/icons/`, tinted at draw time. Word lamps set in
-Barlow Condensed. Tach numerals sit **inside** the well (0 and 9 drop extra);
-ticks stay on the printed band. The needle is a cream dart from the well onto
-the scale.
+Printed tach amber grades `#e08c24` → `#b04810` toward redline in 48 slices,
+with a quiet live wash `#f49420`. LCD red is `#ff261c`. The LCD well is
+charcoal with a faint screen-door, not a brown overlay. Telltales: red
+`#e22820`, amber `#ec941c`, green `#28c85c`, ISO high-beam blue `#2460e4`
+(never neon cyan). Off lamps sit near-black, not muddy grey. Icons are
+white-on-transparent ISO silhouettes under `assets/icons/`, tinted at draw
+time. Word lamps set in Barlow Condensed. Tach numerals sit **inside** the
+well (0 and 9 drop extra); ticks stay on the printed band. The needle is a
+cream dart from the well onto the scale, with a little analog lag.

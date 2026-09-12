@@ -13,6 +13,7 @@ from oem_icons import (  # noqa: E402
     ICON_KINDS,
     LAMP_AMBER,
     LAMP_BLUE,
+    LAMP_GHOST,
     LAMP_GREEN,
     LAMP_RED,
     LAMPS,
@@ -43,6 +44,10 @@ class ColourTests(unittest.TestCase):
         for kind in green:
             self.assertEqual(lamp_color_for(kind), LAMP_GREEN)
         self.assertEqual(lamp_color_for("high_beam"), LAMP_BLUE)
+
+    def test_ghost_lamps_are_near_black(self) -> None:
+        self.assertLess(max(LAMP_GHOST), 50)
+        self.assertGreater(min(LAMP_GHOST), 20)
 
     def test_high_beam_is_blue_not_cyan(self) -> None:
         r, g, b = LAMP_BLUE

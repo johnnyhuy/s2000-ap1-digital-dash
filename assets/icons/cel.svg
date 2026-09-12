@@ -4,7 +4,7 @@
   <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
        White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
   <g fill="#fff">
-    <path fill-rule="evenodd" d="M8.2 20.4h7.4l3.3-7.8h14.2l2.3 7.8H50.6l4.6-5.2h5.2v7.6h2.6v13.2h-2.6v8.2H8.2v-8.2H3.4V29.2h4.8z M17.4 26.2h29.4v7.4H17.4z"/>
-    <path d="M19.6 27.6h3.2v4.6h-3.2zm5.4 0h3.2v4.6h-3.2zm5.4 0h3.2v4.6h-3.2zm5.4 0h3.2v4.6h-3.2zm5.4 0h3.2v4.6h-3.2z"/>
+    <path fill-rule="evenodd" d="M8.2 20.2h7.4l3.4-8h15.4l2.4 8h13.2l4.8-5.4h5.4v8h2.8v13.4h-2.8v8.4H8.2v-8.4H3V29.4h5.2z M16.8 26h30.4v8.2H16.8z"/>
+    <path d="M18.8 27.4h3.2v5.4h-3.2zm5.6 0h3.2v5.4h-3.2zm5.6 0h3.2v5.4h-3.2zm5.6 0h3.2v5.4h-3.2zm5.6 0h3.2v5.4h-3.2z"/>
   </g>
 </svg>
