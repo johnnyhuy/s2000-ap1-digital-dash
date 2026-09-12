@@ -23,7 +23,7 @@ npm run build
 npm test
 ```
 
-Play / pause, **AP1 / AP2** face presets, and drive presets: **Idle**, **Cruise**, **VTEC**, **Warn**. Space skips the ID.4-style boot (sweep → READY → reveal). Telltale pictograms live in `components/LampIcons.tsx`; SVG plates in `public/icons/` still match `assets/icons/`.
+Play / pause, **AP1 / AP2** face presets, and drive presets: **Idle**, **Cruise**, **VTEC**, **Warn**. Space skips the ID.4-style boot (sweep → READY → reveal). Telltale pictograms live in `components/LampIcons.tsx`; SVG plates in `public/icons/` still match `assets/icons/`. Current web stills: [`docs/assets/web-ap1-cruise.png`](../../docs/assets/web-ap1-cruise.png), [`web-ap1-warn.png`](../../docs/assets/web-ap1-warn.png), [`web-ap2-warn.png`](../../docs/assets/web-ap2-warn.png).
 
 ## Vercel
 
