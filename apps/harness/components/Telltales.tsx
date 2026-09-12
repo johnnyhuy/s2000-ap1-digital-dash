@@ -36,7 +36,7 @@ const TONE: Record<Tone, string> = {
   blue: "#2460e4",
 };
 
-const GHOST = "#2c2824";
+const GHOST = "#3a3630";
 
 export function TelltaleStrip({
   lamps,
@@ -58,7 +58,7 @@ export function TelltaleStrip({
         return (
           <span
             key={spec.kind}
-            className={`telltale${lit ? " telltale-on" : ""}`}
+            className={`telltale telltale-${spec.tone}${lit ? " telltale-on" : ""}`}
             title={spec.label}
             style={{ color, ["--lamp" as string]: color, ["--i" as string]: i }}
           >

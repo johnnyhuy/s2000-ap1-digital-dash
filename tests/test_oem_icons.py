@@ -125,6 +125,17 @@ class AssetTests(unittest.TestCase):
         self.assertEqual(missing, [])
         self.assertTrue((ASSETS / "atlas.svg").is_file())
 
+    def test_pictograms_keep_iso_cutouts(self) -> None:
+        battery = (ASSETS / "battery.svg").read_text(encoding="utf-8")
+        oil = (ASSETS / "oil.svg").read_text(encoding="utf-8")
+        beam = (ASSETS / "high_beam.svg").read_text(encoding="utf-8")
+        belt = (ASSETS / "seatbelt.svg").read_text(encoding="utf-8")
+        self.assertIn("evenodd", battery)
+        self.assertIn("evenodd", oil)
+        self.assertIn("evenodd", beam)
+        self.assertIn("evenodd", belt)
+        self.assertIn("fill-rule", oil)
+
     def test_protocol_field_names_unchanged(self) -> None:
         self.assertEqual(
             REQUIRED_FIELDS,
