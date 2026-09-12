@@ -1,10 +1,11 @@
 import type { LampMap } from "@/lib/protocol";
 import { BATT_LOW_V } from "@/lib/protocol";
+import { PICTOGRAMS } from "./LampIcons";
 
 type Tone = "red" | "amber" | "green" | "blue";
 
 type LampSpec = {
-  kind: string;
+  kind: keyof typeof PICTOGRAMS | "abs" | "brake" | "maint" | "eps" | "srs";
   key: string;
   tone: Tone;
   label: string;
@@ -13,20 +14,20 @@ type LampSpec = {
 };
 
 export const LAMP_STRIP: LampSpec[] = [
-  { kind: "turn_l", key: "turn_l", tone: "green", label: "Left turn", width: 16 },
-  { kind: "high_beam", key: "high_beam", tone: "blue", label: "High beam", width: 18 },
-  { kind: "abs", key: "abs", tone: "amber", label: "ABS", width: 24, word: "ABS" },
-  { kind: "brake", key: "brake", tone: "red", label: "BRAKE", width: 36, word: "BRAKE" },
-  { kind: "battery", key: "batt_warn", tone: "red", label: "Battery", width: 16 },
-  { kind: "oil", key: "oil", tone: "red", label: "Oil", width: 18 },
-  { kind: "cel", key: "cel", tone: "amber", label: "Check engine", width: 20 },
-  { kind: "immobilizer", key: "immobilizer", tone: "green", label: "Immobilizer", width: 16 },
-  { kind: "maint", key: "maint", tone: "amber", label: "MAINT REQ'D", width: 28, word: ["MAINT", "REQ'D"] },
-  { kind: "eps", key: "eps", tone: "amber", label: "EPS", width: 20, word: "EPS" },
-  { kind: "seatbelt", key: "seatbelt", tone: "red", label: "Seatbelt", width: 15 },
-  { kind: "door", key: "door", tone: "red", label: "Door", width: 18 },
-  { kind: "srs", key: "srs", tone: "red", label: "SRS", width: 16, word: "SRS" },
-  { kind: "turn_r", key: "turn_r", tone: "green", label: "Right turn", width: 16 },
+  { kind: "turn_l", key: "turn_l", tone: "green", label: "Left turn", width: 22 },
+  { kind: "high_beam", key: "high_beam", tone: "blue", label: "High beam", width: 26 },
+  { kind: "abs", key: "abs", tone: "amber", label: "ABS", width: 32, word: "ABS" },
+  { kind: "brake", key: "brake", tone: "red", label: "BRAKE", width: 48, word: "BRAKE" },
+  { kind: "battery", key: "batt_warn", tone: "red", label: "Battery", width: 22 },
+  { kind: "oil", key: "oil", tone: "red", label: "Oil", width: 24 },
+  { kind: "cel", key: "cel", tone: "amber", label: "Check engine", width: 26 },
+  { kind: "immobilizer", key: "immobilizer", tone: "green", label: "Immobilizer", width: 22 },
+  { kind: "maint", key: "maint", tone: "amber", label: "MAINT REQ'D", width: 36, word: ["MAINT", "REQ'D"] },
+  { kind: "eps", key: "eps", tone: "amber", label: "EPS", width: 26, word: "EPS" },
+  { kind: "seatbelt", key: "seatbelt", tone: "red", label: "Seatbelt", width: 20 },
+  { kind: "door", key: "door", tone: "red", label: "Door", width: 24 },
+  { kind: "srs", key: "srs", tone: "red", label: "SRS", width: 22, word: "SRS" },
+  { kind: "turn_r", key: "turn_r", tone: "green", label: "Right turn", width: 22 },
 ];
 
 const TONE: Record<Tone, string> = {
@@ -36,7 +37,7 @@ const TONE: Record<Tone, string> = {
   blue: "#2460e4",
 };
 
-const GHOST = "#3a3630";
+const GHOST = "#4a4540";
 
 export function TelltaleStrip({
   lamps,
@@ -53,8 +54,8 @@ export function TelltaleStrip({
         const extra = spec.key === "batt_warn" && battV < BATT_LOW_V;
         const lit = bulbCheck || Boolean(lamps[spec.key] || extra);
         const color = lit ? TONE[spec.tone] : GHOST;
-        const src = `/icons/${spec.kind}.svg`;
         const word = spec.word;
+        const Pictogram = spec.kind in PICTOGRAMS ? PICTOGRAMS[spec.kind as keyof typeof PICTOGRAMS] : null;
         return (
           <span
             key={spec.kind}
@@ -72,16 +73,9 @@ export function TelltaleStrip({
                     ))
                   : word}
               </span>
-            ) : (
-              <span
-                className="telltale-icon"
-                style={{
-                  width: spec.width,
-                  WebkitMaskImage: `url(${src})`,
-                  maskImage: `url(${src})`,
-                }}
-              />
-            )}
+            ) : Pictogram ? (
+              <Pictogram className="telltale-icon" width={spec.width} />
+            ) : null}
             <span className="sr-only">
               {spec.label}
               {lit ? " on" : " off"}

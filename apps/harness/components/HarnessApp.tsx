@@ -130,6 +130,9 @@ export function HarnessApp() {
     const target = frameAt(0, odoRef.current, next);
     rawRef.current = target;
     setRaw(target);
+    const snapped = snapDisplay(target, tripOriginRef.current);
+    faceRef.current = snapped;
+    setFace(snapped);
   }, []);
 
   const applyStyle = useCallback((next: FaceStyle) => {

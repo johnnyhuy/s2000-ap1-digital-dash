@@ -264,7 +264,7 @@ export function tachNumXY(frac: number, geom: FaceGeom = FACE): { x: number; y: 
   const p = tachArchXY(t, geom);
   const n = tachArchNormal(t, geom);
   const end = Math.abs(2 * t - 1);
-  const extra = 11 * end * end;
+  const extra = 6.5 * end * end;
   return { x: p.x + n.x * TACH_NUM_INSET, y: p.y + n.y * TACH_NUM_INSET + extra };
 }
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Barlow_Condensed, Geist, Geist_Mono, Oxanium, Share_Tech_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,25 +15,25 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const shareTech = Share_Tech_Mono({
+const shareTech = localFont({
+  src: "./fonts/ShareTechMono-Regular.ttf",
   variable: "--font-share-tech",
-  weight: "400",
-  subsets: ["latin"],
   display: "swap",
 });
 
-const oxanium = Oxanium({
+const oxanium = localFont({
+  src: "./fonts/Oxanium-Bold.ttf",
+  weight: "700",
   variable: "--font-oxanium",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
   display: "swap",
 });
 
-const barlow = Barlow_Condensed({
+const barlow = localFont({
+  src: [
+    { path: "./fonts/BarlowCondensed-Bold.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/BarlowCondensed-SemiBoldItalic.ttf", weight: "600", style: "italic" },
+  ],
   variable: "--font-barlow",
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
