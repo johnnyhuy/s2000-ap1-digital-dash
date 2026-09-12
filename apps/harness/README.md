@@ -1,6 +1,8 @@
 # S2000 Digital Dash — web cluster harness
 
-Shareable Next.js App Router demo of the OEM-geometry face (red 7-seg speed/odo, amber tach). Same frozen JSON fields as the Pi bench (`rpm`, `speed_kmh`, `fuel_pct`, `ect_c`, `batt_v`, `odo_km`, optional `lamps`). Client-side mock drive — no Raspberry Pi, no ESP32.
+Shareable Next.js App Router demo of the OEM-geometry face (red 7-seg speed/odo, printed amber tach with a cream needle). Same frozen JSON fields as the Pi bench (`rpm`, `speed_kmh`, `fuel_pct`, `ect_c`, `batt_v`, `odo_km`, optional `lamps`). Client-side mock drive — no Raspberry Pi, no ESP32.
+
+The tach is a printed scale, not a filling LED bar. Numerals sit in the LCD well (Barlow Condensed italic). Off telltales stay near-black; cruise lights the ISO high beam.
 
 **Face styles:** **AP1** (default — straight TEMP / FUEL, locked flat elevation) and **AP2** (interpretive arched side gauges). Toggle on the desk or open `/?style=ap2`. AP2 is **not** a measured plate.
 

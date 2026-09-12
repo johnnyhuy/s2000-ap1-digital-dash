@@ -21,4 +21,10 @@ describe("mock drive", () => {
     assert.equal(frame.lamps.cel, true);
     assert.equal(frame.lamps.brake, true);
   });
+
+  it("cruise keeps a night high-beam lamp", () => {
+    const frame = frameAt(0, 0, "cruise");
+    assert.equal(frame.lamps.high_beam, true);
+    assert.equal(frame.lamps.turn_l, false);
+  });
 });

@@ -32,9 +32,11 @@ export const LAMP_STRIP: LampSpec[] = [
 const TONE: Record<Tone, string> = {
   red: "#e22820",
   amber: "#ec941c",
-  green: "#28c85c",
+  green: "#28cc5c",
   blue: "#2460e4",
 };
+
+const GHOST = "#2c2824";
 
 export function TelltaleStrip({
   lamps,
@@ -50,7 +52,7 @@ export function TelltaleStrip({
       {LAMP_STRIP.map((spec, i) => {
         const extra = spec.key === "batt_warn" && battV < BATT_LOW_V;
         const lit = bulbCheck || Boolean(lamps[spec.key] || extra);
-        const color = lit ? TONE[spec.tone] : undefined;
+        const color = lit ? TONE[spec.tone] : GHOST;
         const src = `/icons/${spec.kind}.svg`;
         const word = spec.word;
         return (
@@ -58,11 +60,7 @@ export function TelltaleStrip({
             key={spec.kind}
             className={`telltale${lit ? " telltale-on" : ""}`}
             title={spec.label}
-            style={
-              color
-                ? { color, ["--lamp" as string]: color, ["--i" as string]: i }
-                : { ["--i" as string]: i }
-            }
+            style={{ color, ["--lamp" as string]: color, ["--i" as string]: i }}
           >
             {word ? (
               <span className="telltale-word">

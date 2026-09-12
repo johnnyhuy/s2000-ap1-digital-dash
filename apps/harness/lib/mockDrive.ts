@@ -122,7 +122,7 @@ export function cruiseFrame(t: number, odo: number): Telemetry {
     ect_c: 88 + 1.2 * Math.sin(t * 0.08),
     batt_v: 14.05 + 0.06 * Math.sin(t * 0.3),
     odo_km: Math.round(odo * 10) / 10,
-    lamps: { ...emptyLamps(), ...extrasOff() },
+    lamps: { ...emptyLamps(), ...extrasOff(), high_beam: true },
   };
 }
 
@@ -187,8 +187,8 @@ export function followDisplay(
   tripOrigin: number,
 ): DisplayState {
   return {
-    rpm: expSmooth(current.rpm, target.rpm, dt, 0.16),
-    speed_kmh: expSmooth(current.speed_kmh, target.speed_kmh, dt, 0.10),
+    rpm: expSmooth(current.rpm, target.rpm, dt, 0.18),
+    speed_kmh: expSmooth(current.speed_kmh, target.speed_kmh, dt, 0.11),
     fuel_pct: expSmooth(current.fuel_pct, target.fuel_pct, dt, 0.35),
     ect_c: expSmooth(current.ect_c, target.ect_c, dt, 0.4),
     batt_v: expSmooth(current.batt_v, target.batt_v, dt, 0.22),
