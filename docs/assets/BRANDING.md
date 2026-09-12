@@ -25,12 +25,15 @@ masthead only. DejaVu remains the pygame fallback when those files are absent.
 
 Printed tach amber grades `#e08c24` → `#b04810` toward redline in 48 slices,
 with a quiet live wash `#f49420`. The web face keeps the printed scale and
-cream needle (not a filling LED bar). LCD red is `#ff261c`. The LCD well is
-charcoal with a faint screen-door, not a brown overlay. Telltales: red
-`#e22820`, amber `#ec941c`, green `#28cc5c`, ISO high-beam blue `#2460e4`
-(never neon cyan). Off lamps sit near-black (`#201c18`), not muddy grey.
-Icons are white-on-transparent ISO silhouettes under `assets/icons/`, tinted
-at draw time. Word lamps set in Barlow Condensed. Tach numerals sit
-**inside** the well (0 and 9 drop extra); ticks stay on the printed band.
-The needle is a cream chevron sitting on the printed band, with analog lag
-on RPM. Boot motion is sweep comet → READY glow → reveal settle.
+a short cream chevron needle (not a filling LED bar). LCD red is `#ff261c`
+with a visible 188 / 888888 ghost (`#3a0c0a`). The LCD well is charcoal with
+a faint screen-door, not a brown overlay. Telltales: red `#e22820`, amber
+`#ec941c`, green `#28cc5c`, ISO high-beam blue `#2460e4` (never neon cyan).
+Off lamps sit just above black (`#3a3630`) so the strip still reads as a
+lamp row. Icons are white-on-transparent ISO silhouettes (hollow battery,
+oil-can with drop, outlined high-beam D) under `assets/icons/`, tinted at
+draw time. Word lamps set in Barlow Condensed. Tach numerals sit **inside**
+the well (0 and 9 drop extra) in Barlow Condensed SemiBold Italic with
+tight-but-not-crushed tracking. Ticks stay on the printed band. Analog lag
+on RPM; green turn lamps pulse after the strike. Boot motion is sweep comet
+→ READY glow → reveal settle.

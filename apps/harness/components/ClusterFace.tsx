@@ -43,8 +43,8 @@ const TICK_MINOR_DIM = "#c47c28";
 const REDLINE_PRINT = "#c4281c";
 const COWL = "#100e0d";
 const WELL = "#050302";
-const TACH_NEEDLE_TIP = -3.6;
-const TACH_NEEDLE_TAIL = 14.2;
+const TACH_NEEDLE_TIP = -2.8;
+const TACH_NEEDLE_TAIL = 11.4;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -100,9 +100,9 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
     ].join(" ");
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <polygon points={chevron(5.8)} fill="#1c140c" />
-      <polygon points={chevron(4.9)} fill={glow} />
-      <polygon points={chevron(4.15)} fill={col} />
+      <polygon points={chevron(4.6)} fill="#1c140c" />
+      <polygon points={chevron(3.8)} fill={glow} />
+      <polygon points={chevron(3.15)} fill={col} />
     </g>
   );
 }
@@ -191,7 +191,7 @@ function TachSegments({
 
 function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
   const zero = tachNumXY(0, geom);
-  const size = 18;
+  const size = 19;
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
@@ -480,7 +480,7 @@ export function ClusterFace({
               </feMerge>
             </filter>
             <pattern id="lcd-door" width="3" height="8" patternUnits="userSpaceOnUse">
-              <rect width="1" height="8" fill="rgba(255,42,28,0.07)" />
+              <rect width="1" height="8" fill="rgba(255,42,28,0.12)" />
             </pattern>
           </defs>
           <path d={hoodPath(geom)} fill={COWL} stroke="#3a342e" strokeWidth="1" />
@@ -524,8 +524,8 @@ export function ClusterFace({
                 ghost="188"
                 digitH={58}
                 color={RED_LCD}
-                ghostColor="#140302"
-                italic={0.08}
+                ghostColor="#3a0c0a"
+                italic={0.07}
               />
               <text x={sc.x + 68} y={sc.y + 4} fontSize={10.5} fontWeight={700} fill={RED_LCD} className="lcd-label">
                 km/h
@@ -543,7 +543,7 @@ export function ClusterFace({
                 ghost="888888"
                 digitH={22}
                 color={RED_LCD}
-                ghostColor="#140302"
+                ghostColor="#3a0c0a"
                 italic={0.04}
               />
               <text
@@ -564,7 +564,7 @@ export function ClusterFace({
                 ghost="888.8"
                 digitH={16}
                 color={RED_LCD}
-                ghostColor="#140302"
+                ghostColor="#3a0c0a"
                 italic={0.04}
               />
               {battWarn ? (

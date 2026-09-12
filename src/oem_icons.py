@@ -20,7 +20,7 @@ LAMP_RED = (226, 40, 32)
 LAMP_AMBER = (236, 148, 28)
 LAMP_GREEN = (40, 204, 92)
 LAMP_BLUE = (36, 96, 228)
-LAMP_GHOST = (32, 28, 24)
+LAMP_GHOST = (44, 40, 36)
 
 # Reject the old neon sweep / high-beam cyan
 NEON_CYAN = (72, 210, 230)
@@ -137,7 +137,7 @@ def tint_white(pygame, surf, color: tuple[int, int, int]):
     return out
 
 
-def blit_glow(pygame, dest, src, center: tuple[int, int], strength: float = 0.48, scale: float = 1.16) -> None:
+def blit_glow(pygame, dest, src, center: tuple[int, int], strength: float = 0.62, scale: float = 1.22) -> None:
     """Soft bloom: a larger, faded copy under the sharp sprite."""
     gw = max(2, int(src.get_width() * scale))
     gh = max(2, int(src.get_height() * scale))
@@ -191,11 +191,13 @@ def _draw_turn(pygame, w: int, h: int, left: bool):
 
 
 def _draw_high_beam(pygame, w: int, h: int):
-    """ISO 2575 high-beam: filled D-lamp + five parallel rays."""
+    """ISO 2575 high-beam: hollow D-lamp + five parallel rays."""
     s = _blank(pygame, w, h)
     cx, cy = w // 2 + 7, h // 2
     pygame.draw.circle(s, (255, 255, 255), (cx, cy), 11)
     pygame.draw.rect(s, (255, 255, 255), (cx - 14, cy - 11, 14, 22))
+    pygame.draw.circle(s, (0, 0, 0, 0), (cx + 1, cy), 7)
+    pygame.draw.rect(s, (0, 0, 0, 0), (cx - 10, cy - 7, 12, 14))
     for i, dy in enumerate((-11, -5.5, 0, 5.5, 11)):
         x0 = 5 if i in (0, 4) else 3
         pygame.draw.rect(s, (255, 255, 255), (x0, int(cy + dy - 1.2), cx - 18 - x0, 2))
@@ -217,17 +219,19 @@ def _draw_battery(pygame, w: int, h: int):
 
 
 def _draw_oil(pygame, w: int, h: int):
-    """ISO oil-can: C-handle, solid body, spout, drop."""
+    """ISO oil-can: C-handle, hollow body, spout, drop."""
     s = _blank(pygame, w, h)
     cx, cy = w // 2 - 2, h // 2 + 2
     pygame.draw.rect(s, (255, 255, 255), (cx - 24, cy - 8, 10, 18), border_radius=5)
     s.fill((0, 0, 0, 0), pygame.Rect(cx - 21, cy - 4, 7, 10))
     pygame.draw.rect(s, (255, 255, 255), (cx - 16, cy - 9, 26, 20))
+    s.fill((0, 0, 0, 0), pygame.Rect(cx - 12, cy - 5, 18, 12))
     pygame.draw.polygon(
         s,
         (255, 255, 255),
         [(cx + 8, cy - 9), (cx + 22, cy - 22), (cx + 28, cy - 15), (cx + 12, cy - 2)],
     )
+    s.fill((0, 0, 0, 0), pygame.Rect(cx + 12, cy - 12, 8, 6))
     pygame.draw.polygon(
         s,
         (255, 255, 255),
@@ -266,6 +270,7 @@ def _draw_seatbelt(pygame, w: int, h: int):
     s = _blank(pygame, w, h)
     cx, cy = w // 2, h // 2 + 1
     pygame.draw.circle(s, (255, 255, 255), (cx, cy - 14), 7)
+    pygame.draw.circle(s, (0, 0, 0, 0), (cx, cy - 14), 3)
     pygame.draw.polygon(
         s,
         (255, 255, 255),
@@ -276,7 +281,7 @@ def _draw_seatbelt(pygame, w: int, h: int):
             (cx - 10, cy + 18),
         ],
     )
-    pygame.draw.line(s, (0, 0, 0), (cx - 9, cy - 6), (cx + 10, cy + 17), 6)
+    pygame.draw.line(s, (0, 0, 0, 0), (cx - 9, cy - 6), (cx + 10, cy + 17), 7)
     return s
 
 

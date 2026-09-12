@@ -11,7 +11,7 @@
   --muted: #8e8678;
   --danger: #e42820;
   --lcd-red: #ff261c;
-  --lamp-ghost: #2c2824;
+  --lamp-ghost: #3a3630;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-share-tech), var(--font-geist-mono), ui-monospace, monospace;
   --font-cluster: var(--font-barlow), var(--font-oxanium), var(--font-geist-sans), ui-sans-serif, sans-serif;
@@ -136,7 +136,7 @@ body {
   font-family: var(--font-tach);
   font-style: italic;
   font-weight: 600;
-  letter-spacing: -0.1em;
+  letter-spacing: -0.02em;
   font-synthesis: none;
 }
 
@@ -155,12 +155,12 @@ body {
 }
 
 .seg-lit {
-  filter: drop-shadow(0 0 2.1px rgba(255, 176, 48, 0.55));
-  transition: fill 160ms ease-out, filter 160ms ease-out, opacity 160ms ease-out;
+  filter: drop-shadow(0 0 2.4px rgba(255, 176, 48, 0.62));
+  transition: fill 140ms ease-out, filter 140ms ease-out, opacity 140ms ease-out;
 }
 
 .seg-lit.seg-red {
-  filter: drop-shadow(0 0 3.6px rgba(255, 38, 28, 0.78));
+  filter: drop-shadow(0 0 4.2px rgba(255, 38, 28, 0.86));
 }
 
 .seg-ghost {
@@ -168,12 +168,12 @@ body {
 }
 
 .needle {
-  filter: drop-shadow(0 0 2.8px rgba(255, 208, 112, 0.62));
-  transition: filter 180ms ease-out;
+  filter: drop-shadow(0 0 2.2px rgba(255, 208, 112, 0.7));
+  transition: filter 160ms ease-out;
 }
 
 .needle-hot {
-  filter: drop-shadow(0 0 4.4px rgba(255, 48, 32, 0.82));
+  filter: drop-shadow(0 0 3.8px rgba(255, 48, 32, 0.88));
 }
 
 .cluster-reveal .needle {
@@ -362,7 +362,7 @@ body {
   opacity: 1;
   flex: 0 0 auto;
   color: var(--lamp-ghost);
-  transition: filter 140ms ease-out, color 140ms ease-out;
+  transition: filter 90ms ease-out, color 90ms ease-out, opacity 90ms ease-out;
 }
 
 .telltale-icon {
@@ -397,17 +397,40 @@ body {
 }
 
 .telltale-on {
-  filter: drop-shadow(0 0 5px var(--lamp)) drop-shadow(0 0 1px var(--lamp));
-  animation: lamp-strike 0.38s ease-out both;
-  animation-delay: calc(var(--i, 0) * 14ms);
+  filter: drop-shadow(0 0 6px var(--lamp)) drop-shadow(0 0 1.4px var(--lamp));
+  animation: lamp-strike 0.34s ease-out both;
+  animation-delay: calc(var(--i, 0) * 12ms);
+}
+
+.telltale-on.telltale-green {
+  animation:
+    lamp-strike 0.34s ease-out both,
+    lamp-pulse 0.74s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 12ms), 0.34s;
+}
+
+.telltale-on.telltale-blue {
+  filter: drop-shadow(0 0 8px var(--lamp)) drop-shadow(0 0 2px var(--lamp));
 }
 
 @keyframes lamp-strike {
   from {
-    filter: drop-shadow(0 0 12px var(--lamp)) brightness(1.28);
+    filter: drop-shadow(0 0 14px var(--lamp)) brightness(1.32);
   }
   to {
-    filter: drop-shadow(0 0 5px var(--lamp)) drop-shadow(0 0 1px var(--lamp));
+    filter: drop-shadow(0 0 6px var(--lamp)) drop-shadow(0 0 1.4px var(--lamp));
+  }
+}
+
+@keyframes lamp-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px var(--lamp)) drop-shadow(0 0 1.4px var(--lamp));
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 10px var(--lamp)) drop-shadow(0 0 2px var(--lamp));
+    opacity: 0.86;
   }
 }
 
@@ -582,6 +605,7 @@ body {
 
   .ready-card,
   .telltale-on,
+  .telltale-on.telltale-green,
   .ready-word,
   .cluster-reveal .seven-seg,
   .cluster-reveal .lcd-window,
