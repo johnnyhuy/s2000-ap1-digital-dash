@@ -424,6 +424,11 @@ def tach_point(r: float, frac: float) -> tuple[int, int]:
     )
 
 
+TACH_ARCH_DROP = 14.0
+VISOR_LIP_OFFSET = -2.8
+VISOR_LIP_PAD = 24.0
+
+
 def tach_arch_xy(frac: float, g: FaceGeom | None = None) -> tuple[float, float]:
     """Place a tach tick on the OEM parabola (not a circular wedge).
 
@@ -437,8 +442,40 @@ def tach_arch_xy(frac: float, g: FaceGeom | None = None) -> tuple[float, float]:
     x = x0 + (x1 - x0) * clamp(frac, 0.0, 1.0)
     u = 2.0 * clamp(frac, 0.0, 1.0) - 1.0
     rise = (g.lcd_spring_y - g.lcd_peak_y) * 0.92
-    y = g.lcd_peak_y + 14 + rise * (u * u)
+    y = g.lcd_peak_y + TACH_ARCH_DROP + rise * (u * u)
     return x, y
+
+
+def visor_lip_points(
+    g: FaceGeom | None = None,
+    offset: float = VISOR_LIP_OFFSET,
+    pad: float = VISOR_LIP_PAD,
+    steps: int = 48,
+) -> list[tuple[int, int]]:
+    """Inner visor lip — same parabola as the printed tach, just above it."""
+    g = _geom(g)
+    lx, _, lw, _ = g.lcd
+    inset = lw * 0.055
+    x0t = lx + inset
+    x1t = lx + lw - inset
+    span = x1t - x0t
+    x0 = x0t - pad
+    x1 = x1t + pad
+    rise = (g.lcd_spring_y - g.lcd_peak_y) * 0.92
+    pts: list[tuple[int, int]] = []
+    for i in range(steps + 1):
+        t = i / steps
+        x = x0 + (x1 - x0) * t
+        tu = (x - x0t) / span
+        u = 2.0 * tu - 1.0
+        y = g.lcd_peak_y + TACH_ARCH_DROP + rise * (u * u)
+        dx, dy = span, 4.0 * rise * u
+        n = math.hypot(dx, dy) or 1.0
+        nx, ny = dy / n, -dx / n
+        if ny < 0:
+            nx, ny = -nx, -ny
+        pts.append((int(round(x + nx * offset)), int(round(y + ny * offset))))
+    return pts
 
 
 def tach_arch_tangent(frac: float, g: FaceGeom | None = None) -> tuple[float, float]:
@@ -833,17 +870,6 @@ def draw_cowl(pygame, surf, sweep_t: float | None = None, g: FaceGeom | None = N
     outer = hood_outer_points(g)
     pygame.draw.polygon(surf, COWL, outer)
     pygame.draw.polygon(surf, COWL_EDGE, outer, width=2)
-    # Lip highlight along the outer arch only (still flat / orthographic)
-    lip = arch_points(
-        g.module[0] + g.step,
-        g.module[0] + g.module[2] - g.step,
-        g.hood_peak_y + 6,
-        g.spring_y - 4,
-        n=g.arch_n,
-        steps=40,
-    )
-    if len(lip) > 1:
-        pygame.draw.lines(surf, COWL_HIGH, False, lip, 2)
 
     aperture = lcd_aperture_points(g)
     pygame.draw.polygon(surf, WELL, aperture)
@@ -852,16 +878,9 @@ def draw_cowl(pygame, surf, sweep_t: float | None = None, g: FaceGeom | None = N
     wash = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
     pygame.draw.polygon(wash, (36, 18, 6, 20), aperture)
     surf.blit(wash, (0, 0))
-    inner = arch_points(
-        g.lcd[0] + 14,
-        g.lcd[0] + g.lcd[2] - 14,
-        g.lcd_peak_y + 3,
-        g.lcd_spring_y - 8,
-        n=g.arch_n,
-        steps=40,
-    )
+    inner = visor_lip_points(g)
     if len(inner) > 1:
-        pygame.draw.lines(surf, CREAM, False, inner, 2)
+        pygame.draw.lines(surf, (239, 230, 214), False, inner, 2)
     pygame.draw.polygon(surf, (22, 18, 14), aperture, width=2)
 
     if sweep_t is not None:

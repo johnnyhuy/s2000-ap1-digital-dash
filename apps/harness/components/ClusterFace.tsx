@@ -9,7 +9,6 @@ import {
   TEMP_SEGS,
   MODULE_H,
   VIEW_W,
-  archPoly,
   faceGeom,
   hoodPath,
   lcdPath,
@@ -19,6 +18,7 @@ import {
   tachBandPath,
   tachTickPath,
   tachNumXY,
+  visorLipPoly,
   type FaceGeom,
 } from "@/lib/geometry";
 import { SevenSeg } from "./SevenSeg";
@@ -500,8 +500,7 @@ export function ClusterFace({
   const lowFuel = face.fuel_pct < FUEL_LOW_PCT;
   const battWarn = face.batt_v < BATT_LOW_V || Boolean(face.lamps.batt_warn);
   const speed = Math.round(Math.max(0, Math.min(399, face.speed_kmh)));
-  const { temp, fuel, speed: sc, odo, clock, module: m, step, hoodPeakY, springY, lcdPeakY, lcdSpringY, lcd } = geom;
-  const lip = archPoly(m.x + step, m.x + m.w - step, hoodPeakY + 3, springY - 2);
+  const { temp, fuel, speed: sc, odo, clock } = geom;
   const ap2 = style === "ap2";
   const styleName = ap2 ? "AP2" : "AP1";
   const bulbCheck = phase === "reveal" && phaseT < 0.55;
@@ -541,14 +540,14 @@ export function ClusterFace({
             </pattern>
           </defs>
           <path d={hoodPath(geom)} fill={COWL} stroke="#3a342e" strokeWidth="1" />
-          {ap2 ? null : <polyline points={lip} fill="none" stroke="#6a6258" strokeWidth="2.1" />}
           <path d={lcdPath(geom)} fill={WELL} stroke="none" />
           <path d={lcdPath(geom)} fill="#24140a" fillOpacity="0.05" />
           <polyline
-            points={archPoly(lcd.x + 10, lcd.x + lcd.w - 10, lcdPeakY + 1.4, lcdSpringY - 5)}
+            points={visorLipPoly(geom)}
             fill="none"
-            stroke={CREAM}
-            strokeWidth="1.1"
+            stroke="#efe6d6"
+            strokeWidth="1.15"
+            strokeLinecap="round"
           />
 
           {phase !== "ready" ? (

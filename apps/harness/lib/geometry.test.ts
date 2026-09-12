@@ -16,9 +16,11 @@ import {
   tachTickPath,
   tachArchXY,
   tachNumXY,
+  visorLipPoly,
   TACH_BAND_OUTER,
   TACH_NUM_INSET,
   TACH_TICK_MAJOR,
+  VISOR_LIP_OFFSET,
 } from "./geometry.ts";
 
 function near(got: number, want: number, delta: number) {
@@ -70,6 +72,18 @@ describe("face geometry", () => {
     assert.ok(right.y > rightArch.y);
     assert.ok(left.y - leftArch.y > mid.y - arch.y);
     assert.ok(right.y - rightArch.y > mid.y - arch.y);
+  });
+
+  it("seats the visor lip on the tach parabola, just above the printed band", () => {
+    const mid = tachArchXY(0.5);
+    const d = visorLipPoly();
+    assert.match(d, /^\d/);
+    const first = d.split(" ")[Math.floor(d.split(" ").length / 2)];
+    const [lx, ly] = first.split(",").map(Number);
+    assert.ok(ly < mid.y, `${ly} should sit above tach ${mid.y}`);
+    assert.ok(Math.abs(lx - mid.x) < 20);
+    assert.ok(VISOR_LIP_OFFSET < 0);
+    assert.ok(mid.y - ly < 6);
   });
 
   it("uses six thin AP1 temp ticks and slanted tach paths", () => {

@@ -25,8 +25,11 @@ stays on the masthead only. DejaVu remains the pygame fallback when those
 files are absent.
 
 Printed tach amber grades `#f0a028` → `#a83810` toward redline in 48 slices,
-with a quiet live wash `#f49420`. The web face keeps the printed scale and
-a short cream chevron needle (not a filling LED bar). LCD red is `#ff261c`
+with a quiet live wash `#f49420`. The inner visor lip is a thin off-white
+(`#efe6d6`) on the **same parabola** as the printed tach, sitting just
+outside the band — not a high cream arc at the well peak. The web face
+keeps the printed scale and a short cream chevron needle (not a filling
+LED bar). LCD red is `#ff261c`
 with a readable 188 / 888888 ghost (`#240808` on the web face, `#240808` in
 pygame) and a faint idle bloom. The LCD well is charcoal with a faint
 screen-door, not a brown overlay. TEMP uses the OEM coolant pictogram

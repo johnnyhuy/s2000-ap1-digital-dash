@@ -240,6 +240,13 @@ export function archPoly(x0: number, x1: number, yPeak: number, ySpring: number)
   return archPoints(x0, x1, yPeak, ySpring);
 }
 
+/** Drop from the LCD well peak to the outer (top) edge of the printed tach. */
+export const TACH_ARCH_DROP = 8;
+/** Hairline visor lip sits this far outside the printed band, toward the cowl. */
+export const VISOR_LIP_OFFSET = -1.6;
+/** Extra well-width the visor lip continues past 0 and 9 (OEM hood inner edge). */
+export const VISOR_LIP_PAD = 14;
+
 export function tachArchXY(frac: number, geom: FaceGeom = FACE): { x: number; y: number } {
   const t = frac < 0 ? 0 : frac > 1 ? 1 : frac;
   const inset = geom.lcd.w * 0.055;
@@ -249,8 +256,43 @@ export function tachArchXY(frac: number, geom: FaceGeom = FACE): { x: number; y:
   const rise = (geom.lcdSpringY - geom.lcdPeakY) * 0.92;
   return {
     x: x0 + (x1 - x0) * t,
-    y: geom.lcdPeakY + 8 + rise * u * u,
+    y: geom.lcdPeakY + TACH_ARCH_DROP + rise * u * u,
   };
+}
+
+/** Inner visor lip — same parabola as the printed tach, just above it. */
+export function visorLipPoly(
+  geom: FaceGeom = FACE,
+  offset = VISOR_LIP_OFFSET,
+  pad = VISOR_LIP_PAD,
+  steps = 48,
+): string {
+  const inset = geom.lcd.w * 0.055;
+  const x0t = geom.lcd.x + inset;
+  const x1t = geom.lcd.x + geom.lcd.w - inset;
+  const span = x1t - x0t;
+  const x0 = x0t - pad;
+  const x1 = x1t + pad;
+  const rise = (geom.lcdSpringY - geom.lcdPeakY) * 0.92;
+  const pts: string[] = [];
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    const x = x0 + (x1 - x0) * t;
+    const tu = (x - x0t) / span;
+    const u = 2 * tu - 1;
+    const y = geom.lcdPeakY + TACH_ARCH_DROP + rise * u * u;
+    const dx = span;
+    const dy = 4 * rise * u;
+    const n = Math.hypot(dx, dy) || 1;
+    let nx = dy / n;
+    let ny = -dx / n;
+    if (ny < 0) {
+      nx = -nx;
+      ny = -ny;
+    }
+    pts.push(`${(x + nx * offset).toFixed(2)},${(y + ny * offset).toFixed(2)}`);
+  }
+  return pts.join(" ");
 }
 
 /** Inward offset from the printed band into the LCD well (viewBox units). */
