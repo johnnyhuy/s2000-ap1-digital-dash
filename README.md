@@ -141,7 +141,7 @@ uv sync --extra dev
 Shareable Next.js demo of the OEM-geometry face (red 7-seg, printed amber tach, cream needle), driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn) and the same sweep → READY → reveal boot as the Pi UI. Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track. Tach numerals sit in the well; off lamps stay just above black. Cluster type is self-hosted Barlow Condensed; telltales are inline ISO pictograms.
 
 <p align="center">
-  <img src="docs/assets/web-ap1-cruise.png" alt="Web AP1 cruise: 82 km/h, cream needle, ISO high beam" width="960" />
+  <img src="docs/assets/web-ap1-cruise.png" alt="Web AP1 cruise: 81 km/h, cream needle, ISO high beam" width="960" />
 </p>
 <p align="center">
   <sub>Web AP1 cruise. Warn and AP2 stills: <a href="docs/assets/web-ap1-warn.png"><code>web-ap1-warn.png</code></a>, <a href="docs/assets/web-ap2-warn.png"><code>web-ap2-warn.png</code></a>.</sub>
