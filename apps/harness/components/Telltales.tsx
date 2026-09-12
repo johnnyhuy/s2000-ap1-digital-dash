@@ -106,7 +106,16 @@ export function HardwareBezel({
           <span className="round-btn">+</span>
         </div>
         <p className="cancel">
-          <span className="dial" aria-hidden />
+          <svg className="cancel-mark" viewBox="0 0 28 16" aria-hidden>
+            <circle cx="8" cy="8" r="6.1" fill="none" stroke="currentColor" strokeWidth="1.55" />
+            <circle cx="8" cy="8" r="1.25" fill="currentColor" />
+            <line x1="8" y1="8" x2="12.1" y2="4.3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="3.4" y1="5.1" x2="2.1" y2="3.6" stroke="currentColor" strokeWidth="1.35" />
+            <line x1="4.6" y1="3.6" x2="3.6" y2="2.1" stroke="currentColor" strokeWidth="1.35" />
+            <line x1="6.4" y1="2.8" x2="5.8" y2="1.15" stroke="currentColor" strokeWidth="1.35" />
+            <line x1="8.4" y1="2.4" x2="8.4" y2="0.7" stroke="currentColor" strokeWidth="1.35" />
+            <path d="M18.4 4.2 25.2 11.1M25.2 4.2 18.4 11.1" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          </svg>
           PUSH CANCEL
         </p>
       </div>

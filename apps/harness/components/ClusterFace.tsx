@@ -65,18 +65,74 @@ function lerpHex(a: string, b: string, t: number): string {
 function LcdWindow({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
   return (
     <g className="lcd-window">
-      <rect x={x} y={y} width={w} height={h} rx={1.8} fill="#070201" stroke="#32100c" strokeWidth={0.4} />
+      <rect x={x} y={y} width={w} height={h} rx={1.6} fill="#060201" stroke="#1c0a08" strokeWidth={0.32} />
       <rect
         x={x + 0.7}
         y={y + 0.7}
         width={w - 1.4}
         height={h - 1.4}
-        rx={1.2}
+        rx={1.1}
         fill="none"
-        stroke="#1a0806"
-        strokeWidth={0.28}
+        stroke="#120604"
+        strokeWidth={0.22}
       />
-      <rect x={x} y={y} width={w} height={h} rx={1.8} fill="url(#lcd-door)" />
+      <rect x={x} y={y} width={w} height={h} rx={1.6} fill="url(#lcd-door)" />
+    </g>
+  );
+}
+
+function CoolantIcon({
+  x,
+  y,
+  scale,
+  fill,
+}: {
+  x: number;
+  y: number;
+  scale: number;
+  fill: string;
+}) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`} fill={fill} stroke={fill}>
+      <rect x="-1.7" y="-14" width="3.4" height="16.2" rx="1.6" fill={fill} stroke="none" />
+      <circle cx="0" cy="5.4" r="4.6" fill={fill} stroke="none" />
+      <circle cx="0" cy="5.4" r="1.7" fill="#060402" stroke="none" />
+      <path d="M5.2 -10.4h4.8M5.2 -6h4.8M5.2 -1.6h4.8M5.2 2.6h4.8" strokeWidth="1.4" fill="none" />
+      <path
+        d="M-8.2 12.4c2.4-2.6 4.8-2.6 7.2 0s4.8 2.6 7.2 0 4.8-2.6 7.2 0"
+        fill="none"
+        strokeWidth="1.45"
+        strokeLinecap="round"
+      />
+      <path
+        d="M-7 16c2.2-2.2 4.4-2.2 6.6 0s4.4 2.2 6.6 0 4.4-2.2 6.6 0"
+        fill="none"
+        strokeWidth="1.35"
+        strokeLinecap="round"
+      />
+    </g>
+  );
+}
+
+function PumpIcon({
+  x,
+  y,
+  scale,
+  fill,
+}: {
+  x: number;
+  y: number;
+  scale: number;
+  fill: string;
+}) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`} fill={fill} stroke={fill}>
+      <rect x="-8.8" y="-4" width="10.6" height="15.4" rx="1.15" stroke="none" />
+      <rect x="-6.8" y="-9.4" width="6.2" height="5.6" rx="0.55" stroke="none" />
+      <rect x="-5.8" y="-0.6" width="4.6" height="3.5" fill="#060402" stroke="none" />
+      <path d="M1.8 -1c6.8-4.8 11.6 0.3 11.4 7.4" fill="none" strokeWidth="1.65" strokeLinecap="round" />
+      <rect x="10.4" y="1.4" width="3.3" height="8.2" rx="0.8" stroke="none" />
+      <rect x="-8.8" y="11.4" width="10.6" height="1.9" rx="0.4" stroke="none" />
     </g>
   );
 }
@@ -101,9 +157,9 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
     ].join(" ");
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <polygon points={chevron(5.05)} fill="#1a120c" />
-      <polygon points={chevron(4.05)} fill={glow} />
-      <polygon points={chevron(3.05)} fill={col} />
+      <polygon points={chevron(4.7)} fill="#1a120c" />
+      <polygon points={chevron(3.65)} fill={glow} />
+      <polygon points={chevron(2.55)} fill={col} />
     </g>
   );
 }
@@ -192,7 +248,7 @@ function TachSegments({
 
 function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
   const zero = tachNumXY(0, geom);
-  const size = 19.2;
+  const size = 20.6;
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
@@ -203,7 +259,7 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
             key={i}
             className="tach-num"
             x={p.x}
-            y={p.y + size * 0.36}
+            y={p.y + size * 0.34}
             fontSize={size}
             fontWeight={600}
             fontStyle="italic"
@@ -216,9 +272,9 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
       })}
       <text
         className="unit-label"
-        x={zero.x + 30}
-        y={zero.y + 18}
-        fontSize={6.4}
+        x={zero.x + 28}
+        y={zero.y + 16}
+        fontSize={5.8}
         fontWeight={700}
         fill={dim ? DIM : WHITE}
         textAnchor="middle"
@@ -473,15 +529,15 @@ export function ClusterFace({
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
-            <filter id="lcd-bloom" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="1.15" result="blur" />
+            <filter id="lcd-bloom" x="-28%" y="-28%" width="156%" height="156%">
+              <feGaussianBlur stdDeviation="1.35" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
             <pattern id="lcd-door" width="3" height="8" patternUnits="userSpaceOnUse">
-              <rect width="1" height="8" fill="rgba(255,42,28,0.06)" />
+              <rect width="1" height="8" fill="rgba(255,42,28,0.045)" />
             </pattern>
           </defs>
           <path d={hoodPath(geom)} fill={COWL} stroke="#3a342e" strokeWidth="1" />
@@ -518,16 +574,18 @@ export function ClusterFace({
           {liveLike ? (
             <>
               <LcdWindow x={sc.x - 84} y={sc.y - 34} w={178} h={54} />
-              <SevenSeg
-                x={sc.x - 62}
-                y={sc.y - 30}
-                text={String(speed).padStart(3, " ")}
-                ghost="188"
-                digitH={50}
-                color={RED_LCD}
-                ghostColor={RED_LCD_GHOST}
-                italic={0.07}
-              />
+              <g filter="url(#lcd-bloom)">
+                <SevenSeg
+                  x={sc.x - 62}
+                  y={sc.y - 30}
+                  text={String(speed).padStart(3, " ")}
+                  ghost="188"
+                  digitH={50}
+                  color={RED_LCD}
+                  ghostColor={RED_LCD_GHOST}
+                  italic={0.07}
+                />
+              </g>
               <text x={sc.x + 64} y={sc.y + 8} fontSize={9} fontWeight={700} fill={RED_LCD} className="lcd-label">
                 km/h
               </text>
@@ -537,16 +595,18 @@ export function ClusterFace({
                 </text>
               ) : null}
               <LcdWindow x={odo.x - 160} y={odo.y - 16} w={320} h={34} />
-              <SevenSeg
-                x={odo.x - 126}
-                y={odo.y - 10}
-                text={odoKm}
-                ghost="888888"
-                digitH={20}
-                color={RED_LCD}
-                ghostColor={RED_LCD_GHOST}
-                italic={0.04}
-              />
+              <g filter="url(#lcd-bloom)">
+                <SevenSeg
+                  x={odo.x - 126}
+                  y={odo.y - 10}
+                  text={odoKm}
+                  ghost="888888"
+                  digitH={20}
+                  color={RED_LCD}
+                  ghostColor={RED_LCD_GHOST}
+                  italic={0.04}
+                />
+              </g>
               <text
                 x={odo.x + 108}
                 y={odo.y - 9}
@@ -558,16 +618,18 @@ export function ClusterFace({
               >
                 TRIP A
               </text>
-              <SevenSeg
-                x={odo.x + 78}
-                y={odo.y + 0}
-                text={trip}
-                ghost="888.8"
-                digitH={16}
-                color={RED_LCD}
-                ghostColor={RED_LCD_GHOST}
-                italic={0.04}
-              />
+              <g filter="url(#lcd-bloom)">
+                <SevenSeg
+                  x={odo.x + 78}
+                  y={odo.y + 0}
+                  text={trip}
+                  ghost="888.8"
+                  digitH={16}
+                  color={RED_LCD}
+                  ghostColor={RED_LCD_GHOST}
+                  italic={0.04}
+                />
+              </g>
               {battWarn ? (
                 <text x={odo.x} y={odo.y + 24} textAnchor="middle" fontSize={11} fontWeight={700} fill={RED}>
                   {`${face.batt_v.toFixed(1)}V`}
@@ -579,11 +641,12 @@ export function ClusterFace({
           {phase !== "ready" ? (
             ap2 ? (
               <>
-                <g transform={`translate(${sideArchPoint(temp, 0).x} ${sideArchPoint(temp, 0).y - 14})`} fill={hot ? RED : AMBER}>
-                  <rect x="-1.6" y="-10" width="3.2" height="13" rx="1.5" fill={hot ? RED : AMBER} stroke="none" />
-                  <circle cx="0" cy="5.4" r="4.3" fill={hot ? RED : AMBER} stroke="none" />
-                  <circle cx="0" cy="5.4" r="1.6" fill="#060402" stroke="none" />
-                </g>
+                <CoolantIcon
+                  x={sideArchPoint(temp, 0).x}
+                  y={sideArchPoint(temp, 0).y - 16}
+                  scale={0.52}
+                  fill={hot ? RED : AMBER}
+                />
                 <ArchedSideGauge
                   box={temp}
                   frac={barFracEct}
@@ -593,13 +656,12 @@ export function ClusterFace({
                   warnLow={false}
                   hotEnd={hot}
                 />
-                <g
-                  transform={`translate(${sideArchPoint(fuel, 1).x} ${sideArchPoint(fuel, 1).y - 12})`}
+                <PumpIcon
+                  x={sideArchPoint(fuel, 1).x}
+                  y={sideArchPoint(fuel, 1).y - 14}
+                  scale={0.52}
                   fill={lowFuel ? "#e68424" : AMBER}
-                >
-                  <rect x="-8.2" y="-3.6" width="9.4" height="13.4" rx="1.1" stroke="none" />
-                  <rect x="-6.2" y="-8.6" width="5.4" height="5.2" rx="0.5" stroke="none" />
-                </g>
+                />
                 <ArchedSideGauge
                   box={fuel}
                   frac={barFracFuel}
@@ -612,13 +674,13 @@ export function ClusterFace({
               </>
             ) : (
               <>
-                <text className="unit-label" x={temp.x - 14} y={temp.y + temp.h * 0.85} fontSize={11} fontWeight={700} fill={AMBER} textAnchor="middle">
+                <text className="unit-label" x={temp.x - 14} y={temp.y + temp.h * 0.72} fontSize={11} fontWeight={700} fill={AMBER} textAnchor="middle">
                   C
                 </text>
                 <text
                   className="unit-label"
                   x={temp.x + temp.w + 14}
-                  y={temp.y + temp.h * 0.85}
+                  y={temp.y + temp.h * 0.72}
                   fontSize={11}
                   fontWeight={700}
                   fill={hot ? RED : AMBER}
@@ -626,18 +688,13 @@ export function ClusterFace({
                 >
                   H
                 </text>
-                <g transform={`translate(${temp.x + 10} ${temp.y - 13}) scale(0.62)`} fill={hot ? RED : AMBER} stroke={hot ? RED : AMBER}>
-                  <rect x="-1.7" y="-11" width="3.4" height="14" rx="1.6" fill={hot ? RED : AMBER} stroke="none" />
-                  <circle cx="0" cy="5.6" r="4.5" fill={hot ? RED : AMBER} stroke="none" />
-                  <circle cx="0" cy="5.6" r="1.8" fill="#060402" stroke="none" />
-                  <path d="M5 -8h4.5M5 -4h4.5M5 0h4.5M5 3.6h4.5" strokeWidth="1.35" fill="none" />
-                </g>
+                <CoolantIcon x={temp.x + 10} y={temp.y - 16} scale={0.62} fill={hot ? RED : AMBER} />
                 <SegBar {...temp} frac={barFracEct} segs={TEMP_SEGS} warnLow={false} hotEnd={hot} />
 
                 <text
                   className="unit-label"
                   x={fuel.x - 14}
-                  y={fuel.y + fuel.h * 0.85}
+                  y={fuel.y + fuel.h * 0.72}
                   fontSize={11}
                   fontWeight={700}
                   fill={lowFuel ? RED : AMBER}
@@ -645,20 +702,10 @@ export function ClusterFace({
                 >
                   E
                 </text>
-                <text className="unit-label" x={fuel.x + fuel.w + 14} y={fuel.y + fuel.h * 0.85} fontSize={11} fontWeight={700} fill={AMBER} textAnchor="middle">
+                <text className="unit-label" x={fuel.x + fuel.w + 14} y={fuel.y + fuel.h * 0.72} fontSize={11} fontWeight={700} fill={AMBER} textAnchor="middle">
                   F
                 </text>
-                <g
-                  transform={`translate(${fuel.x + fuel.w - 8} ${fuel.y - 13}) scale(0.62)`}
-                  fill={lowFuel ? "#e68424" : AMBER}
-                  stroke={lowFuel ? "#e68424" : AMBER}
-                >
-                  <rect x="-8.5" y="-3.5" width="10" height="14" rx="1.1" stroke="none" />
-                  <rect x="-6.4" y="-8.6" width="5.6" height="5.2" rx="0.6" stroke="none" />
-                  <rect x="-5.4" y="-0.4" width="4.2" height="3.2" fill="#060402" stroke="none" />
-                  <path d="M1.4 -0.4c6.2-4.2 10.6 0.2 10.6 6.4" fill="none" strokeWidth="1.55" />
-                  <rect x="9.6" y="0.4" width="3.1" height="7.4" rx="0.8" stroke="none" />
-                </g>
+                <PumpIcon x={fuel.x + fuel.w - 8} y={fuel.y - 16} scale={0.62} fill={lowFuel ? "#e68424" : AMBER} />
                 <SegBar {...fuel} frac={barFracFuel} segs={FUEL_SEGS} warnLow={lowFuel} hotEnd={false} />
               </>
             )
