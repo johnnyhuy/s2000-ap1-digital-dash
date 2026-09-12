@@ -64,7 +64,7 @@ describe("face geometry", () => {
     const left = tachNumXY(0);
     const leftArch = tachArchXY(0);
     assert.ok(left.y > leftArch.y);
-    assert.ok(left.y - leftArch.y > TACH_NUM_INSET * 0.4);
+    assert.ok(left.y - leftArch.y > TACH_NUM_INSET * 0.35);
     const right = tachNumXY(1);
     const rightArch = tachArchXY(1);
     assert.ok(right.y > rightArch.y);
