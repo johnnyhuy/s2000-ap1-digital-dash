@@ -64,7 +64,7 @@ def _v_seg(x: float, y: float, h: float, t: float) -> list[tuple[float, float]]:
 
 def segment_polys(x: int, y: int, w: int, h: int) -> dict[str, list[tuple[int, int]]]:
     """Pixel polygons for one digit. Origin is top-left of the digit box."""
-    t = max(2.8, h * 0.128)
+    t = max(2.8, h * 0.142)
     t_g = t * 1.12  # slightly heavier middle bar (OEM 7-seg)
     gap = max(1.4, t * 0.28)
     inner_w = w - t
@@ -215,9 +215,10 @@ def lcd_window(
     """Recessed rectangular LCD well with a light screen-door wash."""
     x, y, w, h = rect
     pygame.draw.rect(dest, wash, pygame.Rect(x, y, w, h), border_radius=3)
+    pygame.draw.rect(dest, (28, 10, 8), pygame.Rect(x + 1, y + 1, max(2, w - 2), max(2, h - 2)), width=1, border_radius=2)
     pygame.draw.rect(dest, edge, pygame.Rect(x, y, w, h), width=1, border_radius=3)
     polariser = pygame.Surface((w, h), pygame.SRCALPHA)
-    for i in range(0, w, 4):
+    for i in range(0, w, 3):
         pygame.draw.line(polariser, door, (i, 0), (i, h))
     dest.blit(polariser, (x, y))
 

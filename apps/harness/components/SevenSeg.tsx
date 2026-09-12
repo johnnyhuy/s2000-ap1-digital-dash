@@ -26,7 +26,7 @@ function vSeg(x: number, y: number, h: number, t: number): string {
 }
 
 function digitPaths(w: number, h: number): Record<string, string> {
-  const t = Math.max(2.2, h * 0.128);
+  const t = Math.max(2.2, h * 0.142);
   const tg = t * 1.12;
   const gap = Math.max(1.1, t * 0.28);
   const inner = w - t;

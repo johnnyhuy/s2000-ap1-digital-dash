@@ -134,7 +134,7 @@ body {
   font-family: var(--font-tach);
   font-style: italic;
   font-weight: 600;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.06em;
 }
 
 .cluster-stage > svg text.lcd-label,
@@ -150,8 +150,8 @@ body {
 }
 
 .seg-lit {
-  filter: drop-shadow(0 0 2.4px rgba(255, 176, 48, 0.62));
-  transition: fill 80ms ease-out, filter 80ms ease-out, opacity 80ms ease-out;
+  filter: drop-shadow(0 0 2.6px rgba(255, 176, 48, 0.7));
+  transition: fill 70ms ease-out, filter 70ms ease-out, opacity 70ms ease-out;
 }
 
 .seg-lit.seg-red {
@@ -163,11 +163,11 @@ body {
 }
 
 .needle {
-  filter: drop-shadow(0 0 5px rgba(255, 208, 112, 0.62));
+  filter: drop-shadow(0 0 5.5px rgba(255, 208, 112, 0.7));
 }
 
 .needle-hot {
-  filter: drop-shadow(0 0 6px rgba(255, 48, 32, 0.78));
+  filter: drop-shadow(0 0 7px rgba(255, 48, 32, 0.82));
 }
 
 .cluster-reveal .needle {
@@ -264,12 +264,13 @@ body {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, #d4d4d0, #6e6e6c 72%);
+  background: radial-gradient(circle at 30% 24%, #ecece8, #9a9a96 42%, #5c5c5a 78%);
   color: #f4f0e8;
   font-weight: 700;
   font-size: 0.85rem;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.35),
     0 2px 3px rgba(0, 0, 0, 0.55);
 }
 
@@ -341,10 +342,10 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  opacity: 0.4;
+  opacity: 0.34;
   flex: 0 0 auto;
   color: #3a3632;
-  transition: opacity 110ms ease-out, filter 110ms ease-out, color 110ms ease-out;
+  transition: opacity 90ms ease-out, filter 90ms ease-out, color 90ms ease-out;
 }
 
 .telltale-icon {
@@ -364,10 +365,10 @@ body {
   align-items: center;
   justify-content: center;
   font-family: var(--font-cluster);
-  font-size: 0.64rem;
+  font-size: 0.66rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 0.95;
+  letter-spacing: 0.04em;
+  line-height: 0.92;
   color: currentColor;
 }
 
@@ -380,15 +381,18 @@ body {
 .telltale-on {
   opacity: 1;
   filter: drop-shadow(0 0 6px var(--lamp)) drop-shadow(0 0 1.2px var(--lamp));
-  animation: lamp-strike 0.36s ease-out;
+  animation: lamp-strike 0.4s ease-out both;
+  animation-delay: calc(var(--i, 0) * 16ms);
 }
 
 @keyframes lamp-strike {
   from {
-    filter: drop-shadow(0 0 12px var(--lamp)) brightness(1.28);
+    filter: drop-shadow(0 0 14px var(--lamp)) brightness(1.32);
+    opacity: 0.55;
   }
   to {
     filter: drop-shadow(0 0 6px var(--lamp)) drop-shadow(0 0 1.2px var(--lamp));
+    opacity: 1;
   }
 }
 
@@ -399,14 +403,15 @@ body {
   height: 22px;
   padding: 0 0.55rem;
   border-radius: 999px;
-  background: radial-gradient(circle at 30% 28%, #d0d0cc, #6c6c6a 74%);
+  background: radial-gradient(circle at 28% 24%, #e8e8e4, #9c9c98 46%, #5e5e5c 78%);
   color: #f4f0e8;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   font-family: var(--font-cluster);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.32),
     0 2px 3px rgba(0, 0, 0, 0.5);
 }
 

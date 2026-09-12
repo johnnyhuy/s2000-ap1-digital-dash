@@ -63,7 +63,8 @@ function lerpHex(a: string, b: string, t: number): string {
 function LcdWindow({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
   return (
     <g className="lcd-window">
-      <rect x={x} y={y} width={w} height={h} rx={3} fill="#0a0302" stroke="#3a100e" strokeWidth={0.8} />
+      <rect x={x} y={y} width={w} height={h} rx={3} fill="#080201" stroke="#4a1612" strokeWidth={0.85} />
+      <rect x={x + 1.1} y={y + 1.1} width={w - 2.2} height={h - 2.2} rx={2} fill="none" stroke="#1c0806" strokeWidth={0.6} />
       <rect x={x} y={y} width={w} height={h} rx={3} fill="url(#lcd-door)" />
     </g>
   );
@@ -101,12 +102,12 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
   };
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <polygon points={dart(6.8)} fill="#1c140c" />
-      <polygon points={dart(5.9)} fill={glow} />
-      <polygon points={dart(4.9)} fill={col} />
-      <circle cx={hubX} cy={hubY} r={3.2} fill="#1c140c" />
-      <circle cx={hubX} cy={hubY} r={2.5} fill={glow} />
-      <circle cx={hubX} cy={hubY} r={1.2} fill={col} />
+      <polygon points={dart(7.4)} fill="#1c140c" />
+      <polygon points={dart(6.4)} fill={glow} />
+      <polygon points={dart(5.2)} fill={col} />
+      <circle cx={hubX} cy={hubY} r={3.4} fill="#1c140c" />
+      <circle cx={hubX} cy={hubY} r={2.6} fill={glow} />
+      <circle cx={hubX} cy={hubY} r={1.25} fill={col} />
       <circle cx={hubX} cy={hubY} r={0.45} fill="#140e08" />
     </g>
   );
@@ -162,11 +163,11 @@ function TachSegments({
   const washRed = needleFrac > redFrom ? tachBandPath(redFrom, needleFrac, 0.25, TACH_BAND_OUTER + 1, geom) : "";
   const trail =
     sweepT !== undefined
-      ? tachBandPath(Math.max(0, sweepT - 0.07), Math.max(sweepT, 0.012), 0.25, TACH_BAND_OUTER, geom)
+      ? tachBandPath(Math.max(0, sweepT - 0.11), Math.max(sweepT, 0.012), 0.25, TACH_BAND_OUTER, geom)
       : "";
   const tip = needleFrac > 0.002 ? needleFrac : null;
   const printed = [];
-  const slices = 12;
+  const slices = 48;
   for (let i = 0; i < slices; i += 1) {
     const t0 = (i / slices) * redFrom;
     const t1 = ((i + 1) / slices) * redFrom;
@@ -207,7 +208,7 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
             className="tach-num"
             x={p.x}
             y={p.y}
-            fontSize={16}
+            fontSize={14.5}
             fontWeight={600}
             fontStyle="italic"
             fill={dim ? DIM : WHITE}
@@ -252,8 +253,8 @@ function SegBar({
   warnLow: boolean;
   hotEnd: boolean;
 }) {
-  const gap = Math.max(3, w * 0.045);
-  const tickW = Math.max(6, ((w - gap * (segs - 1)) / segs) * 0.72);
+  const gap = Math.max(2, w * 0.028);
+  const tickW = Math.max(6, ((w - gap * (segs - 1)) / segs) * 0.9);
   const tickH = Math.max(5, h * 0.82);
   const stride = segs > 1 ? (w - tickW) / (segs - 1) : 0;
   const lit = Math.round(frac * segs);
@@ -452,8 +453,8 @@ export function ClusterFace({
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
-            <pattern id="lcd-door" width="4" height="8" patternUnits="userSpaceOnUse">
-              <rect width="1" height="8" fill="rgba(255,48,32,0.1)" />
+            <pattern id="lcd-door" width="3" height="8" patternUnits="userSpaceOnUse">
+              <rect width="1" height="8" fill="rgba(255,48,32,0.14)" />
             </pattern>
           </defs>
           <path d={hoodPath(geom)} fill="#161412" stroke="#3a342e" strokeWidth="1" />

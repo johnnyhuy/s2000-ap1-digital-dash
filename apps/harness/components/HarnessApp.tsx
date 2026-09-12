@@ -23,7 +23,7 @@ import {
 } from "@/lib/mockDrive";
 import { telemetryToDict, type Telemetry } from "@/lib/protocol";
 
-const HZ_FEEL = 48;
+const HZ_FEEL = 60;
 
 function styleFromSearch(): FaceStyle {
   if (typeof window === "undefined") return "ap1";

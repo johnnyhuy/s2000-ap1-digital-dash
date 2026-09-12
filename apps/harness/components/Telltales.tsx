@@ -47,7 +47,7 @@ export function TelltaleStrip({
 }) {
   return (
     <div className="lamp-strip" role="group" aria-label="OEM telltales">
-      {LAMP_STRIP.map((spec) => {
+      {LAMP_STRIP.map((spec, i) => {
         const extra = spec.key === "batt_warn" && battV < BATT_LOW_V;
         const lit = bulbCheck || Boolean(lamps[spec.key] || extra);
         const color = lit ? TONE[spec.tone] : undefined;
@@ -58,7 +58,11 @@ export function TelltaleStrip({
             key={spec.kind}
             className={`telltale${lit ? " telltale-on" : ""}`}
             title={spec.label}
-            style={color ? { color, ["--lamp" as string]: color } : undefined}
+            style={
+              color
+                ? { color, ["--lamp" as string]: color, ["--i" as string]: i }
+                : { ["--i" as string]: i }
+            }
           >
             {word ? (
               <span className="telltale-word">

@@ -605,8 +605,8 @@ class DisplayState:
         self.trip_km = max(0.0, self.odo_km - self.trip_origin)
 
     def follow(self, telem: Telemetry, dt: float) -> None:
-        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.08)
-        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.11)
+        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.11)
+        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.08)
         self.fuel_pct = exp_smooth(self.fuel_pct, float(telem.fuel_pct), dt, 0.32)
         self.ect_c = exp_smooth(self.ect_c, float(telem.ect_c), dt, 0.38)
         self.batt_v = exp_smooth(self.batt_v, float(telem.batt_v), dt, 0.20)
@@ -916,11 +916,11 @@ def draw_tach_segments(
     n_minor = 9 * TACH_MINORS_PER  # 36 × 200 r/min steps across 0–9
     del ghost
 
-    slices = 12
+    slices = 48
     for i in range(slices):
         t0 = red_from * (i / slices)
         t1 = red_from * ((i + 1) / slices)
-        slab = tach_band_poly(t0, t1, 0.4, TACH_BAND_OUTER, g, steps=10)
+        slab = tach_band_poly(t0, t1, 0.4, TACH_BAND_OUTER, g, steps=8)
         if slab:
             col = lerp_colour(AMBER_BAND_LO, AMBER_BAND_HI, i / max(1, slices - 1))
             pygame.draw.polygon(surf, col, slab)
@@ -1011,7 +1011,7 @@ def draw_welcome_sweep(pygame, surf, sweep_t: float, g: FaceGeom | None = None) 
     g = _geom(g)
     t = smoothstep(clamp(sweep_t, 0.0, 1.0))
     bloom = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
-    trail = tach_band_poly(max(0.0, t - 0.07), max(t, 0.012), 0.4, TACH_BAND_OUTER, g, steps=22)
+    trail = tach_band_poly(max(0.0, t - 0.11), max(t, 0.012), 0.4, TACH_BAND_OUTER, g, steps=28)
     if trail:
         pygame.draw.polygon(bloom, (255, 208, 96, 78), trail)
     n = 36
@@ -1068,8 +1068,8 @@ def _seg_bar(
     """Thin horizontal amber ticks — OEM AP1, not fat LCD blocks."""
     x, y, w, h = rect
     tick_h = max(5, min(10, h))
-    gap = max(4, int(w * 0.045))
-    tick_w = max(10, int((w - gap * (segs - 1)) / segs * 0.72))
+    gap = max(3, int(w * 0.028))
+    tick_w = max(10, int((w - gap * (segs - 1)) / segs * 0.9))
     stride = (w - tick_w) / max(1, segs - 1)
     lit = int(round(frac * segs))
     baseline = y + tick_h + 3
@@ -1527,13 +1527,13 @@ def build_fonts(pygame) -> dict:
     return {
         "speed": _font(pygame, 132, bold=True, mono=True),
         "ready": _font(pygame, 88, bold=True),
-        "tick": _font(pygame, 36, italic=True),
+        "tick": _font(pygame, 34, italic=True),
         "label": _font(pygame, 20, bold=True),
         "readout": _font(pygame, 26, bold=True, mono=True),
-        "tiny": _font(pygame, 16, italic=True),
+        "tiny": _font(pygame, 15, italic=True),
         "unit": _font(pygame, 18, bold=True),
         "micro": _font(pygame, 13, bold=True),
-        "lamp": _font(pygame, 15, bold=True),
+        "lamp": _font(pygame, 16, bold=True),
     }
 
 
