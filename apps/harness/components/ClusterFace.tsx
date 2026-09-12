@@ -3,6 +3,9 @@ import {
   AP2_TEMP_SEGS,
   FUEL_SEGS,
   REDLINE_BLOCKS,
+  TACH_BAND_OUTER,
+  TACH_TICK_MAJOR,
+  TACH_TICK_MINOR,
   TEMP_SEGS,
   MODULE_H,
   VIEW_W,
@@ -38,11 +41,10 @@ const CREAM = "#f6ecd6";
 const DIM = "#6e6454";
 const TICK_MINOR_DIM = "#c47c28";
 const REDLINE_PRINT = "#c4281c";
-const TACH_BAND_OUTER = 16;
-const TACH_TICK_MAJOR = { w: 1.35, len: 11.5 };
-const TACH_TICK_MINOR = { w: 0.75, len: 6.8 };
-const TACH_NEEDLE_TIP = -3.4;
-const TACH_NEEDLE_TAIL = 13.5;
+const COWL = "#100e0d";
+const WELL = "#050302";
+const TACH_NEEDLE_TIP = -3.6;
+const TACH_NEEDLE_TAIL = 14.2;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -62,9 +64,18 @@ function lerpHex(a: string, b: string, t: number): string {
 function LcdWindow({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
   return (
     <g className="lcd-window">
-      <rect x={x} y={y} width={w} height={h} rx={3} fill="#080201" stroke="#4a1612" strokeWidth={0.85} />
-      <rect x={x + 1.1} y={y + 1.1} width={w - 2.2} height={h - 2.2} rx={2} fill="none" stroke="#1c0806" strokeWidth={0.6} />
-      <rect x={x} y={y} width={w} height={h} rx={3} fill="url(#lcd-door)" />
+      <rect x={x} y={y} width={w} height={h} rx={2.4} fill="#0a0302" stroke="#2a0c0a" strokeWidth={0.55} />
+      <rect
+        x={x + 0.9}
+        y={y + 0.9}
+        width={w - 1.8}
+        height={h - 1.8}
+        rx={1.8}
+        fill="none"
+        stroke="#140604"
+        strokeWidth={0.4}
+      />
+      <rect x={x} y={y} width={w} height={h} rx={2.4} fill="url(#lcd-door)" />
     </g>
   );
 }
@@ -89,9 +100,9 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
     ].join(" ");
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <polygon points={chevron(5.4)} fill="#1c140c" />
-      <polygon points={chevron(4.6)} fill={glow} />
-      <polygon points={chevron(3.9)} fill={col} />
+      <polygon points={chevron(5.8)} fill="#1c140c" />
+      <polygon points={chevron(4.9)} fill={glow} />
+      <polygon points={chevron(4.15)} fill={col} />
     </g>
   );
 }
@@ -112,13 +123,13 @@ function TachSegments({
     const frac = i / 36;
     if (frac >= redFrom - 1e-6) continue;
     const major = i % 4 === 0;
-    const reached = frac <= needleFrac + 1e-6;
     const tick = major ? TACH_TICK_MAJOR : TACH_TICK_MINOR;
-    const fill = major ? WHITE : reached ? lerpHex(AMBER, AMBER_HOT, frac) : TICK_MINOR_DIM;
+    const dist = sweepT === undefined ? 1 : Math.max(0, 1 - Math.abs(sweepT - frac) / 0.09);
+    const fill = major ? WHITE : lerpHex(TICK_MINOR_DIM, AMBER_HOT, dist);
     segs.push(
       <path
         key={`s${i}`}
-        className={reached ? "seg-lit" : "seg-ghost"}
+        className={major ? "seg-lit" : "seg-ghost"}
         d={tachTickPath(frac, tick.w, tick.len, geom, 1.1)}
         fill={fill}
         stroke="none"
@@ -130,7 +141,7 @@ function TachSegments({
     const t0 = redFrom + (1 - redFrom) * (i / REDLINE_BLOCKS);
     const t1 = redFrom + (1 - redFrom) * ((i + 1) / REDLINE_BLOCKS);
     const mid = (t0 + t1) * 0.5;
-    const reached = mid <= needleFrac + 1e-6;
+    const reached = sweepT === undefined && mid <= needleFrac + 1e-6;
     reds.push(
       <path
         key={`r${i}`}
@@ -141,9 +152,10 @@ function TachSegments({
       />,
     );
   }
+  const liveWash = sweepT === undefined;
   const washTo = Math.min(needleFrac, redFrom);
-  const wash = needleFrac > 0.012 ? tachBandPath(0, washTo, 0.25, TACH_BAND_OUTER, geom) : "";
-  const washRed = needleFrac > redFrom ? tachBandPath(redFrom, needleFrac, 0.25, TACH_BAND_OUTER + 1, geom) : "";
+  const wash = liveWash && needleFrac > 0.012 ? tachBandPath(0, washTo, 0.25, TACH_BAND_OUTER, geom) : "";
+  const washRed = liveWash && needleFrac > redFrom ? tachBandPath(redFrom, needleFrac, 0.25, TACH_BAND_OUTER + 1, geom) : "";
   const trail =
     sweepT !== undefined
       ? tachBandPath(Math.max(0, sweepT - 0.11), Math.max(sweepT, 0.012), 0.25, TACH_BAND_OUTER, geom)
@@ -179,6 +191,7 @@ function TachSegments({
 
 function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
   const zero = tachNumXY(0, geom);
+  const size = 18;
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
@@ -189,13 +202,12 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
             key={i}
             className="tach-num"
             x={p.x}
-            y={p.y}
-            fontSize={16}
+            y={p.y + size * 0.36}
+            fontSize={size}
             fontWeight={600}
             fontStyle="italic"
             fill={dim ? DIM : WHITE}
             textAnchor="middle"
-            dominantBaseline="middle"
           >
             {i}
           </text>
@@ -203,9 +215,9 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
       })}
       <text
         className="unit-label"
-        x={zero.x + 24}
-        y={zero.y + 11}
-        fontSize={5.6}
+        x={zero.x + 30}
+        y={zero.y + 18}
+        fontSize={6.2}
         fontWeight={700}
         fill={dim ? DIM : WHITE}
         textAnchor="middle"
@@ -358,13 +370,38 @@ function ReadyCard({ face, geom }: { face: DisplayState; geom: FaceGeom }) {
   ];
   return (
     <g className="ready-card">
-      <text x={cx} y={geom.lcd.y + 48} textAnchor="middle" fontSize={11} fill={DIM} letterSpacing="0.22em">
+      <text
+        className="unit-label"
+        x={cx}
+        y={geom.lcd.y + 48}
+        textAnchor="middle"
+        fontSize={11}
+        fill={DIM}
+        letterSpacing="0.28em"
+      >
         S2000  DIGITAL  DASH
       </text>
-      <text x={cx} y={geom.speed.y + 8} textAnchor="middle" fontSize={48} fontWeight={700} fill={AMBER_HOT} className="ready-word" letterSpacing="0.08em">
+      <text
+        x={cx}
+        y={geom.speed.y + 8}
+        textAnchor="middle"
+        fontSize={52}
+        fontWeight={700}
+        fill={AMBER_HOT}
+        className="ready-word"
+        letterSpacing="0.1em"
+      >
         READY
       </text>
-      <text x={cx} y={geom.speed.y + 36} textAnchor="middle" fontSize={10} fill={DIM} letterSpacing="0.12em">
+      <text
+        className="unit-label"
+        x={cx}
+        y={geom.speed.y + 38}
+        textAnchor="middle"
+        fontSize={10}
+        fill={DIM}
+        letterSpacing="0.16em"
+      >
         IGNITION ON   SYSTEMS OK
       </text>
       {chips.map(([name, val], i) => {
@@ -428,21 +465,28 @@ export function ClusterFace({
           aria-label={`${styleName} cluster, ${speed} kilometres per hour, ${Math.round(rpm)} rpm`}
         >
           <defs>
-            <filter id="amber-bloom" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="1.8" result="blur" />
+            <filter id="amber-bloom" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="1.6" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <filter id="lcd-bloom" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1.15" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
             <pattern id="lcd-door" width="3" height="8" patternUnits="userSpaceOnUse">
-              <rect width="1" height="8" fill="rgba(255,48,32,0.14)" />
+              <rect width="1" height="8" fill="rgba(255,42,28,0.07)" />
             </pattern>
           </defs>
-          <path d={hoodPath(geom)} fill="#161412" stroke="#3a342e" strokeWidth="1" />
+          <path d={hoodPath(geom)} fill={COWL} stroke="#3a342e" strokeWidth="1" />
           {ap2 ? null : <polyline points={lip} fill="none" stroke="#6a6258" strokeWidth="2.1" />}
-          <path d={lcdPath(geom)} fill="#090302" stroke="none" />
-          <path d={lcdPath(geom)} fill="#24140a" fillOpacity="0.08" />
+          <path d={lcdPath(geom)} fill={WELL} stroke="none" />
+          <path d={lcdPath(geom)} fill="#24140a" fillOpacity="0.05" />
           <polyline
             points={archPoly(lcd.x + 10, lcd.x + lcd.w - 10, lcdPeakY + 1.4, lcdSpringY - 5)}
             fill="none"
@@ -480,10 +524,10 @@ export function ClusterFace({
                 ghost="188"
                 digitH={58}
                 color={RED_LCD}
-                ghostColor="#2e0806"
+                ghostColor="#140302"
                 italic={0.08}
               />
-              <text x={sc.x + 62} y={sc.y + 2} fontSize={11} fontWeight={700} fill={RED_LCD} className="lcd-label">
+              <text x={sc.x + 68} y={sc.y + 4} fontSize={10.5} fontWeight={700} fill={RED_LCD} className="lcd-label">
                 km/h
               </text>
               {ap2 ? (
@@ -499,7 +543,7 @@ export function ClusterFace({
                 ghost="888888"
                 digitH={22}
                 color={RED_LCD}
-                ghostColor="#2e0806"
+                ghostColor="#140302"
                 italic={0.04}
               />
               <text
@@ -520,7 +564,7 @@ export function ClusterFace({
                 ghost="888.8"
                 digitH={16}
                 color={RED_LCD}
-                ghostColor="#2e0806"
+                ghostColor="#140302"
                 italic={0.04}
               />
               {battWarn ? (

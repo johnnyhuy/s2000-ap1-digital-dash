@@ -253,14 +253,18 @@ export function tachArchXY(frac: number, geom: FaceGeom = FACE): { x: number; y:
   };
 }
 
-export const TACH_NUM_INSET = 28;
+/** Inward offset from the printed band into the LCD well (viewBox units). */
+export const TACH_NUM_INSET = 40;
+export const TACH_BAND_OUTER = 16;
+export const TACH_TICK_MAJOR = { w: 1.35, len: 11.5 };
+export const TACH_TICK_MINOR = { w: 0.75, len: 6.8 };
 
 export function tachNumXY(frac: number, geom: FaceGeom = FACE): { x: number; y: number } {
   const t = frac < 0 ? 0 : frac > 1 ? 1 : frac;
   const p = tachArchXY(t, geom);
   const n = tachArchNormal(t, geom);
   const end = Math.abs(2 * t - 1);
-  const extra = 7 * end * end;
+  const extra = 11 * end * end;
   return { x: p.x + n.x * TACH_NUM_INSET, y: p.y + n.y * TACH_NUM_INSET + extra };
 }
 

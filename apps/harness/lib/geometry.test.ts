@@ -16,7 +16,9 @@ import {
   tachTickPath,
   tachArchXY,
   tachNumXY,
+  TACH_BAND_OUTER,
   TACH_NUM_INSET,
+  TACH_TICK_MAJOR,
 } from "./geometry.ts";
 
 function near(got: number, want: number, delta: number) {
@@ -57,12 +59,17 @@ describe("face geometry", () => {
     const arch = tachArchXY(0.5);
     assert.ok(mid.y > arch.y);
     assert.ok(Math.abs(mid.x - arch.x) < 6);
+    assert.ok(TACH_NUM_INSET > TACH_BAND_OUTER);
+    assert.ok(TACH_NUM_INSET > TACH_TICK_MAJOR.len + 16);
     const left = tachNumXY(0);
     const leftArch = tachArchXY(0);
     assert.ok(left.y > leftArch.y);
     assert.ok(left.y - leftArch.y > TACH_NUM_INSET * 0.4);
     const right = tachNumXY(1);
-    assert.ok(right.y > tachArchXY(1).y);
+    const rightArch = tachArchXY(1);
+    assert.ok(right.y > rightArch.y);
+    assert.ok(left.y - leftArch.y > mid.y - arch.y);
+    assert.ok(right.y - rightArch.y > mid.y - arch.y);
   });
 
   it("uses six thin AP1 temp ticks and slanted tach paths", () => {

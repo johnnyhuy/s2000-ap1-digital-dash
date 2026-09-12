@@ -138,7 +138,7 @@ uv sync --extra dev
 
 ## Web cluster harness (no Pi)
 
-Shareable Next.js demo of the OEM-geometry face (red 7-seg, amber tach), driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn) and the same sweep → READY → reveal boot as the Pi UI. Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track.
+Shareable Next.js demo of the OEM-geometry face (red 7-seg, printed amber tach, cream needle), driven by the same frozen JSON fields. Client-side mock loop (play/pause, **AP1 / AP2** face, idle / cruise / VTEC / warn) and the same sweep → READY → reveal boot as the Pi UI. Approximate CSS/SVG cluster — pixel-perfect pygame parity is a separate track. Tach numerals sit in the well; off lamps stay near-black.
 
 ```bash
 cd apps/harness
