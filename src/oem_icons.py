@@ -191,16 +191,16 @@ def _draw_turn(pygame, w: int, h: int, left: bool):
 
 
 def _draw_high_beam(pygame, w: int, h: int):
-    """ISO 2575 high-beam: hollow D-lamp + five parallel rays."""
+    """ISO 2575 high-beam: hollow D-lamp + three parallel rays."""
     s = _blank(pygame, w, h)
     cx, cy = w // 2 + 7, h // 2
     pygame.draw.circle(s, (255, 255, 255), (cx, cy), 11)
     pygame.draw.rect(s, (255, 255, 255), (cx - 14, cy - 11, 14, 22))
     pygame.draw.circle(s, (0, 0, 0, 0), (cx + 1, cy), 7)
     pygame.draw.rect(s, (0, 0, 0, 0), (cx - 10, cy - 7, 12, 14))
-    for i, dy in enumerate((-11, -5.5, 0, 5.5, 11)):
-        x0 = 5 if i in (0, 4) else 3
-        pygame.draw.rect(s, (255, 255, 255), (x0, int(cy + dy - 1.2), cx - 18 - x0, 2))
+    for i, dy in enumerate((-9, 0, 9)):
+        x0 = 4 if i in (0, 2) else 3
+        pygame.draw.rect(s, (255, 255, 255), (x0, int(cy + dy - 1.6), cx - 18 - x0, 3))
     return s
 
 
@@ -241,7 +241,7 @@ def _draw_oil(pygame, w: int, h: int):
 
 
 def _draw_cel(pygame, w: int, h: int):
-    """ISO engine block — grille stands in for CHECK at strip size."""
+    """ISO engine block with CHECK punched as negative space."""
     s = _blank(pygame, w, h)
     cx, cy = w // 2, h // 2
     pygame.draw.rect(s, (255, 255, 255), (cx - 19, cy - 6, 38, 18), border_radius=1)
@@ -249,9 +249,15 @@ def _draw_cel(pygame, w: int, h: int):
     pygame.draw.rect(s, (255, 255, 255), (cx - 26, cy - 2, 8, 10))
     pygame.draw.rect(s, (255, 255, 255), (cx + 18, cy - 2, 8, 10))
     pygame.draw.rect(s, (255, 255, 255), (cx + 25, cy + 2, 6, 12))
-    s.fill((0, 0, 0, 0), pygame.Rect(cx - 13, cy - 1, 26, 8))
-    for i in range(5):
-        pygame.draw.rect(s, (255, 255, 255), (cx - 11 + i * 5, cy, 2, 6))
+    font = _font(pygame, max(8, h // 5))
+    check = font.render("CHECK", True, (255, 255, 255))
+    box = check.get_rect(center=(cx, cy + 2))
+    for y in range(check.get_height()):
+        for x in range(check.get_width()):
+            if check.get_at((x, y)).a > 80:
+                px, py = box.x + x, box.y + y
+                if 0 <= px < w and 0 <= py < h:
+                    s.set_at((px, py), (0, 0, 0, 0))
     return s
 
 

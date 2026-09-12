@@ -130,11 +130,15 @@ class AssetTests(unittest.TestCase):
         oil = (ASSETS / "oil.svg").read_text(encoding="utf-8")
         beam = (ASSETS / "high_beam.svg").read_text(encoding="utf-8")
         belt = (ASSETS / "seatbelt.svg").read_text(encoding="utf-8")
+        cel = (ASSETS / "cel.svg").read_text(encoding="utf-8")
         self.assertIn("evenodd", battery)
         self.assertIn("evenodd", oil)
         self.assertIn("evenodd", beam)
         self.assertIn("evenodd", belt)
+        self.assertIn("evenodd", cel)
         self.assertIn("fill-rule", oil)
+        self.assertEqual(beam.count("<rect"), 3)
+        self.assertIn("16.2 22.2", cel)
 
     def test_protocol_field_names_unchanged(self) -> None:
         self.assertEqual(

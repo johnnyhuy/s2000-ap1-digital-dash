@@ -32,9 +32,10 @@ pygame). The LCD well is charcoal with a faint screen-door, not a brown
 overlay. Telltales: red `#e22820`, amber `#ec941c`, green `#28cc5c`, ISO
 high-beam blue `#2460e4` (never neon cyan). Off lamps sit just above black
 (`#4a4540` on the web strip, `#2c2824` in pygame) so the row still reads.
-Icons are white-on-transparent ISO silhouettes (hollow battery, oil-can with
-drop, outlined high-beam D) under `assets/icons/`, tinted at draw time. The
-web strip draws the same pictograms inline (`LampIcons.tsx`) so CSS masks
+Icons are white-on-transparent ISO silhouettes (hollow battery with +/−,
+oil-can with drop, 3-ray outlined high-beam D, CEL with CHECK punched
+through the block) under `assets/icons/`, tinted at draw time. The web
+strip draws the same pictograms inline (`LampIcons.tsx`) so CSS masks
 cannot collapse them. Word lamps set in Barlow Condensed. Tach numerals sit
 **inside** the well (0 and 9 drop extra) in Barlow Condensed SemiBold Italic
 with tight-but-not-crushed tracking. Ticks stay on the printed band. Analog
