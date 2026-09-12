@@ -37,7 +37,7 @@ const TONE: Record<Tone, string> = {
   blue: "#2460e4",
 };
 
-const GHOST = "#4a4540";
+const GHOST = "#322e2a";
 
 export function TelltaleStrip({
   lamps,

@@ -139,6 +139,14 @@ class AssetTests(unittest.TestCase):
         self.assertIn("fill-rule", oil)
         self.assertEqual(beam.count("<rect"), 3)
         self.assertIn("16.2 22.2", cel)
+        self.assertIn("<circle", belt)
+        self.assertIn("21.6 15.4", belt)
+        self.assertIn("h-8.8", belt)
+        key = (ASSETS / "immobilizer.svg").read_text(encoding="utf-8")
+        door = (ASSETS / "door.svg").read_text(encoding="utf-8")
+        self.assertIn("evenodd", key)
+        self.assertIn("16.6", key)
+        self.assertIn("2.8 28.6", door)
 
     def test_protocol_field_names_unchanged(self) -> None:
         self.assertEqual(

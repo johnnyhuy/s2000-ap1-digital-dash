@@ -32,19 +32,20 @@ import { HardwareBezel } from "./Telltales";
 const AMBER = "#f49420";
 const AMBER_HOT = "#ffb838";
 const AMBER_GHOST = "#2a180a";
-const AMBER_BAND_LO = "#e08c24";
-const AMBER_BAND_HI = "#b04810";
+const AMBER_BAND_LO = "#f0a028";
+const AMBER_BAND_HI = "#a83810";
 const RED = "#e42820";
 const RED_LCD = "#ff261c";
+const RED_LCD_GHOST = "#240808";
 const WHITE = "#f8f2e8";
-const CREAM = "#f6ecd6";
+const CREAM = "#fff4dc";
 const DIM = "#6e6454";
 const TICK_MINOR_DIM = "#c47c28";
 const REDLINE_PRINT = "#c4281c";
 const COWL = "#100e0d";
 const WELL = "#050302";
-const TACH_NEEDLE_TIP = -3.1;
-const TACH_NEEDLE_TAIL = 10.6;
+const TACH_NEEDLE_TIP = -4.4;
+const TACH_NEEDLE_TAIL = 13.6;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -100,9 +101,9 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
     ].join(" ");
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <polygon points={chevron(4.15)} fill="#1a120c" />
-      <polygon points={chevron(3.35)} fill={glow} />
-      <polygon points={chevron(2.55)} fill={col} />
+      <polygon points={chevron(5.05)} fill="#1a120c" />
+      <polygon points={chevron(4.05)} fill={glow} />
+      <polygon points={chevron(3.05)} fill={col} />
     </g>
   );
 }
@@ -191,7 +192,7 @@ function TachSegments({
 
 function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
   const zero = tachNumXY(0, geom);
-  const size = 20.5;
+  const size = 19.2;
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
@@ -524,10 +525,10 @@ export function ClusterFace({
                 ghost="188"
                 digitH={50}
                 color={RED_LCD}
-                ghostColor="#120404"
+                ghostColor={RED_LCD_GHOST}
                 italic={0.07}
               />
-              <text x={sc.x + 62} y={sc.y + 6} fontSize={10} fontWeight={700} fill={RED_LCD} className="lcd-label">
+              <text x={sc.x + 64} y={sc.y + 8} fontSize={9} fontWeight={700} fill={RED_LCD} className="lcd-label">
                 km/h
               </text>
               {ap2 ? (
@@ -543,14 +544,14 @@ export function ClusterFace({
                 ghost="888888"
                 digitH={20}
                 color={RED_LCD}
-                ghostColor="#120404"
+                ghostColor={RED_LCD_GHOST}
                 italic={0.04}
               />
               <text
                 x={odo.x + 108}
-                y={odo.y - 8}
+                y={odo.y - 9}
                 textAnchor="middle"
-                fontSize={7.5}
+                fontSize={7.2}
                 fontWeight={700}
                 fill={RED_LCD}
                 className="lcd-label"
@@ -564,7 +565,7 @@ export function ClusterFace({
                 ghost="888.8"
                 digitH={16}
                 color={RED_LCD}
-                ghostColor="#120404"
+                ghostColor={RED_LCD_GHOST}
                 italic={0.04}
               />
               {battWarn ? (

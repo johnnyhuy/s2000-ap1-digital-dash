@@ -57,12 +57,12 @@ export function HighBeamIcon(props: IconProps) {
 export function BatteryIcon(props: IconProps) {
   return (
     <Plate {...props}>
-      <rect x="18.6" y="6.4" width="9.6" height="6.4" rx="0.7" />
-      <rect x="35.8" y="6.4" width="9.6" height="6.4" rx="0.7" />
-      <path fillRule="evenodd" d="M10.4 13.2h43.2v28.4H10.4z M15.2 17.8h33.6v19.2H15.2z" />
-      <rect x="19.4" y="25.4" width="10.8" height="3.1" />
-      <rect x="23.25" y="21.5" width="3.1" height="10.9" />
-      <rect x="34.2" y="25.4" width="10.8" height="3.1" />
+      <rect x="17.4" y="5.2" width="10.4" height="7.2" rx="0.8" />
+      <rect x="36.2" y="5.2" width="10.4" height="7.2" rx="0.8" />
+      <path fillRule="evenodd" d="M8.8 12.8h46.4v30.4H8.8z M15.6 19.2h32.8v17.6H15.6z" />
+      <rect x="18.6" y="25.6" width="11.6" height="3.4" />
+      <rect x="22.7" y="21.4" width="3.4" height="11.8" />
+      <rect x="34.2" y="25.6" width="11.6" height="3.4" />
     </Plate>
   );
 }
@@ -72,15 +72,15 @@ export function OilIcon(props: IconProps) {
     <Plate {...props}>
       <path
         fillRule="evenodd"
-        d="M4.2 25.2c0-8.4 6.2-14.6 15.2-14.6h6.2v4.6h-5.4c-5.2 0-8.6 3.6-8.6 10s3.4 10 8.6 10h5.4v4.6h-6.2C10.4 39.8 4.2 33.6 4.2 25.2z"
+        d="M3.2 26.4c0-9.2 6.6-16 16.6-16h6.4v5.2H20.2c-5.8 0-9.6 4-9.6 10.8s3.8 10.8 9.6 10.8h6v5.2h-6.4C9.8 42.4 3.2 35.6 3.2 26.4z"
       />
-      <rect x="28.4" y="10.6" width="10.2" height="4.4" rx="0.6" />
-      <path fillRule="evenodd" d="M20.8 14.8h24.8v21.2H20.8z M25.2 19.2h16v12.4H25.2z" />
+      <rect x="27.8" y="11.2" width="11.4" height="5" rx="0.7" />
+      <path fillRule="evenodd" d="M19.6 16h26.6v22.4H19.6z M24.4 20.8h17v12.8H24.4z" />
       <path
         fillRule="evenodd"
-        d="M45.4 14.8 56.4 4.6l4.6 5-8.8 8.2z M48.6 16.4 56.2 9.4l1.6 1.8-6.4 5.6z"
+        d="M44.6 16.2 55.8 6.2l5.2 5.4-8.6 8z M48.2 17.8 56.2 10.4l1.8 1.9-6.4 5.8z"
       />
-      <path d="M58.4 5.2c0 3.4 2.4 5.8 4.4 5.8s4.4-2.4 4.4-5.8c0-2.6-2-5.6-4.4-8.6-2.4 3-4.4 6-4.4 8.6z" />
+      <path d="M57.6 14.6c0 3.2 2.2 5.6 4.2 5.6s4.2-2.4 4.2-5.6c0-2.4-1.8-5.4-4.2-8.4-2.4 3-4.2 6-4.2 8.4z" />
     </Plate>
   );
 }
@@ -102,10 +102,10 @@ export function CelIcon(props: IconProps) {
 export function ImmobilizerIcon(props: IconProps) {
   return (
     <Plate {...props}>
-      <path fillRule="evenodd" d="M18.4 7.4a13.6 13.6 0 1 0 .02 0zm0 6.2a7.4 7.4 0 1 0 .02 0z" />
-      <rect x="29.2" y="20.4" width="28.8" height="6.6" rx="1.2" />
-      <rect x="45.6" y="27" width="4.4" height="8.4" rx="0.7" />
-      <rect x="52.4" y="27" width="4.4" height="11.8" rx="0.7" />
+      <path fillRule="evenodd" d="M17.2 5.6a16.6 16.6 0 1 0 .02 0zm0 7.4a9.2 9.2 0 1 0 .02 0z" />
+      <rect x="30.4" y="19.2" width="30.6" height="8.4" rx="1.5" />
+      <rect x="48.2" y="27.4" width="5.4" height="9.6" rx="0.8" />
+      <rect x="55.8" y="27.4" width="5.4" height="13.4" rx="0.8" />
     </Plate>
   );
 }
@@ -113,11 +113,13 @@ export function ImmobilizerIcon(props: IconProps) {
 export function SeatbeltIcon(props: IconProps) {
   return (
     <Plate {...props}>
-      <circle cx="32" cy="8.4" r="6.6" />
+      <circle cx="32" cy="8.2" r="6.5" />
+      <path d="M29.2 13.8h5.6v3.4h-5.6z" />
       <path
         fillRule="evenodd"
-        d="M18.4 16.6c0-2.4 6.1-4.8 13.6-4.8s13.6 2.4 13.6 4.8V45.4H18.4z M21.8 16 46.6 45.4h-8.8L20 22.6z"
+        d="M16.8 17.6 24.6 16.2 28 19h8l3.4-2.8 7.8 1.4-2.6 27.8H19.4z M20.4 15.2 49.6 45.4h-14L18.4 21.6z"
       />
+      <path d="M21.6 15.4 47.4 45h-8.8L20.2 22.2z" />
     </Plate>
   );
 }
@@ -127,10 +129,10 @@ export function DoorIcon(props: IconProps) {
     <Plate {...props}>
       <path
         fillRule="evenodd"
-        d="M26.4 2.4h11.2c1.7 0 3.3 1 4.2 2.5L45.8 11.2v26.6c0 1.6-.9 3.1-2.3 4l-6.2 4.4H26.7l-6.2-4.4c-1.4-.9-2.3-2.4-2.3-4V11.2L22.2 4.9c.9-1.5 2.5-2.5 4.2-2.5z M29.6 9.6h4.8v7.2h-4.8z"
+        d="M25.4 2.2h13.2c2 0 3.8 1.15 4.7 2.95L47.4 11.4v26.4c0 1.7-1 3.3-2.6 4.3L38.2 46H25.8l-6.6-3.9c-1.6-1-2.6-2.6-2.6-4.3V11.4L20.7 5.15C21.6 3.35 23.4 2.2 25.4 2.2z M27.6 8.6h8.8v8.4h-8.8z"
       />
-      <path d="M18.2 20.2 4.4 27.6l2.8 5.2 12.4-6.6z" />
-      <path d="M45.8 20.2 59.6 27.6l-2.8 5.2-12.4-6.6z" />
+      <path d="M18.2 20.6 2.8 28.6l3.6 6 13.6-7.2z" />
+      <path d="M45.8 20.6 61.2 28.6l-3.6 6-13.6-7.2z" />
     </Plate>
   );
 }
