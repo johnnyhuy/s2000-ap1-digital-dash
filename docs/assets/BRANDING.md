@@ -24,19 +24,18 @@ harness self-hosts the same OFL files from `apps/harness/app/fonts/`; Oxanium
 stays on the masthead only. DejaVu remains the pygame fallback when those
 files are absent.
 
-Printed tach amber grades `#f0a028` → `#a83810` toward redline in 48 slices,
-with a quiet live wash `#f49420`. The inner visor lip is a thin off-white
-(`#efe6d6`) on the **same parabola** as the printed tach, sitting just
+Printed tach amber grades `#f2aa32` → `#b03c12` toward redline in 48 slices,
+with a quiet live wash. The inner visor lip is a thin off-white
+(`#f2eadc`) on the **same parabola** as the printed tach, sitting just
 outside the band — not a high cream arc at the well peak. The web face
-keeps the printed scale and a short cream chevron needle (not a filling
-LED bar). LCD red is `#ff261c`
-with a readable 188 / 888888 ghost (`#240808` on the web face, `#240808` in
-pygame) and a faint idle bloom. The LCD well is charcoal with a faint
+keeps the printed scale and a short white chevron needle (not a filling
+LED bar). LCD red is `#ff3a22`
+with a quiet 188 / 888888 ghost (`#1a0606` on the web face) and a faint idle bloom. The LCD well is charcoal with a faint
 screen-door, not a brown overlay. TEMP uses the OEM coolant pictogram
 (stem, bulb, ticks, two waves); FUEL is a pump with window, hose, and
-nozzle. Telltales: red `#e22820`, amber `#ec941c`, green `#28cc5c`, ISO
-high-beam blue `#2460e4` (never neon cyan). Off lamps sit just above black
-(`#322e2a` on the web strip, `#2c2824` in pygame) so the row still reads
+nozzle. Telltales: red `#e22820`, amber `#ec941c`, green `#22b84c`, ISO
+high-beam blue `#1c54d8` (never neon cyan). Off lamps sit just above black
+(`#1a1816` on the web strip, `#1a1816` in pygame) so the row still reads
 without competing with lit bulbs. Icons are white-on-transparent ISO
 silhouettes (hollow battery with +/−, oil-can with drop, 3-ray outlined
 high-beam D, CEL with CHECK punched through the block, filled key bow,
