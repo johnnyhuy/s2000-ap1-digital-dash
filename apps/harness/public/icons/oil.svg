@@ -4,9 +4,10 @@
   <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
        White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
   <g fill="#fff">
-    <path fill-rule="evenodd" d="M4.6 24.6c0-8 6-14 14.6-14h6.6v4.8h-5.6c-4.8 0-8.2 3.4-8.2 9.2s3.4 9.2 8.2 9.2h5.6v4.8h-6.6C10.6 38.6 4.6 32.6 4.6 24.6z"/>
-    <path fill-rule="evenodd" d="M20.4 14.2h24.4v20.4H20.4z M24.6 18.4h16v12H24.6z"/>
-    <path fill-rule="evenodd" d="M44.8 14.2 58.2 2.8l5.4 5.8-10.2 8.6z M48.2 16.2 57.4 8.4l1.8 2-7.6 6.4z"/>
-    <path d="M53.6 13.8c0 3.4 2.4 5.8 4.4 5.8s4.4-2.4 4.4-5.8c0-2.6-2-5.6-4.4-8.4-2.4 2.8-4.4 5.8-4.4 8.4z"/>
+    <path fill-rule="evenodd" d="M4.2 25.2c0-8.4 6.2-14.6 15.2-14.6h6.2v4.6h-5.4c-5.2 0-8.6 3.6-8.6 10s3.4 10 8.6 10h5.4v4.6h-6.2C10.4 39.8 4.2 33.6 4.2 25.2z"/>
+    <rect x="28.4" y="10.6" width="10.2" height="4.4" rx="0.6"/>
+    <path fill-rule="evenodd" d="M20.8 14.8h24.8v21.2H20.8z M25.2 19.2h16v12.4H25.2z"/>
+    <path fill-rule="evenodd" d="M45.4 14.8 56.4 4.6l4.6 5-8.8 8.2z M48.6 16.4 56.2 9.4l1.6 1.8-6.4 5.6z"/>
+    <path d="M58.4 5.2c0 3.4 2.4 5.8 4.4 5.8s4.4-2.4 4.4-5.8c0-2.6-2-5.6-4.4-8.6-2.4 3-4.4 6-4.4 8.6z"/>
   </g>
 </svg>

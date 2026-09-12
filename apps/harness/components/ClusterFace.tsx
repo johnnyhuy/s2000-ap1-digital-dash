@@ -43,8 +43,8 @@ const TICK_MINOR_DIM = "#c47c28";
 const REDLINE_PRINT = "#c4281c";
 const COWL = "#100e0d";
 const WELL = "#050302";
-const TACH_NEEDLE_TIP = -2.8;
-const TACH_NEEDLE_TAIL = 11.4;
+const TACH_NEEDLE_TIP = -3.1;
+const TACH_NEEDLE_TAIL = 10.6;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -100,9 +100,9 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
     ].join(" ");
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <polygon points={chevron(4.6)} fill="#1c140c" />
-      <polygon points={chevron(3.8)} fill={glow} />
-      <polygon points={chevron(3.15)} fill={col} />
+      <polygon points={chevron(4.15)} fill="#1a120c" />
+      <polygon points={chevron(3.35)} fill={glow} />
+      <polygon points={chevron(2.55)} fill={col} />
     </g>
   );
 }
@@ -524,7 +524,7 @@ export function ClusterFace({
                 ghost="188"
                 digitH={50}
                 color={RED_LCD}
-                ghostColor="#1a0706"
+                ghostColor="#120404"
                 italic={0.07}
               />
               <text x={sc.x + 62} y={sc.y + 6} fontSize={10} fontWeight={700} fill={RED_LCD} className="lcd-label">
@@ -543,7 +543,7 @@ export function ClusterFace({
                 ghost="888888"
                 digitH={20}
                 color={RED_LCD}
-                ghostColor="#1a0706"
+                ghostColor="#120404"
                 italic={0.04}
               />
               <text
@@ -564,7 +564,7 @@ export function ClusterFace({
                 ghost="888.8"
                 digitH={16}
                 color={RED_LCD}
-                ghostColor="#1a0706"
+                ghostColor="#120404"
                 italic={0.04}
               />
               {battWarn ? (

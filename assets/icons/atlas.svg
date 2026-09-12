@@ -4,8 +4,10 @@
   <rect width="980" height="72" fill="#0a0a0a"/>
   <g transform="translate(8,16)" fill="#28c85c"><path d="M34 6 6 24l28 18v-10h10V16H34z"/></g>
   <g transform="translate(52,16)" fill="#2460e4">
-    <path d="M28 8c9 0 14 6.4 14 10.4S37 28.8 28 28.8h-4V8h4z"/>
-    <path d="M4 11h18M2 15.2h20M2 19.2h20M2 23.2h20M4 27.2h18" stroke="#2460e4" stroke-width="2.2" fill="none"/>
+    <path fill-rule="evenodd" d="M24 7.2h4.6C38.2 7.2 43 12.6 43 18.4S38.2 29.6 28.6 29.6H24V7.2z M26.8 10.2v16.4h2.2c7.6 0 10.8-3.8 10.8-8.2S36.6 10.2 29 10.2h-2.2z"/>
+    <rect x="3.2" y="11.2" width="16.4" height="2.6" rx="0.3"/>
+    <rect x="2.4" y="17.1" width="17.6" height="2.6" rx="0.3"/>
+    <rect x="3.2" y="23" width="16.4" height="2.6" rx="0.3"/>
   </g>
   <text x="130" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#ec941c">ABS</text>
   <text x="210" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#e22820">BRAKE</text>

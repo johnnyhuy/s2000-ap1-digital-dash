@@ -27,7 +27,7 @@ function Plate({
 export function TurnLeftIcon(props: IconProps) {
   return (
     <Plate {...props}>
-      <path d="M50 7.2 3.2 24 50 40.8v-9.6H61.2V16.8H50z" />
+      <path d="M44 9.2 7.2 24 44 38.8v-7.6h12.4V16.8H44z" />
     </Plate>
   );
 }
@@ -35,7 +35,7 @@ export function TurnLeftIcon(props: IconProps) {
 export function TurnRightIcon(props: IconProps) {
   return (
     <Plate {...props}>
-      <path d="M14 7.2v9.6H2.8v14.4H14v9.6L60.8 24z" />
+      <path d="M20 9.2v7.6H7.6v14.4H20v7.6L56.8 24z" />
     </Plate>
   );
 }
@@ -43,15 +43,13 @@ export function TurnRightIcon(props: IconProps) {
 export function HighBeamIcon(props: IconProps) {
   return (
     <Plate {...props}>
+      <rect x="4.2" y="13.2" width="22.6" height="3.7" rx="0.4" />
+      <rect x="3.2" y="22.15" width="24.4" height="3.7" rx="0.4" />
+      <rect x="4.2" y="31.1" width="22.6" height="3.7" rx="0.4" />
       <path
         fillRule="evenodd"
-        d="M36.4 8.4h7.2C56.4 8.4 62 16 62 24s-5.6 15.6-18.4 15.6h-7.2V8.4z M40.6 12.6v22.8h3c9.2 0 13.2-5.2 13.2-11.4S52.8 12.6 43.6 12.6h-3z"
+        d="M33.6 8.2h6.4C54.8 8.2 61 15.4 61 24s-6.2 15.8-21 15.8h-6.4V8.2z M37.6 12.4v23.2h3.2c11.2 0 16-5.6 16-11.6S52 12.4 40.8 12.4h-3.2z"
       />
-      <rect x="3.6" y="10.8" width="26.4" height="2.4" rx="0.4" />
-      <rect x="2" y="16.4" width="28" height="2.4" rx="0.4" />
-      <rect x="2" y="22.8" width="28" height="2.4" rx="0.4" />
-      <rect x="2" y="29.2" width="28" height="2.4" rx="0.4" />
-      <rect x="3.6" y="34.8" width="26.4" height="2.4" rx="0.4" />
     </Plate>
   );
 }
@@ -59,12 +57,12 @@ export function HighBeamIcon(props: IconProps) {
 export function BatteryIcon(props: IconProps) {
   return (
     <Plate {...props}>
-      <rect x="20.4" y="7.6" width="9.2" height="6.2" rx="0.7" />
-      <rect x="34.4" y="7.6" width="9.2" height="6.2" rx="0.7" />
-      <path fillRule="evenodd" d="M11.6 14.6h40.8v25.2H11.6z M16.2 19h31.6v16.4H16.2z" />
-      <rect x="19.2" y="25.6" width="11.2" height="3" />
-      <rect x="23.3" y="21.4" width="3" height="11.4" />
-      <rect x="34.4" y="25.6" width="11.2" height="3" />
+      <rect x="18.6" y="6.4" width="9.6" height="6.4" rx="0.7" />
+      <rect x="35.8" y="6.4" width="9.6" height="6.4" rx="0.7" />
+      <path fillRule="evenodd" d="M10.4 13.2h43.2v28.4H10.4z M15.2 17.8h33.6v19.2H15.2z" />
+      <rect x="19.4" y="25.4" width="10.8" height="3.1" />
+      <rect x="23.25" y="21.5" width="3.1" height="10.9" />
+      <rect x="34.2" y="25.4" width="10.8" height="3.1" />
     </Plate>
   );
 }
@@ -74,23 +72,29 @@ export function OilIcon(props: IconProps) {
     <Plate {...props}>
       <path
         fillRule="evenodd"
-        d="M4.6 24.6c0-8 6-14 14.6-14h6.6v4.8h-5.6c-4.8 0-8.2 3.4-8.2 9.2s3.4 9.2 8.2 9.2h5.6v4.8h-6.6C10.6 38.6 4.6 32.6 4.6 24.6z"
+        d="M4.2 25.2c0-8.4 6.2-14.6 15.2-14.6h6.2v4.6h-5.4c-5.2 0-8.6 3.6-8.6 10s3.4 10 8.6 10h5.4v4.6h-6.2C10.4 39.8 4.2 33.6 4.2 25.2z"
       />
-      <path fillRule="evenodd" d="M20.4 14.2h24.4v20.4H20.4z M24.6 18.4h16v12H24.6z" />
-      <path fillRule="evenodd" d="M44.8 14.2 58.2 2.8l5.4 5.8-10.2 8.6z M48.2 16.2 57.4 8.4l1.8 2-7.6 6.4z" />
-      <path d="M53.6 13.8c0 3.4 2.4 5.8 4.4 5.8s4.4-2.4 4.4-5.8c0-2.6-2-5.6-4.4-8.4-2.4 2.8-4.4 5.8-4.4 8.4z" />
+      <rect x="28.4" y="10.6" width="10.2" height="4.4" rx="0.6" />
+      <path fillRule="evenodd" d="M20.8 14.8h24.8v21.2H20.8z M25.2 19.2h16v12.4H25.2z" />
+      <path
+        fillRule="evenodd"
+        d="M45.4 14.8 56.4 4.6l4.6 5-8.8 8.2z M48.6 16.4 56.2 9.4l1.6 1.8-6.4 5.6z"
+      />
+      <path d="M58.4 5.2c0 3.4 2.4 5.8 4.4 5.8s4.4-2.4 4.4-5.8c0-2.6-2-5.6-4.4-8.6-2.4 3-4.4 6-4.4 8.6z" />
     </Plate>
   );
 }
+
+const CHECK_HOLES =
+  "M16.2 22.2h5.1v2.05h-3.05v4.5h3.05v2.05h-5.1zM22.2 22.2h2.05v3.35h1.7V22.2h2.05v8.6h-2.05v-3.2h-1.7v3.2H22.2zM29.1 22.2h5.05v2.05h-3v1.55h2.45v1.9H31.15v1.05h3v2.05h-5.05zM35.3 22.2h5.1v2.05h-3.05v4.5h3.05v2.05h-5.1zM41.5 22.2h2.1v3.15l2.55-3.15h2.35L45.3 26.4l3.35 4.4h-2.45l-2.05-2.7v2.7h-2.1z";
 
 export function CelIcon(props: IconProps) {
   return (
     <Plate {...props}>
       <path
         fillRule="evenodd"
-        d="M17.6 8.8h20.4c1.5 0 2.8 1 3.3 2.4l2.2 6.2h9.2l5.2-5.6h5.2v7.4h3.4v13.2h-3.4v7.4H7.8v-7.4H2.2V26.4h5.6v-4.4h7.2L16.2 11.2c.5-1.4 1.8-2.4 3.3-2.4z M16.4 23.8h31.6v10.2H16.4z"
+        d={`M16.8 9.2h18.8c1.6 0 3 1.05 3.5 2.55l1.9 5.35h8.6l4.6-4.9h4.6v6.6h3.1v12.2h-3.1v6.8H8.4v-6.8H2.8V26.1h5.2v-4.2h6.6L15.4 11.7c.5-1.5 1.9-2.5 3.4-2.5z ${CHECK_HOLES}`}
       />
-      <path d="M19 25.6h3.4v6.6H19zm6.6 0h3.4v6.6h-3.4zm6.6 0h3.4v6.6h-3.4zm6.6 0h3.4v6.6h-3.4zm6.6 0h3.4v6.6h-3.4z" />
     </Plate>
   );
 }
@@ -98,10 +102,10 @@ export function CelIcon(props: IconProps) {
 export function ImmobilizerIcon(props: IconProps) {
   return (
     <Plate {...props}>
-      <path fillRule="evenodd" d="M17.2 8.6a13.2 13.2 0 1 0 .02 0zm0 6.4a6.8 6.8 0 1 0 .02 0z" />
-      <rect x="27.2" y="19.6" width="30.6" height="6.4" rx="1.1" />
-      <rect x="44.6" y="26" width="4.6" height="8.8" rx="0.6" />
-      <rect x="51.8" y="26" width="4.6" height="12.2" rx="0.6" />
+      <path fillRule="evenodd" d="M18.4 7.4a13.6 13.6 0 1 0 .02 0zm0 6.2a7.4 7.4 0 1 0 .02 0z" />
+      <rect x="29.2" y="20.4" width="28.8" height="6.6" rx="1.2" />
+      <rect x="45.6" y="27" width="4.4" height="8.4" rx="0.7" />
+      <rect x="52.4" y="27" width="4.4" height="11.8" rx="0.7" />
     </Plate>
   );
 }
@@ -109,10 +113,10 @@ export function ImmobilizerIcon(props: IconProps) {
 export function SeatbeltIcon(props: IconProps) {
   return (
     <Plate {...props}>
-      <path fillRule="evenodd" d="M32 2.4a7.2 7.2 0 1 0 .02 0zm0 4.4a2.8 2.8 0 1 0 .02 0z" />
+      <circle cx="32" cy="8.4" r="6.6" />
       <path
         fillRule="evenodd"
-        d="M17.6 16.8c0-2.4 6.4-4.8 14.4-4.8s14.4 2.4 14.4 4.8V44.4H17.6z M21.2 16.2 46.4 44.4h-9.6L19.2 23.2z"
+        d="M18.4 16.6c0-2.4 6.1-4.8 13.6-4.8s13.6 2.4 13.6 4.8V45.4H18.4z M21.8 16 46.6 45.4h-8.8L20 22.6z"
       />
     </Plate>
   );
@@ -123,10 +127,10 @@ export function DoorIcon(props: IconProps) {
     <Plate {...props}>
       <path
         fillRule="evenodd"
-        d="M24.8 2.4h14.4c1.5 0 2.9.8 3.7 2l5.2 6.6v27.8c0 1.5-.8 2.9-2 3.7l-6.6 5.2H24.7l-6.6-5.2c-1.2-.8-2-2.2-2-3.7V11c0-1.5.8-2.9 2-3.7z M28.4 10.6h7.2v6.4h-7.2z"
+        d="M26.4 2.4h11.2c1.7 0 3.3 1 4.2 2.5L45.8 11.2v26.6c0 1.6-.9 3.1-2.3 4l-6.2 4.4H26.7l-6.2-4.4c-1.4-.9-2.3-2.4-2.3-4V11.2L22.2 4.9c.9-1.5 2.5-2.5 4.2-2.5z M29.6 9.6h4.8v7.2h-4.8z"
       />
-      <path d="M16.4 19.2 1.4 27.2l4 6.2 12.8-6.8z" />
-      <path d="M47.6 19.2 62.6 27.2l-4 6.2-12.8-6.8z" />
+      <path d="M18.2 20.2 4.4 27.6l2.8 5.2 12.4-6.6z" />
+      <path d="M45.8 20.2 59.6 27.6l-2.8 5.2-12.4-6.6z" />
     </Plate>
   );
 }

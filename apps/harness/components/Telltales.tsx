@@ -14,20 +14,20 @@ type LampSpec = {
 };
 
 export const LAMP_STRIP: LampSpec[] = [
-  { kind: "turn_l", key: "turn_l", tone: "green", label: "Left turn", width: 22 },
-  { kind: "high_beam", key: "high_beam", tone: "blue", label: "High beam", width: 26 },
-  { kind: "abs", key: "abs", tone: "amber", label: "ABS", width: 32, word: "ABS" },
-  { kind: "brake", key: "brake", tone: "red", label: "BRAKE", width: 48, word: "BRAKE" },
+  { kind: "turn_l", key: "turn_l", tone: "green", label: "Left turn", width: 20 },
+  { kind: "high_beam", key: "high_beam", tone: "blue", label: "High beam", width: 28 },
+  { kind: "abs", key: "abs", tone: "amber", label: "ABS", width: 34, word: "ABS" },
+  { kind: "brake", key: "brake", tone: "red", label: "BRAKE", width: 50, word: "BRAKE" },
   { kind: "battery", key: "batt_warn", tone: "red", label: "Battery", width: 22 },
-  { kind: "oil", key: "oil", tone: "red", label: "Oil", width: 24 },
-  { kind: "cel", key: "cel", tone: "amber", label: "Check engine", width: 26 },
-  { kind: "immobilizer", key: "immobilizer", tone: "green", label: "Immobilizer", width: 22 },
-  { kind: "maint", key: "maint", tone: "amber", label: "MAINT REQ'D", width: 36, word: ["MAINT", "REQ'D"] },
-  { kind: "eps", key: "eps", tone: "amber", label: "EPS", width: 26, word: "EPS" },
+  { kind: "oil", key: "oil", tone: "red", label: "Oil", width: 26 },
+  { kind: "cel", key: "cel", tone: "amber", label: "Check engine", width: 28 },
+  { kind: "immobilizer", key: "immobilizer", tone: "green", label: "Immobilizer", width: 24 },
+  { kind: "maint", key: "maint", tone: "amber", label: "MAINT REQ'D", width: 38, word: ["MAINT", "REQ'D"] },
+  { kind: "eps", key: "eps", tone: "amber", label: "EPS", width: 28, word: "EPS" },
   { kind: "seatbelt", key: "seatbelt", tone: "red", label: "Seatbelt", width: 20 },
-  { kind: "door", key: "door", tone: "red", label: "Door", width: 24 },
-  { kind: "srs", key: "srs", tone: "red", label: "SRS", width: 22, word: "SRS" },
-  { kind: "turn_r", key: "turn_r", tone: "green", label: "Right turn", width: 22 },
+  { kind: "door", key: "door", tone: "red", label: "Door", width: 22 },
+  { kind: "srs", key: "srs", tone: "red", label: "SRS", width: 24, word: "SRS" },
+  { kind: "turn_r", key: "turn_r", tone: "green", label: "Right turn", width: 20 },
 ];
 
 const TONE: Record<Tone, string> = {
