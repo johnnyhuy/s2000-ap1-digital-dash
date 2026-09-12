@@ -30,6 +30,7 @@ from gauge_ui import (  # noqa: E402
     tach_arch_xy,
     tach_band_poly,
     tach_num_xy,
+    visor_lip_points,
     DisplayState,
     PHASE_READY_S,
     PHASE_REVEAL_S,
@@ -201,6 +202,15 @@ class FaceGeomTests(unittest.TestCase):
         self.assertGreater(left[1], left_arch[1])
         self.assertGreater(left[1] - left_arch[1], TACH_NUM_INSET * 0.4)
         self.assertGreater(tach_num_xy(1.0)[1], tach_arch_xy(1.0)[1])
+
+    def test_visor_lip_hugs_the_printed_tach(self) -> None:
+        ax, ay = tach_arch_xy(0.5)
+        pts = visor_lip_points()
+        self.assertGreater(len(pts), 20)
+        mid = pts[len(pts) // 2]
+        self.assertLess(mid[1], ay)
+        self.assertLess(abs(mid[0] - ax), 24)
+        self.assertLess(ay - mid[1], 10)
 
     def test_module_is_flat_bottom_and_stepped(self) -> None:
         bl, br = hood_bottom_corners(FACE)
