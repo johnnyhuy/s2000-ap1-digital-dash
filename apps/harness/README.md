@@ -2,7 +2,7 @@
 
 Shareable Next.js App Router demo of the OEM-geometry face (red 7-seg speed/odo, printed amber tach with a cream needle). Same frozen JSON fields as the Pi bench (`rpm`, `speed_kmh`, `fuel_pct`, `ect_c`, `batt_v`, `odo_km`, optional `lamps`). Client-side mock drive — no Raspberry Pi, no ESP32.
 
-The tach is a printed scale, not a filling LED bar. Numerals sit in the LCD well (bundled Barlow Condensed SemiBold Italic). Off telltales stay just above black so the strip still reads; cruise lights the ISO high beam. Green turn lamps pulse at about 85 flashes/min after the strike. Cluster type is self-hosted from `app/fonts/` (same OFL files as `assets/fonts/`). Inline ISO pictograms replace CSS masks so the lamp strip stays sharp.
+The tach is a printed scale, not a filling LED bar. Numerals sit in the LCD well (bundled Barlow Condensed SemiBold Italic). Off telltales stay just above black so the strip still reads; cruise lights the ISO high beam. Green turn lamps pulse at about 85 flashes/min after the strike. Cluster type is self-hosted from `app/fonts/` (same OFL files as `assets/fonts/`). Inline ISO pictograms replace CSS masks so the lamp strip stays sharp. TEMP uses the OEM coolant-wave thermometer; FUEL is a pump with hose. Redline needle and blocks breathe while the pointer is in the 8–9 zone.
 
 **Face styles:** **AP1** (default — straight TEMP / FUEL, locked flat elevation) and **AP2** (interpretive arched side gauges). Toggle on the desk or open `/?style=ap2`. AP2 is **not** a measured plate.
 
