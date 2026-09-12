@@ -83,12 +83,12 @@ SVGS: dict[str, str] = {
     "battery": wrap(
         "battery",
         """  <g fill="#fff">
-    <rect x="18.6" y="6.4" width="9.6" height="6.4" rx="0.7"/>
-    <rect x="35.8" y="6.4" width="9.6" height="6.4" rx="0.7"/>
-    <path fill-rule="evenodd" d="M10.4 13.2h43.2v28.4H10.4z M15.2 17.8h33.6v19.2H15.2z"/>
-    <rect x="19.4" y="25.4" width="10.8" height="3.1"/>
-    <rect x="23.25" y="21.5" width="3.1" height="10.9"/>
-    <rect x="34.2" y="25.4" width="10.8" height="3.1"/>
+    <rect x="17.4" y="5.2" width="10.4" height="7.2" rx="0.8"/>
+    <rect x="36.2" y="5.2" width="10.4" height="7.2" rx="0.8"/>
+    <path fill-rule="evenodd" d="M8.8 12.8h46.4v30.4H8.8z M15.6 19.2h32.8v17.6H15.6z"/>
+    <rect x="18.6" y="25.6" width="11.6" height="3.4"/>
+    <rect x="22.7" y="21.4" width="3.4" height="11.8"/>
+    <rect x="34.2" y="25.6" width="11.6" height="3.4"/>
   </g>
 """,
         label="Battery telltale",
@@ -96,11 +96,11 @@ SVGS: dict[str, str] = {
     "oil": wrap(
         "oil",
         """  <g fill="#fff">
-    <path fill-rule="evenodd" d="M4.2 25.2c0-8.4 6.2-14.6 15.2-14.6h6.2v4.6h-5.4c-5.2 0-8.6 3.6-8.6 10s3.4 10 8.6 10h5.4v4.6h-6.2C10.4 39.8 4.2 33.6 4.2 25.2z"/>
-    <rect x="28.4" y="10.6" width="10.2" height="4.4" rx="0.6"/>
-    <path fill-rule="evenodd" d="M20.8 14.8h24.8v21.2H20.8z M25.2 19.2h16v12.4H25.2z"/>
-    <path fill-rule="evenodd" d="M45.4 14.8 56.4 4.6l4.6 5-8.8 8.2z M48.6 16.4 56.2 9.4l1.6 1.8-6.4 5.6z"/>
-    <path d="M58.4 5.2c0 3.4 2.4 5.8 4.4 5.8s4.4-2.4 4.4-5.8c0-2.6-2-5.6-4.4-8.6-2.4 3-4.4 6-4.4 8.6z"/>
+    <path fill-rule="evenodd" d="M3.2 26.4c0-9.2 6.6-16 16.6-16h6.4v5.2H20.2c-5.8 0-9.6 4-9.6 10.8s3.8 10.8 9.6 10.8h6v5.2h-6.4C9.8 42.4 3.2 35.6 3.2 26.4z"/>
+    <rect x="27.8" y="11.2" width="11.4" height="5" rx="0.7"/>
+    <path fill-rule="evenodd" d="M19.6 16h26.6v22.4H19.6z M24.4 20.8h17v12.8H24.4z"/>
+    <path fill-rule="evenodd" d="M44.6 16.2 55.8 6.2l5.2 5.4-8.6 8z M48.2 17.8 56.2 10.4l1.8 1.9-6.4 5.8z"/>
+    <path d="M57.6 14.6c0 3.2 2.2 5.6 4.2 5.6s4.2-2.4 4.2-5.6c0-2.4-1.8-5.4-4.2-8.4-2.4 3-4.2 6-4.2 8.4z"/>
   </g>
 """,
         label="Oil pressure telltale",
@@ -116,10 +116,10 @@ SVGS: dict[str, str] = {
     "immobilizer": wrap(
         "immobilizer",
         """  <g fill="#fff">
-    <path fill-rule="evenodd" d="M18.4 7.4a13.6 13.6 0 1 0 .02 0zm0 6.2a7.4 7.4 0 1 0 .02 0z"/>
-    <rect x="29.2" y="20.4" width="28.8" height="6.6" rx="1.2"/>
-    <rect x="45.6" y="27" width="4.4" height="8.4" rx="0.7"/>
-    <rect x="52.4" y="27" width="4.4" height="11.8" rx="0.7"/>
+    <path fill-rule="evenodd" d="M17.2 5.6a16.6 16.6 0 1 0 .02 0zm0 7.4a9.2 9.2 0 1 0 .02 0z"/>
+    <rect x="30.4" y="19.2" width="30.6" height="8.4" rx="1.5"/>
+    <rect x="48.2" y="27.4" width="5.4" height="9.6" rx="0.8"/>
+    <rect x="55.8" y="27.4" width="5.4" height="13.4" rx="0.8"/>
   </g>
 """,
         label="Immobilizer key telltale",
@@ -138,8 +138,10 @@ SVGS: dict[str, str] = {
     "seatbelt": wrap(
         "seatbelt",
         """  <g fill="#fff">
-    <circle cx="32" cy="8.4" r="6.6"/>
-    <path fill-rule="evenodd" d="M18.4 16.6c0-2.4 6.1-4.8 13.6-4.8s13.6 2.4 13.6 4.8V45.4H18.4z M21.8 16 46.6 45.4h-8.8L20 22.6z"/>
+    <circle cx="32" cy="8.2" r="6.5"/>
+    <path d="M29.2 13.8h5.6v3.4h-5.6z"/>
+    <path fill-rule="evenodd" d="M16.8 17.6 24.6 16.2 28 19h8l3.4-2.8 7.8 1.4-2.6 27.8H19.4z M20.4 15.2 49.6 45.4h-14L18.4 21.6z"/>
+    <path d="M21.6 15.4 47.4 45h-8.8L20.2 22.2z"/>
   </g>
 """,
         label="Seatbelt telltale",
@@ -147,9 +149,9 @@ SVGS: dict[str, str] = {
     "door": wrap(
         "door",
         """  <g fill="#fff">
-    <path fill-rule="evenodd" d="M26.4 2.4h11.2c1.7 0 3.3 1 4.2 2.5L45.8 11.2v26.6c0 1.6-.9 3.1-2.3 4l-6.2 4.4H26.7l-6.2-4.4c-1.4-.9-2.3-2.4-2.3-4V11.2L22.2 4.9c.9-1.5 2.5-2.5 4.2-2.5z M29.6 9.6h4.8v7.2h-4.8z"/>
-    <path d="M18.2 20.2 4.4 27.6l2.8 5.2 12.4-6.6z"/>
-    <path d="M45.8 20.2 59.6 27.6l-2.8 5.2-12.4-6.6z"/>
+    <path fill-rule="evenodd" d="M25.4 2.2h13.2c2 0 3.8 1.15 4.7 2.95L47.4 11.4v26.4c0 1.7-1 3.3-2.6 4.3L38.2 46H25.8l-6.6-3.9c-1.6-1-2.6-2.6-2.6-4.3V11.4L20.7 5.15C21.6 3.35 23.4 2.2 25.4 2.2z M27.6 8.6h8.8v8.4h-8.8z"/>
+    <path d="M18.2 20.6 2.8 28.6l3.6 6 13.6-7.2z"/>
+    <path d="M45.8 20.6 61.2 28.6l-3.6 6-13.6-7.2z"/>
   </g>
 """,
         label="Door-open telltale",
@@ -175,18 +177,18 @@ ATLAS = '''<?xml version="1.0" encoding="UTF-8"?>
   <text x="130" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#ec941c">ABS</text>
   <text x="210" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="18" font-weight="700" fill="#e22820">BRAKE</text>
   <g transform="translate(268,16)" fill="#e22820">
-    <rect x="6" y="2" width="6" height="4" rx="0.4"/>
-    <rect x="16" y="2" width="6" height="4" rx="0.4"/>
-    <path fill-rule="evenodd" d="M2 8h24v16H2z M4 10.4h20v11.2H4z"/>
-    <rect x="6" y="15" width="6" height="2"/>
-    <rect x="15" y="15" width="6" height="2"/>
-    <rect x="17.2" y="12.4" width="1.8" height="7.2"/>
+    <rect x="5.4" y="1.4" width="6.4" height="4.4" rx="0.4"/>
+    <rect x="16.2" y="1.4" width="6.4" height="4.4" rx="0.4"/>
+    <path fill-rule="evenodd" d="M1.4 7.6h25.2v17.2H1.4z M4.8 11h18.4v10.4H4.8z"/>
+    <rect x="6.2" y="14.8" width="6.4" height="2"/>
+    <rect x="8.4" y="12.6" width="2" height="6.4"/>
+    <rect x="15.4" y="14.8" width="6.4" height="2"/>
   </g>
   <g transform="translate(316,14)" fill="#e22820">
-    <path fill-rule="evenodd" d="M2.2 18.4c0-5.2 3.8-9 9.4-9h4.4v3.8h-3.8c-3 0-5 2.1-5 5.2s2 5.2 5 5.2h3.8V27h-4.4c-5.6 0-9.4-3.8-9.4-8.6z"/>
-    <rect x="13.2" y="12" width="15.6" height="13" rx="0.8"/>
-    <path d="M28.8 12 38.2 4.4l3.4 3.6-6.6 5.8z"/>
-    <path d="M39.2 9.8c0 2.6 1.8 4.4 3.4 4.4s3.4-1.8 3.4-4.4c0-2-1.6-4.2-3.4-6.4-1.8 2.2-3.4 4.4-3.4 6.4z"/>
+    <path fill-rule="evenodd" d="M1.6 18.8c0-5.6 4-9.6 10-9.6h4.6v3.4h-4c-3.2 0-5.4 2.2-5.4 6.2s2.2 6.2 5.4 6.2h4V28h-4.6c-6 0-10-4-10-9.2z"/>
+    <rect x="13" y="11.6" width="16.4" height="13.6" rx="0.8"/>
+    <path d="M28.4 11.6 37.6 4.2l3.4 3.6-6.4 5.6z"/>
+    <path d="M38.6 11.2c0 2.4 1.6 4.2 3.2 4.2s3.2-1.8 3.2-4.2c0-1.8-1.4-4-3.2-6.2-1.8 2.2-3.2 4.4-3.2 6.2z"/>
   </g>
   <g transform="translate(360,14)" fill="#ec941c">
     <path d="M4 16h5l2.4-5.2h7l1.6 5.2h12l2.6-3.4H38v5.4h2.4v9H38V36H4v-4H1.2v-8.2H4z"/>
@@ -194,22 +196,24 @@ ATLAS = '''<?xml version="1.0" encoding="UTF-8"?>
     <text x="22" y="25" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="6" font-weight="800" fill="#ec941c">CHECK</text>
   </g>
   <g transform="translate(414,16)" fill="#28c85c">
-    <path fill-rule="evenodd" d="M10 6.2a8.4 8.4 0 1 0 .01 0zm0 4.2a4.2 4.2 0 1 0 .01 0z"/>
-    <rect x="16" y="13" width="18" height="5.2" rx="0.5"/>
-    <rect x="27" y="18" width="2.8" height="6"/>
-    <rect x="31.6" y="18" width="2.8" height="8.2"/>
+    <path fill-rule="evenodd" d="M9.4 4.4a10.2 10.2 0 1 0 .01 0zm0 4.6a5.6 5.6 0 1 0 .01 0z"/>
+    <rect x="17.2" y="12.4" width="19.2" height="5.6" rx="0.7"/>
+    <rect x="28.4" y="18" width="3.2" height="6.4"/>
+    <rect x="33.2" y="18" width="3.2" height="8.8"/>
   </g>
   <text x="500" y="32" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#ec941c">MAINT</text>
   <text x="500" y="48" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="11" font-weight="700" fill="#ec941c">REQ'D</text>
   <text x="568" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#ec941c">EPS</text>
   <g transform="translate(600,10)" fill="#e22820">
-    <circle cx="22" cy="8.6" r="5.5"/>
-    <path fill-rule="evenodd" d="M11 18.4c0-2 3.2-3.6 11-3.6s11 1.6 11 3.6V40H11z M13.4 17.2 33.6 40h-7.4L12.2 22.4z"/>
+    <circle cx="22" cy="8" r="5.6"/>
+    <path d="M19.6 13h4.8v2.8h-4.8z"/>
+    <path fill-rule="evenodd" d="M10.4 17.4 16.8 16.2 19.4 18.4h5.2l2.6-2.2 6.4 1.2-2.2 22.2H12.6z M14.8 16.6 34.8 39.6h-6.4L13.2 21.6z"/>
+    <path d="M14.2 16 33.8 39.2h-4.8L13.2 21.2z"/>
   </g>
   <g transform="translate(652,8)" fill="#e22820">
-    <path fill-rule="evenodd" d="M18.4 6h13.2l5.6 6.2v24.4L31.6 43H18.4l-5.6-6.4V12.2z M21.6 12h6.8v5H21.6z"/>
-    <path d="M13 20 4.2 25.4l2.2 3.4 8.6-4.6z"/>
-    <path d="M37 20l8.8 5.4-2.2 3.4-8.6-4.6z"/>
+    <path fill-rule="evenodd" d="M17.6 5.2h13.6c1.6 0 3.1 .9 3.8 2.4L39.2 13.6v21.6c0 1.4-.8 2.7-2.1 3.5L32 42.4H20l-5.1-3.7c-1.3-.8-2.1-2.1-2.1-3.5V13.6L13.8 7.6c.7-1.5 2.2-2.4 3.8-2.4z M21.2 12.2h6.4v5.8h-6.4z"/>
+    <path d="M12.8 18.4 3.2 23.6l2.4 4 8.8-4.8z"/>
+    <path d="M39.2 18.4l9.6 5.2-2.4 4-8.8-4.8z"/>
   </g>
   <text x="760" y="44" text-anchor="middle" font-family="Barlow Condensed, DejaVu Sans, Liberation Sans, sans-serif" font-size="16" font-weight="700" fill="#e22820">SRS</text>
   <g transform="translate(800,16)" fill="#28c85c"><path d="M10 6v9H0v12h10v9l28-15z"/></g>

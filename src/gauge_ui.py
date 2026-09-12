@@ -60,15 +60,15 @@ AMBER_DIM = (110, 58, 14)
 AMBER_GHOST = (42, 24, 10)
 AMBER_WASH = (80, 42, 10)
 AMBER_BAND = (176, 88, 20)
-AMBER_BAND_LO = (224, 140, 36)
-AMBER_BAND_HI = (176, 72, 16)
+AMBER_BAND_LO = (240, 160, 40)
+AMBER_BAND_HI = (168, 56, 16)
 RED = (228, 40, 32)
 RED_DIM = (86, 18, 16)
 RED_GHOST = (44, 14, 12)
 RED_LCD = (255, 38, 28)
-RED_LCD_GHOST = (36, 8, 6)
+RED_LCD_GHOST = (36, 8, 8)
 WHITE = (248, 242, 232)
-CREAM = (246, 236, 214)
+CREAM = (255, 244, 220)
 DIM = (110, 100, 84)
 MUTED = (48, 44, 38)
 ORANGE = (244, 120, 32)
@@ -84,8 +84,8 @@ TACH_BAND_OUTER = 32.0
 TACH_NUM_INSET = 54.0
 TACH_TICK_MAJOR = (2.4, 22.0)
 TACH_TICK_MINOR = (1.4, 13.0)
-TACH_NEEDLE_TIP = -5.5
-TACH_NEEDLE_TAIL = 22.0
+TACH_NEEDLE_TIP = -6.5
+TACH_NEEDLE_TAIL = 24.0
 
 # --- locked % layout (see refs/flat/DIMENSIONS.md) ---------------------------
 # Module as % of the 1920×1080 canvas; height from OEM 2.35:1 elevation
@@ -989,9 +989,9 @@ def _draw_tach_pointer(pygame, surf, frac: float, g: FaceGeom) -> None:
             (int(base[0] - px * half), int(base[1] - py * half)),
         ]
 
-    pygame.draw.polygon(surf, (28, 20, 12), chevron(8.6))
-    pygame.draw.polygon(surf, glow, chevron(7.2))
-    pygame.draw.polygon(surf, col, chevron(6.0))
+    pygame.draw.polygon(surf, (28, 20, 12), chevron(9.4))
+    pygame.draw.polygon(surf, glow, chevron(7.8))
+    pygame.draw.polygon(surf, col, chevron(6.2))
 
 
 def draw_welcome_sweep(pygame, surf, sweep_t: float, g: FaceGeom | None = None) -> None:
@@ -1514,7 +1514,7 @@ def build_fonts(pygame) -> dict:
     return {
         "speed": _font(pygame, 132, bold=True, mono=True),
         "ready": _font(pygame, 92, bold=True),
-        "tick": _font(pygame, 40, italic=True),
+        "tick": _font(pygame, 38, italic=True),
         "label": _font(pygame, 20, bold=True),
         "readout": _font(pygame, 26, bold=True, mono=True),
         "tiny": _font(pygame, 15, italic=True),

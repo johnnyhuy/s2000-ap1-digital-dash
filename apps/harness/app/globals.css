@@ -11,7 +11,7 @@
   --muted: #8e8678;
   --danger: #e42820;
   --lcd-red: #ff261c;
-  --lamp-ghost: #3f3b38;
+  --lamp-ghost: #322e2a;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-share-tech), var(--font-geist-mono), ui-monospace, monospace;
   --font-cluster: var(--font-barlow), var(--font-oxanium), var(--font-geist-sans), ui-sans-serif, sans-serif;
@@ -136,7 +136,7 @@ body {
   font-family: var(--font-tach);
   font-style: italic;
   font-weight: 600;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   font-synthesis: none;
   paint-order: stroke fill;
 }
@@ -169,12 +169,12 @@ body {
 }
 
 .needle {
-  filter: drop-shadow(0 0 2.1px rgba(255, 214, 130, 0.78));
-  transition: filter 160ms ease-out;
+  filter: drop-shadow(0 0 2.6px rgba(255, 226, 150, 0.86));
+  transition: filter 140ms ease-out;
 }
 
 .needle-hot {
-  filter: drop-shadow(0 0 4.6px rgba(255, 48, 32, 0.92));
+  filter: drop-shadow(0 0 5.2px rgba(255, 48, 32, 0.94));
 }
 
 .cluster-reveal .needle {
@@ -419,10 +419,10 @@ body {
   align-items: center;
   justify-content: center;
   font-family: var(--font-cluster);
-  font-size: 1.02rem;
+  font-size: 1.04rem;
   font-weight: 700;
-  letter-spacing: 0.07em;
-  line-height: 0.84;
+  letter-spacing: 0.09em;
+  line-height: 0.82;
   color: currentColor;
   font-synthesis: none;
 }
@@ -435,15 +435,15 @@ body {
 
 .telltale-on {
   filter: drop-shadow(0 0 6.4px var(--lamp)) drop-shadow(0 0 1.4px var(--lamp));
-  animation: lamp-strike 0.24s ease-out both;
+  animation: lamp-strike 0.16s ease-out both;
   animation-delay: calc(var(--i, 0) * 12ms);
 }
 
 .telltale-on.telltale-green {
   animation:
-    lamp-strike 0.24s ease-out both,
-    lamp-pulse 1.12s ease-in-out infinite;
-  animation-delay: calc(var(--i, 0) * 12ms), 0.24s;
+    lamp-strike 0.16s ease-out both,
+    lamp-pulse 0.7s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 12ms), 0.16s;
 }
 
 .telltale-on.telltale-blue {
@@ -466,8 +466,8 @@ body {
     opacity: 1;
   }
   50% {
-    filter: drop-shadow(0 0 10px var(--lamp)) drop-shadow(0 0 2.2px var(--lamp));
-    opacity: 0.82;
+    filter: drop-shadow(0 0 9px var(--lamp)) drop-shadow(0 0 2px var(--lamp));
+    opacity: 0.78;
   }
 }
 
