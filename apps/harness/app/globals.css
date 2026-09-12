@@ -134,7 +134,8 @@ body {
   font-family: var(--font-tach);
   font-style: italic;
   font-weight: 600;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.08em;
+  font-synthesis: none;
 }
 
 .cluster-stage > svg text.lcd-label,
@@ -150,8 +151,8 @@ body {
 }
 
 .seg-lit {
-  filter: drop-shadow(0 0 2.6px rgba(255, 176, 48, 0.7));
-  transition: fill 70ms ease-out, filter 70ms ease-out, opacity 70ms ease-out;
+  filter: drop-shadow(0 0 2.4px rgba(255, 176, 48, 0.62));
+  transition: fill 110ms ease-out, filter 110ms ease-out, opacity 110ms ease-out;
 }
 
 .seg-lit.seg-red {
@@ -163,11 +164,11 @@ body {
 }
 
 .needle {
-  filter: drop-shadow(0 0 5.5px rgba(255, 208, 112, 0.7));
+  filter: drop-shadow(0 0 3.4px rgba(255, 208, 112, 0.58));
 }
 
 .needle-hot {
-  filter: drop-shadow(0 0 7px rgba(255, 48, 32, 0.82));
+  filter: drop-shadow(0 0 4.2px rgba(255, 48, 32, 0.78));
 }
 
 .cluster-reveal .needle {
@@ -179,13 +180,12 @@ body {
 }
 
 .ready-word {
-  filter: drop-shadow(0 0 18px rgba(255, 176, 48, 0.5));
+  filter: drop-shadow(0 0 16px rgba(255, 176, 48, 0.48));
   animation: ready-glow 1.75s ease-in-out;
 }
 
 .ready-card {
-  animation: ready-in 0.62s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-origin: 50% 40%;
+  animation: ready-in 0.55s ease-out;
 }
 
 .cluster-reveal .seven-seg,
@@ -196,11 +196,9 @@ body {
 @keyframes ready-in {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
@@ -342,14 +340,14 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  opacity: 0.34;
+  opacity: 0.28;
   flex: 0 0 auto;
-  color: #3a3632;
-  transition: opacity 90ms ease-out, filter 90ms ease-out, color 90ms ease-out;
+  color: #2a2620;
+  transition: opacity 120ms ease-out, filter 120ms ease-out, color 120ms ease-out;
 }
 
 .telltale-icon {
-  height: 20px;
+  height: 22px;
   background: currentColor;
   mask-size: contain;
   mask-repeat: no-repeat;
@@ -423,10 +421,10 @@ body {
 .cluster-caption {
   margin: 0.45rem 0 0;
   text-align: center;
-  color: #3a3632;
+  color: #5a5448;
   font-size: 0.72rem;
   font-family: var(--font-cluster);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
 }
 
 .desk {

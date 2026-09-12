@@ -66,7 +66,7 @@ RED = (228, 40, 32)
 RED_DIM = (86, 18, 16)
 RED_GHOST = (44, 14, 12)
 RED_LCD = (255, 38, 28)
-RED_LCD_GHOST = (56, 10, 8)
+RED_LCD_GHOST = (48, 8, 6)
 WHITE = (248, 242, 232)
 CREAM = (246, 236, 214)
 DIM = (110, 100, 84)
@@ -84,8 +84,8 @@ TACH_BAND_OUTER = 32.0
 TACH_NUM_INSET = 54.0
 TACH_TICK_MAJOR = (2.4, 22.0)
 TACH_TICK_MINOR = (1.4, 13.0)
-TACH_NEEDLE_TIP = -5.0
-TACH_NEEDLE_TAIL = 68.0
+TACH_NEEDLE_TIP = -7.0
+TACH_NEEDLE_TAIL = 26.0
 
 # --- locked % layout (see refs/flat/DIMENSIONS.md) ---------------------------
 # Module as % of the 1920×1080 canvas; height from OEM 2.35:1 elevation
@@ -605,8 +605,8 @@ class DisplayState:
         self.trip_km = max(0.0, self.odo_km - self.trip_origin)
 
     def follow(self, telem: Telemetry, dt: float) -> None:
-        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.11)
-        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.08)
+        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.16)
+        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.10)
         self.fuel_pct = exp_smooth(self.fuel_pct, float(telem.fuel_pct), dt, 0.32)
         self.ect_c = exp_smooth(self.ect_c, float(telem.ect_c), dt, 0.38)
         self.batt_v = exp_smooth(self.batt_v, float(telem.batt_v), dt, 0.20)
@@ -972,38 +972,26 @@ def draw_tach_segments(
 
 
 def _draw_tach_pointer(pygame, surf, frac: float, g: FaceGeom) -> None:
-    """Cream analog dart: wide shoulders in the well, tip on the printed band."""
+    """OEM cream chevron on the printed band — short, no well hub."""
     red_from = 8.0 / 9.0
     tx, ty = tach_arch_xy(frac, g)
     nx, ny = tach_arch_normal(frac, g)
     px, py = -ny, nx
     tip = (tx + nx * TACH_NEEDLE_TIP, ty + ny * TACH_NEEDLE_TIP)
-    shoulder = (tx + nx * 14.0, ty + ny * 14.0)
-    hub = (tx + nx * 22.0, ty + ny * 22.0)
-    tail = (tx + nx * TACH_NEEDLE_TAIL, ty + ny * TACH_NEEDLE_TAIL)
+    base = (tx + nx * TACH_NEEDLE_TAIL, ty + ny * TACH_NEEDLE_TAIL)
     col = CREAM if frac < red_from else RED
     glow = AMBER_HOT if frac < red_from else RED
 
-    def dart(half: float) -> list[tuple[int, int]]:
-        sh, hh, th = half, half * 0.48, max(1.2, half * 0.22)
+    def chevron(half: float) -> list[tuple[int, int]]:
         return [
             (int(tip[0]), int(tip[1])),
-            (int(shoulder[0] + px * sh), int(shoulder[1] + py * sh)),
-            (int(hub[0] + px * hh), int(hub[1] + py * hh)),
-            (int(tail[0] + px * th), int(tail[1] + py * th)),
-            (int(tail[0] - px * th), int(tail[1] - py * th)),
-            (int(hub[0] - px * hh), int(hub[1] - py * hh)),
-            (int(shoulder[0] - px * sh), int(shoulder[1] - py * sh)),
+            (int(base[0] + px * half), int(base[1] + py * half)),
+            (int(base[0] - px * half), int(base[1] - py * half)),
         ]
 
-    pygame.draw.polygon(surf, (28, 20, 12), dart(13.0))
-    pygame.draw.polygon(surf, glow, dart(11.5))
-    pygame.draw.polygon(surf, col, dart(9.6))
-    hx, hy = int(hub[0]), int(hub[1])
-    pygame.draw.circle(surf, (28, 20, 12), (hx, hy), 8)
-    pygame.draw.circle(surf, glow, (hx, hy), 6)
-    pygame.draw.circle(surf, col, (hx, hy), 3)
-    pygame.draw.circle(surf, (22, 16, 10), (hx, hy), 1)
+    pygame.draw.polygon(surf, (28, 20, 12), chevron(10.4))
+    pygame.draw.polygon(surf, glow, chevron(8.8))
+    pygame.draw.polygon(surf, col, chevron(7.4))
 
 
 def draw_welcome_sweep(pygame, surf, sweep_t: float, g: FaceGeom | None = None) -> None:
@@ -1044,14 +1032,13 @@ def draw_tach_numbers(pygame, fonts, surf, dim: bool = False, g: FaceGeom | None
         x, y = tach_num_xy(frac, g)
         img = fonts["tick"].render(str(i), True, col)
         surf.blit(img, img.get_rect(center=(int(x), int(y))))
-    lx, ly = tach_num_xy(0.11, g)
-    nx, ny = tach_arch_normal(0.11, g)
+    zx, zy = tach_num_xy(0.0, g)
     blit_text(
         surf,
         fonts["micro"],
-        "×1000 r/min",
+        "x1000 r/min",
         WHITE if not dim else DIM,
-        (int(lx + nx * 18 + 36), int(ly + ny * 16)),
+        (int(zx + 46), int(zy + 20)),
         "center",
     )
 
@@ -1526,8 +1513,8 @@ def write_screenshots(pygame, fonts, face: DisplayState, dest: Path) -> list[Pat
 def build_fonts(pygame) -> dict:
     return {
         "speed": _font(pygame, 132, bold=True, mono=True),
-        "ready": _font(pygame, 88, bold=True),
-        "tick": _font(pygame, 34, italic=True),
+        "ready": _font(pygame, 92, bold=True),
+        "tick": _font(pygame, 38, italic=True),
         "label": _font(pygame, 20, bold=True),
         "readout": _font(pygame, 26, bold=True, mono=True),
         "tiny": _font(pygame, 15, italic=True),

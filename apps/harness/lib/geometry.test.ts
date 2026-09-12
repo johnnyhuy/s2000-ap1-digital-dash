@@ -35,7 +35,7 @@ describe("face geometry", () => {
     near(TEMP_Y_PCT, 0.505, 0.0001);
     near(TEMP_W_PCT, 0.16, 0.0001);
     near(FUEL_X_PCT, 0.76, 0.0001);
-    near(BAR_H_PCT, 0.026, 0.0001);
+    near(BAR_H_PCT, 0.018, 0.0001);
     near(FACE.temp.x / FACE.module.w, TEMP_X_PCT, 0.01);
     near((FACE.temp.y - FACE.module.y) / FACE.module.h, TEMP_Y_PCT, 0.01);
   });

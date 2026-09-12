@@ -64,9 +64,9 @@ def _v_seg(x: float, y: float, h: float, t: float) -> list[tuple[float, float]]:
 
 def segment_polys(x: int, y: int, w: int, h: int) -> dict[str, list[tuple[int, int]]]:
     """Pixel polygons for one digit. Origin is top-left of the digit box."""
-    t = max(2.8, h * 0.142)
-    t_g = t * 1.12  # slightly heavier middle bar (OEM 7-seg)
-    gap = max(1.4, t * 0.28)
+    t = max(2.4, h * 0.118)
+    t_g = t * 1.08
+    gap = max(1.6, t * 0.38)
     inner_w = w - t
     half = (h - t) / 2.0
     ax, ay = x + t * 0.35, y

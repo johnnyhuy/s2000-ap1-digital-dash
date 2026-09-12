@@ -3,6 +3,12 @@
   <title>High beam telltale</title>
   <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
        White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
-  <path fill="#fff" d="M40 8.4c13.4 0 20.4 8.4 20.4 15.6S53.4 39.6 40 39.6H31.2V8.4H40z"/>
-  <path fill="#fff" d="M4.4 12.2h24.8v2.8H4.4zm-2.4 5.4h27.2v2.8H2zm0 5.4h27.2v2.8H2zm0 5.4h27.2v2.8H2zm2.4 5.4h24.8v2.8H4.4z"/>
+  <g fill="#fff">
+    <path d="M39.2 9c12.4 0 18.8 7.2 18.8 15s-6.4 15-18.8 15H32.4V9h6.8z"/>
+    <rect x="4.4" y="11.4" width="24.2" height="2.5" rx="0.4"/>
+    <rect x="2.4" y="16.8" width="26.2" height="2.5" rx="0.4"/>
+    <rect x="2.4" y="22.2" width="26.2" height="2.5" rx="0.4"/>
+    <rect x="2.4" y="27.6" width="26.2" height="2.5" rx="0.4"/>
+    <rect x="4.4" y="33" width="24.2" height="2.5" rx="0.4"/>
+  </g>
 </svg>
