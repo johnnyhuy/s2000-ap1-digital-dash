@@ -55,21 +55,20 @@ COWL_EDGE = (52, 48, 44)
 WELL = (5, 3, 2)
 LCD = (5, 1, 1)
 AMBER = (244, 148, 32)
-AMBER_HOT = (255, 184, 56)
+AMBER_HOT = (255, 194, 74)
 AMBER_DIM = (110, 58, 14)
-AMBER_GHOST = (42, 24, 10)
+AMBER_GHOST = (28, 18, 8)
 AMBER_WASH = (80, 42, 10)
 AMBER_BAND = (176, 88, 20)
-AMBER_BAND_LO = (240, 160, 40)
-AMBER_BAND_HI = (168, 56, 16)
+AMBER_BAND_LO = (242, 170, 50)
+AMBER_BAND_HI = (176, 60, 18)
 RED = (228, 40, 32)
 RED_DIM = (86, 18, 16)
 RED_GHOST = (44, 14, 12)
-RED_LCD = (255, 38, 28)
-RED_LCD_GHOST = (36, 8, 8)
-WHITE = (248, 242, 232)
-CREAM = (255, 244, 220)
-DIM = (110, 100, 84)
+RED_LCD = (255, 58, 34)
+RED_LCD_GHOST = (42, 10, 8)
+WHITE = (246, 240, 228)
+DIM = (122, 114, 100)
 MUTED = (48, 44, 38)
 ORANGE = (244, 120, 32)
 TICK_MAJOR_DIM = (248, 242, 228)
@@ -84,8 +83,8 @@ TACH_BAND_OUTER = 32.0
 TACH_NUM_INSET = 54.0
 TACH_TICK_MAJOR = (2.4, 22.0)
 TACH_TICK_MINOR = (1.4, 13.0)
-TACH_NEEDLE_TIP = -6.5
-TACH_NEEDLE_TAIL = 24.0
+TACH_NEEDLE_TIP = -3.4
+TACH_NEEDLE_TAIL = 16.5
 
 # --- locked % layout (see refs/flat/DIMENSIONS.md) ---------------------------
 # Module as % of the 1920×1080 canvas; height from OEM 2.35:1 elevation
@@ -998,7 +997,7 @@ def _draw_tach_pointer(pygame, surf, frac: float, g: FaceGeom) -> None:
     px, py = -ny, nx
     tip = (tx + nx * TACH_NEEDLE_TIP, ty + ny * TACH_NEEDLE_TIP)
     base = (tx + nx * TACH_NEEDLE_TAIL, ty + ny * TACH_NEEDLE_TAIL)
-    col = CREAM if frac < red_from else RED
+    col = WHITE if frac < red_from else RED
     glow = AMBER_HOT if frac < red_from else RED
 
     def chevron(half: float) -> list[tuple[int, int]]:
@@ -1008,9 +1007,9 @@ def _draw_tach_pointer(pygame, surf, frac: float, g: FaceGeom) -> None:
             (int(base[0] - px * half), int(base[1] - py * half)),
         ]
 
-    pygame.draw.polygon(surf, (28, 20, 12), chevron(9.4))
-    pygame.draw.polygon(surf, glow, chevron(7.8))
-    pygame.draw.polygon(surf, col, chevron(6.2))
+    pygame.draw.polygon(surf, (28, 20, 12), chevron(5.4))
+    pygame.draw.polygon(surf, glow, chevron(4.2))
+    pygame.draw.polygon(surf, col, chevron(2.8))
 
 
 def draw_welcome_sweep(pygame, surf, sweep_t: float, g: FaceGeom | None = None) -> None:
@@ -1096,24 +1095,26 @@ def _seg_bar(
 
 
 def _thermometer_icon(pygame, surf, cx: int, cy: int, col) -> None:
-    """AP1 TEMP pictogram: stem, bulb, right-hand ticks, three waves below."""
-    pygame.draw.rect(surf, col, pygame.Rect(cx - 2, cy - 16, 5, 18), border_radius=2)
-    pygame.draw.circle(surf, col, (cx, cy + 6), 6)
-    for dy in (-12, -7, -2, 3):
-        pygame.draw.line(surf, col, (cx + 5, cy + dy), (cx + 11, cy + dy), 2)
-    for i, y in enumerate((cy + 14, cy + 18, cy + 22)):
+    """AP1 TEMP pictogram: stem, bulb, three right-hand ticks, two waves."""
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 2, cy - 18, 4, 18), border_radius=2)
+    pygame.draw.circle(surf, col, (cx, cy + 4), 6)
+    pygame.draw.circle(surf, WELL, (cx, cy + 4), 2)
+    for dy in (-12, -7, -2):
+        pygame.draw.line(surf, col, (cx + 4, cy + dy), (cx + 11, cy + dy), 2)
+    for y in (cy + 13, cy + 18):
         pts = [(cx - 8 + x, y + (2 if (x // 4) % 2 else -2)) for x in range(0, 20, 4)]
         if len(pts) >= 2:
             pygame.draw.lines(surf, col, False, pts, 2)
 
 
 def _pump_icon(pygame, surf, cx: int, cy: int, col) -> None:
-    """AP1 FUEL pictogram: pump body, window, hose loop, nozzle."""
-    pygame.draw.rect(surf, col, pygame.Rect(cx - 9, cy - 8, 11, 18), border_radius=1)
-    pygame.draw.rect(surf, col, pygame.Rect(cx - 7, cy - 14, 7, 6), border_radius=1)
-    pygame.draw.rect(surf, (0, 0, 0), pygame.Rect(cx - 6, cy - 5, 5, 4))
-    pygame.draw.arc(surf, col, pygame.Rect(cx - 2, cy - 8, 16, 16), -0.4, 1.6, 2)
-    pygame.draw.rect(surf, col, pygame.Rect(cx + 10, cy - 2, 4, 10), border_radius=1)
+    """AP1 FUEL pictogram: pump body, window, hose loop, nozzle, foot."""
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 8, cy - 6, 12, 17), border_radius=2)
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 6, cy - 12, 8, 6), border_radius=1)
+    pygame.draw.rect(surf, WELL, pygame.Rect(cx - 5, cy - 2, 6, 4))
+    pygame.draw.arc(surf, col, pygame.Rect(cx, cy - 6, 16, 16), -0.35, 1.7, 2)
+    pygame.draw.rect(surf, col, pygame.Rect(cx + 12, cy + 2, 4, 10), border_radius=1)
+    pygame.draw.rect(surf, col, pygame.Rect(cx - 8, cy + 11, 12, 2), border_radius=1)
 
 
 def _side_arch_point(rect: tuple[int, int, int, int], frac: float) -> tuple[float, float]:
@@ -1244,14 +1245,14 @@ def draw_speed(pygame, fonts, surf, speed: float, g: FaceGeom | None = None) -> 
     value = int(round(clamp(speed, 0.0, 399.0)))
     digits = f"{value:d}".rjust(3)
     cx, cy = g.speed_c
-    win = (cx - 150, cy - 62, 270, 118)
+    win = (cx - 128, cy - 52, 236, 100)
     lcd_window(pygame, surf, win, (10, 3, 2), (58, 16, 14), door=(255, 42, 28, 16))
     box = blit_digits(
         pygame,
         surf,
         digits,
         (cx - 8, cy),
-        digit_h=108,
+        digit_h=96,
         color=RED_LCD,
         ghost=RED_LCD_GHOST,
         ghost_text="188",
@@ -1283,7 +1284,7 @@ def draw_odo_row(
     trip = clamp(face.trip_km, 0.0, 999.9)
     if g.style == FaceStyle.AP2.value:
         blit_text(surf, fonts["readout"], _clock_text(), DIM, g.clock_c, "center")
-    win = (cx - 210, y - 30, 420, 60)
+    win = (cx - 196, y - 26, 392, 52)
     lcd_window(pygame, surf, win, (10, 3, 2), (52, 14, 12), door=(255, 42, 28, 14))
     blit_digits(
         pygame,

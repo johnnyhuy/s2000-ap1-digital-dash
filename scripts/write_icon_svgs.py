@@ -50,21 +50,21 @@ CHECK_HOLES = (
 SVGS: dict[str, str] = {
     "turn_l": wrap(
         "turn_l",
-        '  <path fill="#fff" d="M44 9.2 7.2 24 44 38.8v-7.6h12.4V16.8H44z"/>\n',
+        '  <path fill="#fff" d="M42.6 8.4 8.2 24l34.4 15.6v-8.2H56V16.6H42.6z"/>\n',
         label="Left turn telltale",
     ),
     "turn_r": wrap(
         "turn_r",
-        '  <path fill="#fff" d="M20 9.2v7.6H7.6v14.4H20v7.6L56.8 24z"/>\n',
+        '  <path fill="#fff" d="M21.4 8.4v8.2H8v15.2h13.4v8.2L55.8 24z"/>\n',
         label="Right turn telltale",
     ),
     "high_beam": wrap(
         "high_beam",
         """  <g fill="#fff">
-    <rect x="4.2" y="13.2" width="22.6" height="3.7" rx="0.4"/>
-    <rect x="3.2" y="22.15" width="24.4" height="3.7" rx="0.4"/>
-    <rect x="4.2" y="31.1" width="22.6" height="3.7" rx="0.4"/>
-    <path fill-rule="evenodd" d="M33.6 8.2h6.4C54.8 8.2 61 15.4 61 24s-6.2 15.8-21 15.8h-6.4V8.2z M37.6 12.4v23.2h3.2c11.2 0 16-5.6 16-11.6S52 12.4 40.8 12.4h-3.2z"/>
+    <rect x="3.4" y="12.4" width="22.8" height="3.5" rx="0.35"/>
+    <rect x="3.4" y="22.25" width="22.8" height="3.5" rx="0.35"/>
+    <rect x="3.4" y="32.1" width="22.8" height="3.5" rx="0.35"/>
+    <path fill-rule="evenodd" d="M32.6 7.6h6.2C54.4 7.6 61.2 14.6 61.2 24S54.4 40.4 38.8 40.4h-6.2V7.6z M36.8 12.2v23.6h2.8c11.6 0 16.4-5.5 16.4-11.8S51.2 12.2 39.6 12.2h-2.8z"/>
   </g>
 """,
         label="High beam telltale",
@@ -83,12 +83,12 @@ SVGS: dict[str, str] = {
     "battery": wrap(
         "battery",
         """  <g fill="#fff">
-    <rect x="17.4" y="5.2" width="10.4" height="7.2" rx="0.8"/>
-    <rect x="36.2" y="5.2" width="10.4" height="7.2" rx="0.8"/>
-    <path fill-rule="evenodd" d="M8.8 12.8h46.4v30.4H8.8z M15.6 19.2h32.8v17.6H15.6z"/>
-    <rect x="18.6" y="25.6" width="11.6" height="3.4"/>
-    <rect x="22.7" y="21.4" width="3.4" height="11.8"/>
-    <rect x="34.2" y="25.6" width="11.6" height="3.4"/>
+    <rect x="18.2" y="4.6" width="9.6" height="7" rx="0.7"/>
+    <rect x="36.2" y="4.6" width="9.6" height="7" rx="0.7"/>
+    <path fill-rule="evenodd" d="M9.2 12.2h45.6v31.2H9.2z M14.4 17.4h35.2v20.8H14.4z"/>
+    <rect x="18.8" y="25.4" width="10.8" height="3.1"/>
+    <rect x="22.65" y="21.55" width="3.1" height="10.8"/>
+    <rect x="34.6" y="25.4" width="10.8" height="3.1"/>
   </g>
 """,
         label="Battery telltale",
@@ -96,11 +96,11 @@ SVGS: dict[str, str] = {
     "oil": wrap(
         "oil",
         """  <g fill="#fff">
-    <path fill-rule="evenodd" d="M3.2 26.4c0-9.2 6.6-16 16.6-16h6.4v5.2H20.2c-5.8 0-9.6 4-9.6 10.8s3.8 10.8 9.6 10.8h6v5.2h-6.4C9.8 42.4 3.2 35.6 3.2 26.4z"/>
-    <rect x="27.8" y="11.2" width="11.4" height="5" rx="0.7"/>
-    <path fill-rule="evenodd" d="M19.6 16h26.6v22.4H19.6z M24.4 20.8h17v12.8H24.4z"/>
-    <path fill-rule="evenodd" d="M44.6 16.2 55.8 6.2l5.2 5.4-8.6 8z M48.2 17.8 56.2 10.4l1.8 1.9-6.4 5.8z"/>
-    <path d="M57.6 14.6c0 3.2 2.2 5.6 4.2 5.6s4.2-2.4 4.2-5.6c0-2.4-1.8-5.4-4.2-8.4-2.4 3-4.2 6-4.2 8.4z"/>
+    <path fill-rule="evenodd" d="M4.4 26.2c0-9.4 6.8-16.4 17-16.4h5.6v4.8H22c-6.2 0-10.2 4.2-10.2 11.6S15.8 37.8 22 37.8h5v4.8h-5.6C11.2 42.6 4.4 35.6 4.4 26.2z"/>
+    <rect x="28.4" y="10.4" width="11.2" height="4.6" rx="0.6"/>
+    <path fill-rule="evenodd" d="M20.6 15.2h26.2v22.2H20.6z M25.2 19.8h17v13H25.2z"/>
+    <path fill-rule="evenodd" d="M45.2 16.2 56.6 5.8l5 5.2-8.8 8z M48.8 17.6 56.6 10.6l1.7 1.8-6.2 5.6z"/>
+    <path d="M57.4 14.4c0 3.2 2.2 5.7 4.3 5.7s4.3-2.5 4.3-5.7c0-2.5-1.8-5.5-4.3-8.5-2.5 3-4.3 6-4.3 8.5z"/>
   </g>
 """,
         label="Oil pressure telltale",
@@ -108,7 +108,7 @@ SVGS: dict[str, str] = {
     "cel": wrap(
         "cel",
         f"""  <g fill="#fff">
-    <path fill-rule="evenodd" d="M16.8 9.2h18.8c1.6 0 3 1.05 3.5 2.55l1.9 5.35h8.6l4.6-4.9h4.6v6.6h3.1v12.2h-3.1v6.8H8.4v-6.8H2.8V26.1h5.2v-4.2h6.6L15.4 11.7c.5-1.5 1.9-2.5 3.4-2.5z {CHECK_HOLES}"/>
+    <path fill-rule="evenodd" d="M16.4 8.8h19.2c1.7 0 3.15 1.05 3.7 2.6l1.85 5.2h8.4l4.4-4.7h4.8v6.4h3.1v12.4h-3.1v6.6H8.2v-6.6H2.6V25.8h5.2v-4h6.8L15 11.4c.5-1.55 1.95-2.6 3.4-2.6z {CHECK_HOLES}"/>
   </g>
 """,
         label="Check engine telltale",
@@ -116,10 +116,11 @@ SVGS: dict[str, str] = {
     "immobilizer": wrap(
         "immobilizer",
         """  <g fill="#fff">
-    <path fill-rule="evenodd" d="M17.2 5.6a16.6 16.6 0 1 0 .02 0zm0 7.4a9.2 9.2 0 1 0 .02 0z"/>
-    <rect x="30.4" y="19.2" width="30.6" height="8.4" rx="1.5"/>
-    <rect x="48.2" y="27.4" width="5.4" height="9.6" rx="0.8"/>
-    <rect x="55.8" y="27.4" width="5.4" height="13.4" rx="0.8"/>
+    <path fill-rule="evenodd" d="M17.6 5.2a16.6 16.6 0 1 0 .02 0zm0 7.2a9.4 9.4 0 1 0 .02 0z"/>
+    <rect x="30.6" y="19.4" width="30.2" height="7.8" rx="1.4"/>
+    <rect x="45.6" y="27" width="4.8" height="7.4" rx="0.7"/>
+    <rect x="52.2" y="27" width="4.8" height="10.2" rx="0.7"/>
+    <rect x="58.8" y="27" width="4.8" height="13.2" rx="0.7"/>
   </g>
 """,
         label="Immobilizer key telltale",
@@ -138,12 +139,9 @@ SVGS: dict[str, str] = {
     "seatbelt": wrap(
         "seatbelt",
         """  <g fill="#fff">
-    <circle cx="32" cy="8.2" r="6.5"/>
-    <path d="M29.2 13.8h5.6v3.4h-5.6z"/>
-    <path d="M17.4 20.2 12.6 28.4l4.2 2.2 3.6-6.8z"/>
-    <path d="M46.6 20.2 51.4 28.4l-4.2 2.2-3.6-6.8z"/>
-    <path fill-rule="evenodd" d="M16.8 17.6 24.6 16.2 28 19h8l3.4-2.8 7.8 1.4-2.6 27.8H19.4z M20.4 15.2 49.6 45.4h-14L18.4 21.6z"/>
-    <path d="M21.6 15.4 47.4 45h-8.8L20.2 22.2z"/>
+    <circle cx="32" cy="7.8" r="6.2"/>
+    <path d="M29.4 13.4h5.2v3.2h-5.2z"/>
+    <path fill-rule="evenodd" d="M18.2 18.2 25.8 16.4 29.2 19.4h5.6l3.4-3 7.6 1.8-2.4 26.6H20.6z M21.6 15.4 47.4 45h-8.8L20.2 22.2z"/>
   </g>
 """,
         label="Seatbelt telltale",
@@ -151,9 +149,9 @@ SVGS: dict[str, str] = {
     "door": wrap(
         "door",
         """  <g fill="#fff">
-    <path fill-rule="evenodd" d="M25.4 2.2h13.2c2 0 3.8 1.15 4.7 2.95L47.4 11.4v26.4c0 1.7-1 3.3-2.6 4.3L38.2 46H25.8l-6.6-3.9c-1.6-1-2.6-2.6-2.6-4.3V11.4L20.7 5.15C21.6 3.35 23.4 2.2 25.4 2.2z M27.2 7.8h9.6v9.4h-9.6z"/>
-    <path d="M18.2 20.6 2.8 28.6l3.6 6 13.6-7.2z"/>
-    <path d="M45.8 20.6 61.2 28.6l-3.6 6-13.6-7.2z"/>
+    <path fill-rule="evenodd" d="M24.8 2.4h14.4c2.05 0 3.9 1.15 4.8 3L48 11.8v25.8c0 1.75-1.05 3.35-2.7 4.35L38.4 46H25.6l-6.9-4.05c-1.65-1-2.7-2.6-2.7-4.35V11.8L20 5.4c.9-1.85 2.75-3 4.8-3z M27.4 8.4h9.2v8.8h-9.2z"/>
+    <path d="M18.2 20.6 2.8 28.6l3.4 5.8 13.4-7.1z"/>
+    <path d="M45.8 20.6 61.2 28.6l-3.4 5.8-13.4-7.1z"/>
   </g>
 """,
         label="Door-open telltale",

@@ -30,22 +30,21 @@ import { ectFrac, fuelFrac } from "@/lib/mockDrive";
 import { HardwareBezel } from "./Telltales";
 
 const AMBER = "#f49420";
-const AMBER_HOT = "#ffb838";
-const AMBER_GHOST = "#2a180a";
-const AMBER_BAND_LO = "#f0a028";
-const AMBER_BAND_HI = "#a83810";
+const AMBER_HOT = "#ffc24a";
+const AMBER_GHOST = "#1c1208";
+const AMBER_BAND_LO = "#f2aa32";
+const AMBER_BAND_HI = "#b03c12";
 const RED = "#e42820";
-const RED_LCD = "#ff261c";
-const RED_LCD_GHOST = "#240808";
-const WHITE = "#f8f2e8";
-const CREAM = "#fff4dc";
-const DIM = "#6e6454";
-const TICK_MINOR_DIM = "#c47c28";
-const REDLINE_PRINT = "#c4281c";
-const COWL = "#100e0d";
-const WELL = "#050302";
-const TACH_NEEDLE_TIP = -4.4;
-const TACH_NEEDLE_TAIL = 13.6;
+const RED_LCD = "#ff3a22";
+const RED_LCD_GHOST = "#1a0606";
+const WHITE = "#f6f0e4";
+const DIM = "#7a7264";
+const TICK_MINOR_DIM = "#c88838";
+const REDLINE_PRINT = "#b4241c";
+const COWL = "#0e0c0b";
+const WELL = "#040201";
+const TACH_NEEDLE_TIP = -2.6;
+const TACH_NEEDLE_TAIL = 10.4;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -65,18 +64,18 @@ function lerpHex(a: string, b: string, t: number): string {
 function LcdWindow({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
   return (
     <g className="lcd-window">
-      <rect x={x} y={y} width={w} height={h} rx={1.6} fill="#060201" stroke="#1c0a08" strokeWidth={0.32} />
+      <rect x={x} y={y} width={w} height={h} rx={1.4} fill="#080201" stroke="#2a0c08" strokeWidth={0.28} />
       <rect
-        x={x + 0.7}
-        y={y + 0.7}
-        width={w - 1.4}
-        height={h - 1.4}
-        rx={1.1}
+        x={x + 0.55}
+        y={y + 0.55}
+        width={w - 1.1}
+        height={h - 1.1}
+        rx={0.9}
         fill="none"
-        stroke="#120604"
-        strokeWidth={0.22}
+        stroke="#140604"
+        strokeWidth={0.18}
       />
-      <rect x={x} y={y} width={w} height={h} rx={1.6} fill="url(#lcd-door)" />
+      <rect x={x} y={y} width={w} height={h} rx={1.4} fill="url(#lcd-door)" />
     </g>
   );
 }
@@ -94,20 +93,20 @@ function CoolantIcon({
 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`} fill={fill} stroke={fill}>
-      <rect x="-1.7" y="-14" width="3.4" height="16.2" rx="1.6" fill={fill} stroke="none" />
-      <circle cx="0" cy="5.4" r="4.6" fill={fill} stroke="none" />
-      <circle cx="0" cy="5.4" r="1.7" fill="#060402" stroke="none" />
-      <path d="M5.2 -10.4h4.8M5.2 -6h4.8M5.2 -1.6h4.8M5.2 2.6h4.8" strokeWidth="1.4" fill="none" />
+      <rect x="-1.45" y="-15.2" width="2.9" height="16.4" rx="1.45" fill={fill} stroke="none" />
+      <circle cx="0" cy="4.7" r="4.35" fill={fill} stroke="none" />
+      <circle cx="0" cy="4.7" r="1.45" fill="#060402" stroke="none" />
+      <path d="M2.2 -11.6h5.1M2.2 -7.1h5.1M2.2 -2.6h5.1" strokeWidth="1.35" fill="none" strokeLinecap="round" />
       <path
-        d="M-8.2 12.4c2.4-2.6 4.8-2.6 7.2 0s4.8 2.6 7.2 0 4.8-2.6 7.2 0"
+        d="M-8.1 11.4c2.15-2.35 4.3-2.35 6.45 0s4.3 2.35 6.45 0 4.3-2.35 6.45 0"
         fill="none"
-        strokeWidth="1.45"
+        strokeWidth="1.4"
         strokeLinecap="round"
       />
       <path
-        d="M-7 16c2.2-2.2 4.4-2.2 6.6 0s4.4 2.2 6.6 0 4.4-2.2 6.6 0"
+        d="M-7 14.9c1.95-2.05 3.9-2.05 5.85 0s3.9 2.05 5.85 0 3.9-2.05 5.85 0"
         fill="none"
-        strokeWidth="1.35"
+        strokeWidth="1.3"
         strokeLinecap="round"
       />
     </g>
@@ -127,12 +126,12 @@ function PumpIcon({
 }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`} fill={fill} stroke={fill}>
-      <rect x="-8.8" y="-4" width="10.6" height="15.4" rx="1.15" stroke="none" />
-      <rect x="-6.8" y="-9.4" width="6.2" height="5.6" rx="0.55" stroke="none" />
-      <rect x="-5.8" y="-0.6" width="4.6" height="3.5" fill="#060402" stroke="none" />
-      <path d="M1.8 -1c6.8-4.8 11.6 0.3 11.4 7.4" fill="none" strokeWidth="1.65" strokeLinecap="round" />
-      <rect x="10.4" y="1.4" width="3.3" height="8.2" rx="0.8" stroke="none" />
-      <rect x="-8.8" y="11.4" width="10.6" height="1.9" rx="0.4" stroke="none" />
+      <rect x="-7.4" y="-3.4" width="11.4" height="15.8" rx="1.05" stroke="none" />
+      <rect x="-5.6" y="-8.8" width="7.8" height="5.6" rx="0.7" stroke="none" />
+      <rect x="-4.6" y="0.2" width="5.6" height="3.3" fill="#060402" stroke="none" />
+      <path d="M3.6 1.1c6.6-5.6 12.4-0.4 11.8 7.4" fill="none" strokeWidth="1.7" strokeLinecap="round" />
+      <rect x="12.6" y="3.8" width="3.05" height="8.2" rx="0.7" stroke="none" />
+      <rect x="-7.4" y="12.2" width="11.4" height="1.7" rx="0.35" stroke="none" />
     </g>
   );
 }
@@ -147,7 +146,7 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
   const baseX = p.x + n.x * TACH_NEEDLE_TAIL;
   const baseY = p.y + n.y * TACH_NEEDLE_TAIL;
   const hot = frac >= 8 / 9;
-  const col = hot ? RED : CREAM;
+  const col = hot ? RED : WHITE;
   const glow = hot ? RED : AMBER_HOT;
   const chevron = (half: number) =>
     [
@@ -157,9 +156,9 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
     ].join(" ");
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <polygon points={chevron(4.7)} fill="#1a120c" />
-      <polygon points={chevron(3.65)} fill={glow} />
-      <polygon points={chevron(2.55)} fill={col} />
+      <polygon points={chevron(3.05)} fill="#1a120c" />
+      <polygon points={chevron(2.28)} fill={glow} />
+      <polygon points={chevron(1.42)} fill={col} />
     </g>
   );
 }
@@ -203,7 +202,7 @@ function TachSegments({
       <path
         key={`r${i}`}
         className={reached ? "seg-lit seg-red" : "seg-ghost"}
-        d={tachTickPath(mid, 3.6, TACH_BAND_OUTER - 1.2, geom, 0.6)}
+        d={tachTickPath(mid, 2.8, TACH_BAND_OUTER - 1.4, geom, 0.7)}
         fill={reached ? RED : REDLINE_PRINT}
         stroke="none"
       />,
@@ -236,7 +235,7 @@ function TachSegments({
     <g aria-hidden>
       {printed}
       <path d={tachBandPath(redFrom, 1, 0.25, TACH_BAND_OUTER + 1, geom)} fill="#941c18" stroke="none" />
-      {wash ? <path d={wash} fill={AMBER_HOT} opacity={0.22} stroke="none" /> : null}
+      {wash ? <path d={wash} fill={AMBER_HOT} opacity={0.12} stroke="none" /> : null}
       {washRed ? <path className="seg-lit seg-red" d={washRed} fill={RED} opacity={0.34} stroke="none" /> : null}
       {trail ? <path className="sweep-bead" d={trail} fill={AMBER_HOT} opacity={0.62} stroke="none" /> : null}
       {segs}
@@ -248,7 +247,7 @@ function TachSegments({
 
 function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
   const zero = tachNumXY(0, geom);
-  const size = 20.6;
+  const size = 18.8;
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
@@ -272,9 +271,9 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
       })}
       <text
         className="unit-label"
-        x={zero.x + 28}
-        y={zero.y + 16}
-        fontSize={5.8}
+        x={zero.x + 30}
+        y={zero.y + 15}
+        fontSize={5.4}
         fontWeight={700}
         fill={dim ? DIM : WHITE}
         textAnchor="middle"
@@ -434,7 +433,7 @@ function ReadyCard({ face, geom }: { face: DisplayState; geom: FaceGeom }) {
         textAnchor="middle"
         fontSize={11}
         fill={DIM}
-        letterSpacing="0.28em"
+        letterSpacing="0.22em"
       >
         S2000  DIGITAL  DASH
       </text>
@@ -442,11 +441,11 @@ function ReadyCard({ face, geom }: { face: DisplayState; geom: FaceGeom }) {
         x={cx}
         y={geom.speed.y + 8}
         textAnchor="middle"
-        fontSize={52}
+        fontSize={50}
         fontWeight={700}
         fill={AMBER_HOT}
         className="ready-word"
-        letterSpacing="0.1em"
+        letterSpacing="0.08em"
       >
         READY
       </text>
@@ -457,7 +456,7 @@ function ReadyCard({ face, geom }: { face: DisplayState; geom: FaceGeom }) {
         textAnchor="middle"
         fontSize={10}
         fill={DIM}
-        letterSpacing="0.16em"
+        letterSpacing="0.12em"
       >
         IGNITION ON   SYSTEMS OK
       </text>
@@ -522,31 +521,35 @@ export function ClusterFace({
         >
           <defs>
             <filter id="amber-bloom" x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur stdDeviation="1.6" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-            <filter id="lcd-bloom" x="-28%" y="-28%" width="156%" height="156%">
               <feGaussianBlur stdDeviation="1.35" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
+            <filter id="lcd-bloom" x="-28%" y="-28%" width="156%" height="156%">
+              <feGaussianBlur stdDeviation="1.15" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <radialGradient id="well-vignette" cx="50%" cy="42%" r="62%">
+              <stop offset="0%" stopColor="#120806" stopOpacity="0" />
+              <stop offset="100%" stopColor="#000" stopOpacity="0.38" />
+            </radialGradient>
             <pattern id="lcd-door" width="3" height="8" patternUnits="userSpaceOnUse">
-              <rect width="1" height="8" fill="rgba(255,42,28,0.045)" />
+              <rect width="1" height="8" fill="rgba(255,58,34,0.05)" />
             </pattern>
           </defs>
-          <path d={hoodPath(geom)} fill={COWL} stroke="#3a342e" strokeWidth="1" />
+          <path d={hoodPath(geom)} fill={COWL} stroke="#2e2a26" strokeWidth="1" />
           <path d={lcdPath(geom)} fill={WELL} stroke="none" />
-          <path d={lcdPath(geom)} fill="#24140a" fillOpacity="0.05" />
+          <path d={lcdPath(geom)} fill="url(#well-vignette)" />
           <polyline
             points={visorLipPoly(geom)}
             fill="none"
-            stroke="#efe6d6"
-            strokeWidth="1.15"
+            stroke="#f2eadc"
+            strokeWidth="0.95"
             strokeLinecap="round"
           />
 
@@ -562,8 +565,8 @@ export function ClusterFace({
               className="sweep-bead"
               cx={sweep.x}
               cy={sweep.y}
-              r={3.2}
-              fill="#ffd56a"
+              r={2.6}
+              fill="#ffe08a"
               filter="url(#amber-bloom)"
             />
           ) : null}
@@ -572,20 +575,20 @@ export function ClusterFace({
 
           {liveLike ? (
             <>
-              <LcdWindow x={sc.x - 84} y={sc.y - 34} w={178} h={54} />
+              <LcdWindow x={sc.x - 72} y={sc.y - 30} w={154} h={48} />
               <g filter="url(#lcd-bloom)">
                 <SevenSeg
-                  x={sc.x - 62}
-                  y={sc.y - 30}
+                  x={sc.x - 54}
+                  y={sc.y - 26}
                   text={String(speed).padStart(3, " ")}
                   ghost="188"
-                  digitH={50}
+                  digitH={44}
                   color={RED_LCD}
                   ghostColor={RED_LCD_GHOST}
-                  italic={0.07}
+                  italic={0.06}
                 />
               </g>
-              <text x={sc.x + 64} y={sc.y + 8} fontSize={9} fontWeight={700} fill={RED_LCD} className="lcd-label">
+              <text x={sc.x + 56} y={sc.y + 6} fontSize={8} fontWeight={700} fill={RED_LCD} className="lcd-label">
                 km/h
               </text>
               {ap2 ? (
@@ -593,24 +596,24 @@ export function ClusterFace({
                   {FACE_CLOCK}
                 </text>
               ) : null}
-              <LcdWindow x={odo.x - 160} y={odo.y - 16} w={320} h={34} />
+              <LcdWindow x={odo.x - 148} y={odo.y - 14} w={296} h={30} />
               <g filter="url(#lcd-bloom)">
                 <SevenSeg
-                  x={odo.x - 126}
-                  y={odo.y - 10}
+                  x={odo.x - 118}
+                  y={odo.y - 8}
                   text={odoKm}
                   ghost="888888"
-                  digitH={20}
+                  digitH={18}
                   color={RED_LCD}
                   ghostColor={RED_LCD_GHOST}
-                  italic={0.04}
+                  italic={0.035}
                 />
               </g>
               <text
-                x={odo.x + 108}
-                y={odo.y - 9}
+                x={odo.x + 100}
+                y={odo.y - 8}
                 textAnchor="middle"
-                fontSize={7.2}
+                fontSize={6.6}
                 fontWeight={700}
                 fill={RED_LCD}
                 className="lcd-label"
@@ -619,14 +622,14 @@ export function ClusterFace({
               </text>
               <g filter="url(#lcd-bloom)">
                 <SevenSeg
-                  x={odo.x + 78}
-                  y={odo.y + 0}
+                  x={odo.x + 74}
+                  y={odo.y + 1}
                   text={trip}
                   ghost="888.8"
-                  digitH={16}
+                  digitH={14}
                   color={RED_LCD}
                   ghostColor={RED_LCD_GHOST}
-                  italic={0.04}
+                  italic={0.035}
                 />
               </g>
               {battWarn ? (
