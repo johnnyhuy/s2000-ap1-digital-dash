@@ -36,7 +36,7 @@ Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
 | TEMP icon | thermometer above **C** |
 | FUEL icon | pump above **F** |
 | Lamp / hardware strip | y ≈ **80.5%** |
-| Tach 0–9 | printed amber band + thin ticks **normal to the parabola** (not upright bricks / not a circular fill); cream **dart** needle from the well onto the band; white italic numerals **inside the well**, below the printed band (0 and 9 drop extra so they clear the scale) |
+| Tach 0–9 | printed amber band + thin ticks **normal to the parabola** (not upright bricks / not a circular fill); cream **chevron** needle on the printed band; white italic numerals **inside the well**, below the printed band (0 and 9 drop extra so they clear the scale); `x1000 r/min` tucked next to 0 |
 | Redline | printed red zone **8–9** with five thick blocks |
 
 Hardware strip, left → right:

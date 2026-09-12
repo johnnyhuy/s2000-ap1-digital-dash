@@ -31,4 +31,4 @@ charcoal with a faint screen-door, not a brown overlay. Telltales: red
 white-on-transparent ISO silhouettes under `assets/icons/`, tinted at draw
 time. Word lamps set in Barlow Condensed. Tach numerals sit **inside** the
 well (0 and 9 drop extra); ticks stay on the printed band. The needle is a
-cream dart from the well onto the scale, with a little analog lag.
+cream chevron sitting on the printed band, with a little analog lag.

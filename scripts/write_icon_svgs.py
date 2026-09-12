@@ -41,18 +41,24 @@ WORD = (
 SVGS: dict[str, str] = {
     "turn_l": wrap(
         "turn_l",
-        '  <path fill="#fff" d="M50 8 4 24l46 16v-9h10V17H50z"/>\n',
+        '  <path fill="#fff" d="M51.2 6.8 2.4 24l48.8 17.2v-10.4H62V17.2H51.2z"/>\n',
         label="Left turn telltale",
     ),
     "turn_r": wrap(
         "turn_r",
-        '  <path fill="#fff" d="M14 8v9H4v14h10v9l46-16z"/>\n',
+        '  <path fill="#fff" d="M12.8 6.8v10.4H2v13.6h10.8v10.4L61.6 24z"/>\n',
         label="Right turn telltale",
     ),
     "high_beam": wrap(
         "high_beam",
-        """  <path fill="#fff" d="M40 8.4c13.4 0 20.4 8.4 20.4 15.6S53.4 39.6 40 39.6H31.2V8.4H40z"/>
-  <path fill="#fff" d="M4.4 12.2h24.8v2.8H4.4zm-2.4 5.4h27.2v2.8H2zm0 5.4h27.2v2.8H2zm0 5.4h27.2v2.8H2zm2.4 5.4h24.8v2.8H4.4z"/>
+        """  <g fill="#fff">
+    <path d="M39.2 9c12.4 0 18.8 7.2 18.8 15s-6.4 15-18.8 15H32.4V9h6.8z"/>
+    <rect x="4.4" y="11.4" width="24.2" height="2.5" rx="0.4"/>
+    <rect x="2.4" y="16.8" width="26.2" height="2.5" rx="0.4"/>
+    <rect x="2.4" y="22.2" width="26.2" height="2.5" rx="0.4"/>
+    <rect x="2.4" y="27.6" width="26.2" height="2.5" rx="0.4"/>
+    <rect x="4.4" y="33" width="24.2" height="2.5" rx="0.4"/>
+  </g>
 """,
         label="High beam telltale",
     ),
@@ -83,10 +89,10 @@ SVGS: dict[str, str] = {
     "oil": wrap(
         "oil",
         """  <g fill="#fff">
-    <path d="M6.8 26c0-5 3.6-9 10-9H20v4h-3.6c-3.2 0-5.2 2.2-5.2 5s2 5 5.2 5H20v4h-3.2C10.4 35 6.8 31 6.8 26z"/>
-    <rect x="18.4" y="17.4" width="22.6" height="18" rx="1.2"/>
-    <path d="M41.8 17.2 54.6 6.4l4.6 4.6-10.2 8.4v15.4h-7.2z"/>
-    <path d="M55.6 14.8c0 3.4 2.4 6 4.6 6s4.6-2.6 4.6-6c0-2.8-2.2-5.4-4.6-8.2-2.4 2.8-4.6 5.4-4.6 8.2z"/>
+    <path fill-rule="evenodd" d="M5.2 24.4c0-7.4 5.4-12.8 13.4-12.8h6.2v5.4h-5.4c-4.2 0-7.2 3-7.2 7.4s3 7.4 7.2 7.4h5.4v5.4h-6.2C10.6 37.2 5.2 31.8 5.2 24.4z"/>
+    <rect x="20.6" y="15.4" width="22.2" height="18.4" rx="1.2"/>
+    <path d="M42.8 15.4 55.6 4.6l4.8 5.2-9.4 8.2z"/>
+    <path d="M56.8 12.2c0 3.6 2.6 6.2 4.8 6.2s4.8-2.6 4.8-6.2c0-2.8-2.2-5.8-4.8-8.8-2.6 3-4.8 6-4.8 8.8z"/>
   </g>
 """,
         label="Oil pressure telltale",
@@ -94,8 +100,8 @@ SVGS: dict[str, str] = {
     "cel": wrap(
         "cel",
         """  <g fill="#fff">
-    <path fill-rule="evenodd" d="M8.2 20.2h7.4l3.4-8h15.4l2.4 8h13.2l4.8-5.4h5.4v8h2.8v13.4h-2.8v8.4H8.2v-8.4H3V29.4h5.2z M16.8 26h30.4v8.2H16.8z"/>
-    <path d="M18.8 27.4h3.2v5.4h-3.2zm5.6 0h3.2v5.4h-3.2zm5.6 0h3.2v5.4h-3.2zm5.6 0h3.2v5.4h-3.2zm5.6 0h3.2v5.4h-3.2z"/>
+    <path fill-rule="evenodd" d="M18.2 9.6h19.6c1.4 0 2.6 0.9 3.1 2.2l2.4 6.6h9.6l4.8-5.4h5.6v7.6h3.2v12.6h-3.2v7.8H8.4v-7.8H2.6V27.8h5.8v-4.6h7.4L16.8 11.8c0.5-1.3 1.7-2.2 3.1-2.2z M17.2 24.8h30.8v8.4H17.2z"/>
+    <path d="M19.6 26.4h3.2v5.2h-3.2zm6.2 0h3.2v5.2h-3.2zm6.2 0h3.2v5.2h-3.2zm6.2 0h3.2v5.2h-3.2zm6.2 0h3.2v5.2h-3.2z"/>
   </g>
 """,
         label="Check engine telltale",
@@ -103,10 +109,10 @@ SVGS: dict[str, str] = {
     "immobilizer": wrap(
         "immobilizer",
         """  <g fill="#fff">
-    <path fill-rule="evenodd" d="M17.6 12.4a11.4 11.4 0 1 0 .01 0zm0 5.4a6 6 0 1 0 .01 0z"/>
-    <rect x="26.4" y="20.4" width="28" height="6.8" rx="0.8"/>
-    <rect x="42.4" y="27" width="4" height="8" rx="0.4"/>
-    <rect x="48.8" y="27" width="4" height="11" rx="0.4"/>
+    <path fill-rule="evenodd" d="M16.8 10.8a12.2 12.2 0 1 0 .02 0zm0 5.8a6.4 6.4 0 1 0 .02 0z"/>
+    <rect x="26.2" y="20.2" width="30.2" height="6.6" rx="1"/>
+    <rect x="43.8" y="26.8" width="4.4" height="8.4" rx="0.5"/>
+    <rect x="50.6" y="26.8" width="4.4" height="11.6" rx="0.5"/>
   </g>
 """,
         label="Immobilizer key telltale",
@@ -125,8 +131,8 @@ SVGS: dict[str, str] = {
     "seatbelt": wrap(
         "seatbelt",
         """  <g fill="#fff">
-    <circle cx="32" cy="8.8" r="6.8"/>
-    <path fill-rule="evenodd" d="M16.8 18.8c0-2.6 4.8-5.2 15.2-5.2s15.2 2.6 15.2 5.2V44H16.8z M19.6 17.2 47 44h-10.2L18.2 24.4z"/>
+    <circle cx="32" cy="8.2" r="6.4"/>
+    <path fill-rule="evenodd" d="M18.4 17.8c0-2.2 5.8-4.4 13.6-4.4s13.6 2.2 13.6 4.4V43.6H18.4z M21.2 16.8 45.6 43.6h-8.8L19.4 23.6z"/>
   </g>
 """,
         label="Seatbelt telltale",
@@ -134,9 +140,9 @@ SVGS: dict[str, str] = {
     "door": wrap(
         "door",
         """  <g fill="#fff">
-    <path fill-rule="evenodd" d="M24.8 3.8h14.4c1.3 0 2.5 0.6 3.4 1.7l5.2 6.8v27.4c0 1.3-0.6 2.5-1.7 3.4L39.2 47.6H24.8l-6.9-5.5c-1.1-0.9-1.7-2.1-1.7-3.4V12.3c0-1.3 0.6-2.5 1.7-3.4z M27.8 10.4h8.4v6.8h-8.4z"/>
-    <path d="M16.8 20.6 2.8 27.6l4 5.8 12.2-6.2z"/>
-    <path d="M47.2 20.6 61.2 27.6l-4 5.8-12.2-6.2z"/>
+    <path fill-rule="evenodd" d="M25.4 3h13.2c1.4 0 2.7.7 3.5 1.8l4.8 6.2v27.2c0 1.4-.7 2.7-1.8 3.5l-6.2 4.8H25.1l-6.2-4.8c-1.1-.8-1.8-2.1-1.8-3.5V11c0-1.4.7-2.7 1.8-3.5z M28.2 10.2h7.6v6.2h-7.6z"/>
+    <path d="M17.2 19.8 2.6 27.4l3.8 5.8 12.4-6.6z"/>
+    <path d="M46.8 19.8 61.4 27.4l-3.8 5.8-12.4-6.6z"/>
   </g>
 """,
         label="Door-open telltale",
@@ -168,10 +174,10 @@ ATLAS = '''<?xml version="1.0" encoding="UTF-8"?>
     <rect x="17.2" y="12.4" width="1.8" height="7.2"/>
   </g>
   <g transform="translate(316,14)" fill="#e22820">
-    <path d="M3 14h4.2c2.2 0 3.6 1.4 3.6 3.4S9.4 21 7.2 21H3z"/>
-    <path fill-rule="evenodd" d="M10 11h12v16H10z M12.2 13.6h7.6v10.8h-7.6z"/>
-    <path d="M22 11 34 4.2l2.4 2.6-8.2 6.6V27H22z"/>
-    <path d="M32.4 10.2c0 2.6 1.8 4.6 3.4 4.6s3.4-2 3.4-4.6c0-2-1.6-3.8-3.4-5.6-1.8 1.8-3.4 3.6-3.4 5.6z"/>
+    <path fill-rule="evenodd" d="M2.2 18.4c0-5.2 3.8-9 9.4-9h4.4v3.8h-3.8c-3 0-5 2.1-5 5.2s2 5.2 5 5.2h3.8V27h-4.4c-5.6 0-9.4-3.8-9.4-8.6z"/>
+    <rect x="13.2" y="12" width="15.6" height="13" rx="0.8"/>
+    <path d="M28.8 12 38.2 4.4l3.4 3.6-6.6 5.8z"/>
+    <path d="M39.2 9.8c0 2.6 1.8 4.4 3.4 4.4s3.4-1.8 3.4-4.4c0-2-1.6-4.2-3.4-6.4-1.8 2.2-3.4 4.4-3.4 6.4z"/>
   </g>
   <g transform="translate(360,14)" fill="#ec941c">
     <path d="M4 16h5l2.4-5.2h7l1.6 5.2h12l2.6-3.4H38v5.4h2.4v9H38V36H4v-4H1.2v-8.2H4z"/>

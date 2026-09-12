@@ -3,5 +3,5 @@
   <title>Left turn telltale</title>
   <!-- Traced / redrawn from OEM AP1 lamp-strip plates in refs/oem/plates/.
        White on transparent; tinted at draw time. Not Honda Motor Co. artwork. -->
-  <path fill="#fff" d="M50 8 4 24l46 16v-9h10V17H50z"/>
+  <path fill="#fff" d="M51.2 6.8 2.4 24l48.8 17.2v-10.4H62V17.2H51.2z"/>
 </svg>

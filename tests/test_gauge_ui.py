@@ -21,6 +21,7 @@ from gauge_ui import (  # noqa: E402
     NOTCH_TOP_PCT,
     REDLINE_BLOCKS,
     TACH_BAND_OUTER,
+    TACH_NEEDLE_TAIL,
     TACH_NUM_INSET,
     TACH_TICK_MAJOR,
     TEMP_SEGS,
@@ -193,6 +194,8 @@ class FaceGeomTests(unittest.TestCase):
         # Clear of the printed band and the major ticks that sit on it
         self.assertGreater(TACH_NUM_INSET, TACH_BAND_OUTER)
         self.assertGreater(TACH_NUM_INSET, TACH_TICK_MAJOR[1] + 16)
+        # Chevron sits on the printed band, not a dart hanging into the well
+        self.assertLess(TACH_NEEDLE_TAIL, TACH_BAND_OUTER)
         left = tach_num_xy(0.0)
         left_arch = tach_arch_xy(0.0)
         self.assertGreater(left[1], left_arch[1])

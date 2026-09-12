@@ -16,7 +16,6 @@ import {
   tachBandPath,
   tachTickPath,
   tachNumXY,
-  TACH_NUM_INSET,
   type FaceGeom,
 } from "@/lib/geometry";
 import { SevenSeg } from "./SevenSeg";
@@ -42,8 +41,8 @@ const REDLINE_PRINT = "#c4281c";
 const TACH_BAND_OUTER = 16;
 const TACH_TICK_MAJOR = { w: 1.35, len: 11.5 };
 const TACH_TICK_MINOR = { w: 0.75, len: 6.8 };
-const TACH_NEEDLE_TIP = -2.6;
-const TACH_NEEDLE_TAIL = 35;
+const TACH_NEEDLE_TIP = -3.4;
+const TACH_NEEDLE_TAIL = 13.5;
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -77,38 +76,22 @@ function TachPointer({ frac, geom }: { frac: number; geom: FaceGeom }) {
   const py = n.x;
   const tipX = p.x + n.x * TACH_NEEDLE_TIP;
   const tipY = p.y + n.y * TACH_NEEDLE_TIP;
-  const shoulderX = p.x + n.x * 7.2;
-  const shoulderY = p.y + n.y * 7.2;
-  const hubX = p.x + n.x * 11.2;
-  const hubY = p.y + n.y * 11.2;
-  const tailX = p.x + n.x * TACH_NEEDLE_TAIL;
-  const tailY = p.y + n.y * TACH_NEEDLE_TAIL;
+  const baseX = p.x + n.x * TACH_NEEDLE_TAIL;
+  const baseY = p.y + n.y * TACH_NEEDLE_TAIL;
   const hot = frac >= 8 / 9;
   const col = hot ? RED : CREAM;
   const glow = hot ? RED : AMBER_HOT;
-  const dart = (half: number) => {
-    const sh = half;
-    const hh = half * 0.48;
-    const th = Math.max(0.6, half * 0.22);
-    return [
+  const chevron = (half: number) =>
+    [
       `${tipX},${tipY}`,
-      `${shoulderX + px * sh},${shoulderY + py * sh}`,
-      `${hubX + px * hh},${hubY + py * hh}`,
-      `${tailX + px * th},${tailY + py * th}`,
-      `${tailX - px * th},${tailY - py * th}`,
-      `${hubX - px * hh},${hubY - py * hh}`,
-      `${shoulderX - px * sh},${shoulderY - py * sh}`,
+      `${baseX + px * half},${baseY + py * half}`,
+      `${baseX - px * half},${baseY - py * half}`,
     ].join(" ");
-  };
   return (
     <g className={hot ? "needle needle-hot" : "needle"}>
-      <polygon points={dart(7.4)} fill="#1c140c" />
-      <polygon points={dart(6.4)} fill={glow} />
-      <polygon points={dart(5.2)} fill={col} />
-      <circle cx={hubX} cy={hubY} r={3.4} fill="#1c140c" />
-      <circle cx={hubX} cy={hubY} r={2.6} fill={glow} />
-      <circle cx={hubX} cy={hubY} r={1.25} fill={col} />
-      <circle cx={hubX} cy={hubY} r={0.45} fill="#140e08" />
+      <polygon points={chevron(5.4)} fill="#1c140c" />
+      <polygon points={chevron(4.6)} fill={glow} />
+      <polygon points={chevron(3.9)} fill={col} />
     </g>
   );
 }
@@ -195,8 +178,7 @@ function TachSegments({
 }
 
 function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
-  const unit = tachArchXY(0.11, geom);
-  const un = tachArchNormal(0.11, geom);
+  const zero = tachNumXY(0, geom);
   return (
     <g className="tach-nums">
       {Array.from({ length: 10 }, (_, i) => {
@@ -208,7 +190,7 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
             className="tach-num"
             x={p.x}
             y={p.y}
-            fontSize={14.5}
+            fontSize={16}
             fontWeight={600}
             fontStyle="italic"
             fill={dim ? DIM : WHITE}
@@ -221,14 +203,14 @@ function TachNumbers({ geom, dim }: { geom: FaceGeom; dim?: boolean }) {
       })}
       <text
         className="unit-label"
-        x={unit.x + un.x * (TACH_NUM_INSET + 10) + 18}
-        y={unit.y + un.y * (TACH_NUM_INSET + 8)}
-        fontSize={6.5}
+        x={zero.x + 24}
+        y={zero.y + 11}
+        fontSize={5.6}
         fontWeight={700}
         fill={dim ? DIM : WHITE}
         textAnchor="middle"
       >
-        ×1000 r/min
+        x1000 r/min
       </text>
     </g>
   );
@@ -379,7 +361,7 @@ function ReadyCard({ face, geom }: { face: DisplayState; geom: FaceGeom }) {
       <text x={cx} y={geom.lcd.y + 48} textAnchor="middle" fontSize={11} fill={DIM} letterSpacing="0.22em">
         S2000  DIGITAL  DASH
       </text>
-      <text x={cx} y={geom.speed.y + 8} textAnchor="middle" fontSize={46} fontWeight={700} fill={AMBER_HOT} className="ready-word">
+      <text x={cx} y={geom.speed.y + 8} textAnchor="middle" fontSize={48} fontWeight={700} fill={AMBER_HOT} className="ready-word" letterSpacing="0.08em">
         READY
       </text>
       <text x={cx} y={geom.speed.y + 36} textAnchor="middle" fontSize={10} fill={DIM} letterSpacing="0.12em">
@@ -498,7 +480,7 @@ export function ClusterFace({
                 ghost="188"
                 digitH={58}
                 color={RED_LCD}
-                ghostColor="#3a0a08"
+                ghostColor="#2e0806"
                 italic={0.08}
               />
               <text x={sc.x + 62} y={sc.y + 2} fontSize={11} fontWeight={700} fill={RED_LCD} className="lcd-label">
@@ -517,7 +499,7 @@ export function ClusterFace({
                 ghost="888888"
                 digitH={22}
                 color={RED_LCD}
-                ghostColor="#3a0a08"
+                ghostColor="#2e0806"
                 italic={0.04}
               />
               <text
@@ -538,7 +520,7 @@ export function ClusterFace({
                 ghost="888.8"
                 digitH={16}
                 color={RED_LCD}
-                ghostColor="#3a0a08"
+                ghostColor="#2e0806"
                 italic={0.04}
               />
               {battWarn ? (
