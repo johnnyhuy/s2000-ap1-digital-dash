@@ -114,12 +114,12 @@ def draw_digit(
             continue
         if bloom is not None:
             glow = (
-                min(255, color[0] + 28),
-                min(255, color[1] + 16),
-                min(255, color[2] + 6),
-                88,
+                min(255, color[0] + 32),
+                min(255, color[1] + 18),
+                min(255, color[2] + 8),
+                102,
             )
-            pygame.draw.polygon(bloom, glow, _expand(pts, 5))
+            pygame.draw.polygon(bloom, glow, _expand(pts, 6))
         pygame.draw.polygon(dest, color, pts)
         cap_r = max(1, int(round(h * 0.04)))
         pygame.draw.circle(dest, color, pts[0], cap_r)

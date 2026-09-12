@@ -605,8 +605,8 @@ class DisplayState:
         self.trip_km = max(0.0, self.odo_km - self.trip_origin)
 
     def follow(self, telem: Telemetry, dt: float) -> None:
-        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.16)
-        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.10)
+        self.rpm = exp_smooth(self.rpm, float(telem.rpm), dt, 0.18)
+        self.speed_kmh = exp_smooth(self.speed_kmh, float(telem.speed_kmh), dt, 0.12)
         self.fuel_pct = exp_smooth(self.fuel_pct, float(telem.fuel_pct), dt, 0.32)
         self.ect_c = exp_smooth(self.ect_c, float(telem.ect_c), dt, 0.38)
         self.batt_v = exp_smooth(self.batt_v, float(telem.batt_v), dt, 0.20)
@@ -1514,7 +1514,7 @@ def build_fonts(pygame) -> dict:
     return {
         "speed": _font(pygame, 132, bold=True, mono=True),
         "ready": _font(pygame, 92, bold=True),
-        "tick": _font(pygame, 38, italic=True),
+        "tick": _font(pygame, 42, italic=True),
         "label": _font(pygame, 20, bold=True),
         "readout": _font(pygame, 26, bold=True, mono=True),
         "tiny": _font(pygame, 15, italic=True),
