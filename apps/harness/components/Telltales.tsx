@@ -33,11 +33,11 @@ export const LAMP_STRIP: LampSpec[] = [
 const TONE: Record<Tone, string> = {
   red: "#e22820",
   amber: "#ec941c",
-  green: "#28cc5c",
-  blue: "#2460e4",
+  green: "#22b84c",
+  blue: "#1c54d8",
 };
 
-const GHOST = "#322e2a";
+const GHOST = "#1a1816";
 
 export function TelltaleStrip({
   lamps,

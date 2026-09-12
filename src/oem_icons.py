@@ -18,9 +18,9 @@ from typing import Iterable, Sequence
 # --- OEM telltale colours (back-lit plastic, not UI chrome) -----------------
 LAMP_RED = (226, 40, 32)
 LAMP_AMBER = (236, 148, 28)
-LAMP_GREEN = (40, 204, 92)
-LAMP_BLUE = (36, 96, 228)
-LAMP_GHOST = (44, 40, 36)
+LAMP_GREEN = (34, 184, 76)
+LAMP_BLUE = (28, 84, 216)
+LAMP_GHOST = (26, 24, 22)
 
 # Reject the old neon sweep / high-beam cyan
 NEON_CYAN = (72, 210, 230)
