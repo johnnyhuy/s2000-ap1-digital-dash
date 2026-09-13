@@ -1,18 +1,44 @@
 # AP1 face dimensions (flat / orthographic)
 
 Canonical lock for the **AP1** face style. Copied from the OEM flat elevation
-(`ap1_cluster_flat`). Percentages are of the **module bounding box**, origin
-top-left. The **AP2** style is a separate layout family (arched side gauges);
-do not copy those percentages here.
+(`ap1_cluster_flat`) and remeasured against the Car Spy photo
+(`refs/oem/lit/lit_ap1_carspy_cluster.jpg`, CC BY 2.0). Percentages are of
+the **module bounding box**, origin top-left. The **AP2** style is a
+separate layout family (arched side gauges); do not copy those percentages
+here.
 
 Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
+
+## Evidence
+
+- Flat elevation: `refs/flat/ap1_cluster_flat.svg` / `.png`
+- OEM photo: `refs/oem/lit/lit_ap1_carspy_cluster.jpg` (1600×1200)
+- Calliper plate: `refs/oem/plates/oem_ap1_measurements_plate.png`
+- Calliper data: `refs/oem/plates/oem_ap1_measurements.json`
+
+Remeasured against the Car Spy photo (module ≈ 480 px tall):
+
+| Landmark | px | % of module |
+| --- | --: | --: |
+| Cluster cowl top | 240 | 0.0 |
+| Hood peak (top of printed band arch) | 290 | 10.4 |
+| Band right end (redline blocks, 9 mark) | 510 | 56.2 |
+| Numeral 9 (visual centre) | 525 | 59.4 |
+| Lamp / hardware strip top | 615 | 78.1 |
+| Cluster bottom | 720 | 100.0 |
+
+In-repo flat lock matches the OEM numbers for the band (~54 % at the
+0-tick vs 56 % in OEM — within ±2 pp). The lamp strip sits a touch higher
+in OEM (78 %) than in the lock (85 %), because the OEM lamp strip is the
+top of the SEL/TRIP row, while the lock draws the full telltale band
+thicker.
 
 ## Module on the 1920×1080 canvas
 
 | Item | Value |
 | --- | --- |
-| x | 4.0% of canvas |
-| w | 92.0% of canvas |
+| x | 4.0 % of canvas |
+| w | 92.0 % of canvas |
 | aspect (w:h) | **2.35:1** |
 
 ## Silhouette (percent of module)
@@ -20,23 +46,24 @@ Physical envelope (OEM face): **170 mm × 72.3 mm** → aspect **2.35:1**.
 | Item | Value |
 | --- | --- |
 | Bottom | **flat** |
-| Side notches | rectangular, **y = 58–72%**, depth 4.4% of width |
-| Top arch | parabola **y% = 28 × u²**, u ∈ [−1, 1], rise **28%** |
-| Arch peak | y = 0% (module top) |
-| Arch spring | y = 28% |
+| Side notches | rectangular, **y = 58–72 %**, depth 4.4 % of width |
+| Top arch | quadratic bezier, peak at module top, spring line ≈ 32 % (eyeballed — cowl spring is hard to pin through the wheel rim) |
+| Arch peak | y ≈ **10 %** (printed band peaks here; the cowl above is a thin lip) |
+| Arch spring | y ≈ **56 %** (where the band's printed curve straightens to the bezel verticals) |
 
 ## Face layout (percent of module)
 
 | Item | Placement |
 | --- | --- |
-| Speed centre | **(50%, 40%)** — **3-digit 7-seg** (ghost `188`); units (`km/h`) to the **right** of the digits |
-| ODO / TRIP | directly under the speed (~50% y): 6-digit odo + `TRIP A` `xxx.x` (ghost `888888` / `888.8`) |
-| TEMP bar | **horizontal** C→H **left of the speedo** at **(8.0%, 50.5%)**, **w = 16%**, **h = 1.2%** — **6** thin coolant ticks |
-| FUEL bar | **horizontal** E→F **right of the speedo** at **(76.0%, 50.5%)**, same w / h — finer tick ladder |
+| Speed centre | **(50 %, 40 %)** — **3-digit 7-seg** (ghost `188`); units (`km/h`) to the **right** of the digits |
+| ODO / TRIP | directly under the speed (~50 % y): 6-digit odo + `TRIP A` `xxx.x` (ghost `888888` / `888.8`) |
+| TEMP bar | **horizontal** C→H **left of the speedo** at **(8.0 %, 50.5 %)**, **w = 16 %**, **h = 1.2 %** — **6** thin coolant ticks |
+| FUEL bar | **horizontal** E→F **right of the speedo** at **(76.0 %, 50.5 %)**, same w / h — finer tick ladder |
 | TEMP icon | thermometer above **C** |
 | FUEL icon | pump above **F** |
-| Lamp / hardware strip | y ≈ **80.5%** |
-| Tach 0–9 | printed amber band + thin ticks **normal to the parabola** (not upright bricks / not a circular fill); white **chevron** needle on the printed band; inner visor lip is a thin off-white on the **same parabola**, just outside the band (not a high arc at the well peak); white italic numerals **inside the well**, below the printed band (0 and 9 drop extra so they clear the scale); `x1000 r/min` tucked next to 0 |
+| Lamp / hardware strip | y ≈ **78 %** (OEM Car Spy, top of SEL/TRIP row) — note: flat lock draws the lamp band at 85 % to give the bezel room |
+| Printed tach band | peak ≈ **10 %**, ends (0 / 9) at **56 %** of module height; rise ≈ **46 %**; parabola passes through (peak, end_y) at u ∈ [−1, 1] |
+| Tach numerals | inside the well, **3–4 % below the band ends**; numerals **0** and **9** drop extra so they clear the curve |
 | Redline | printed red zone **8–9** with five thick blocks |
 
 Hardware strip, left → right:
@@ -62,11 +89,49 @@ Protocol JSON fields stay `rpm`, `speed_kmh`, `fuel_pct`, `ect_c`, `batt_v`,
 
 - **Vertical** TEMP / FUEL side stacks (erroneous; OEM AP1 is horizontal flanking bars)
 - AP2 arched corner gauges copied onto AP1
-- 45° chamfer instead of the **rectangular** 58–72% notches
-- Semicircle / superellipse crown instead of **y = 28 u²**
+- 45° chamfer instead of the **rectangular** 58–72 % notches
+- Semicircle / superellipse crown instead of a quadratic bezier
 - Units stacked under the speed
 - Lamps as large labelled chips on the LCD (use OEM telltale artwork)
 - Neon cyan high beam or sweep (high beam is ISO blue)
 - Fake 3D cabin ellipses
 - Module aspect drifting off **2.35:1**
 - Tach numerals sitting **outside** the printed band (OEM AP1 puts 0–9 in the well)
+- The **printed band** ending at the **parabola's spring line** — the band parabola is
+  steeper than the cowl arch and the band ends sit ~25 pp **below** the cowl spring
+
+## Driver map (which constant moves what)
+
+The face geometry is built in `src/gauge_ui.py::build_face_geom`. The
+rendering path uses `g.lcd_peak_y` and `g.lcd_spring_y` for the printed
+band parabola via `tach_arch_xy` — not the global `TACH_END_Y_PCT`. As of
+this revision:
+
+| Visual landmark | Driven by | Default value |
+| --- | --- | --- |
+| Printed band peak y | `LCD_TOP_PCT` + `TACH_ARCH_DROP` | `0.055 + 14 px` |
+| Printed band end y | `(LCD_TOP_PCT … ARCH_RISE_PCT) × 0.92` | `ARCH_RISE_PCT = 0.28` (currently renders the band ends at ~28 % — see iter note below) |
+| Tach numerals 0 / 9 | `TACH_NUM_INSET` (54 px) + `end² × 14 px` extra drop | inline |
+
+### Iter note — `TACH_END_Y_PCT` is dead code
+
+`TACH_END_Y_PCT` is still read inside `build_face_geom` to derive the
+radius and start/end degrees for an *unused* circle that none of the
+tach drawing functions touch. Sanity check: changing
+`TACH_END_Y_PCT = 0.30 / 0.54 / 0.64` produces a byte-identical
+`docs/assets/compare/compare_ap1_lit_live.png` (`MD5 b71ddd4d…90b5`).
+It is kept as a documented artefact until the dead-code housekeeping
+PR deletes it.
+
+The **actual** knob that controls band rise is `ARCH_RISE_PCT`. The
+current `0.28` renders band ends at ~28 % of module height — about **−25 pp**
+vs OEM (~56 %). Raising `ARCH_RISE_PCT` to ~`0.56` lands the band ends on
+OEM. That fix belongs in a **position-track PR**, not here — this file
+only documents the lock.
+
+### Iter note — lamp strip top
+
+OEM Car Spy puts the SEL/TRIP top at **78 %**. The flat lock draws the
+full lamp band at **85 %** to leave room for the bezel lip. Both are
+correct for their purpose; the **face layout lock** quotes the OEM
+78 %, and the SVG/PNG flat lock keeps the visual 85 % for the band.

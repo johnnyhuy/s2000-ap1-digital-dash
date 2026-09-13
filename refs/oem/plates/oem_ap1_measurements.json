@@ -1,0 +1,44 @@
+{
+  "source": "refs/oem/lit/lit_ap1_carspy_cluster.jpg",
+  "image_size": [
+    1600,
+    1200
+  ],
+  "picks_px": [
+    [
+      "cluster_top",
+      240
+    ],
+    [
+      "hood_peak",
+      290
+    ],
+    [
+      "band_end",
+      510
+    ],
+    [
+      "numeral_9",
+      525
+    ],
+    [
+      "lamp_strip",
+      615
+    ],
+    [
+      "cluster_bot",
+      720
+    ]
+  ],
+  "module_top_px": 240,
+  "module_bottom_px": 720,
+  "module_height_px": 480,
+  "pct_of_module_height": {
+    "cluster_top": 0.0,
+    "hood_peak": 10.42,
+    "band_end": 56.25,
+    "numeral_9": 59.38,
+    "lamp_strip": 78.12,
+    "cluster_bot": 100.0
+  }
+}
