@@ -181,8 +181,8 @@ class FaceGeomTests(unittest.TestCase):
         self.assertGreater(fw, fh * 6)
         self.assertLess(tx + tw, FACE.speed_c[0])
         self.assertGreater(fx, FACE.speed_c[0])
-        # Flank the speed/odo band — not a vertical side stack, not AP2 arches
-        self.assertLess(abs(ty - FACE.odo_c[1]), 40)
+        # Flank the speedo at speed-y (OEM puts the bars level with the speed digits).
+        self.assertLess(abs(ty - FACE.speed_c[1]), 4)
         self.assertLess(th, 16)
 
     def test_tach_numerals_sit_inside_the_well(self) -> None:
@@ -237,12 +237,17 @@ class FaceGeomTests(unittest.TestCase):
     def test_locked_flanking_gauges_and_speed_percentages(self) -> None:
         mx, my, mw, mh = FACE.module
         self.assertAlmostEqual((FACE.temp[0] - mx) / mw, 0.080, delta=0.015)
-        self.assertAlmostEqual((FACE.temp[1] - my) / mh, 0.505, delta=0.02)
+        # OEM puts the speed/odo LCD cluster *under* the printed band, so the
+        # TEMP / FUEL bars sit at the same y as the speedo centre (~68% mh).
+        self.assertAlmostEqual((FACE.temp[1] - my) / mh, 0.680, delta=0.02)
         self.assertAlmostEqual(FACE.temp[3] / mh, BAR_H_PCT, delta=0.01)
         self.assertAlmostEqual(FACE.temp[2] / mw, TEMP_W_PCT, delta=0.015)
         self.assertAlmostEqual((FACE.fuel[0] - mx) / mw, 0.760, delta=0.015)
+        self.assertAlmostEqual((FACE.fuel[1] - my) / mh, 0.680, delta=0.02)
         self.assertAlmostEqual((FACE.speed_c[0] - mx) / mw, 0.50, delta=0.01)
-        self.assertAlmostEqual((FACE.speed_c[1] - my) / mh, 0.40, delta=0.02)
+        self.assertAlmostEqual((FACE.speed_c[1] - my) / mh, 0.680, delta=0.02)
+        # ODO row sits just under the speedo, just above the lamp strip top.
+        self.assertAlmostEqual((FACE.odo_c[1] - my) / mh, 0.74, delta=0.02)
         self.assertAlmostEqual((FACE.bezel[1] - my) / mh, 0.805, delta=0.02)
 
     def test_five_redline_blocks(self) -> None:
@@ -291,9 +296,33 @@ class FaceGeomTests(unittest.TestCase):
         _, y_num = tach_num_xy(0.0)
         # Numerals always sit below the band (inset along inward normal plus extra end² drop).
         self.assertGreater(y_num, y_band)
-        # And the drop stays bounded — well clear of the speedo centre at 40%.
+        # And the drop stays bounded — well clear of the speedo centre at 68%.
         drop_pct = (y_num - my) / mh
         self.assertLess(drop_pct, 0.70)
+
+    def test_lcd_cluster_locks_to_oem_below_band(self) -> None:
+        """OEM Car Spy photo: speed/odo sit BELOW the band ends (~56% mh).
+
+        The speed centre should be ~68% of mh, the odo row just under it at
+        ~74%, and the TEMP/FUEL bars at the same y as the speedo centre.
+        """
+        my, mh = FACE.module[1], FACE.module[3]
+        self.assertAlmostEqual((FACE.speed_c[1] - my) / mh, 0.68, delta=0.02)
+        self.assertAlmostEqual((FACE.odo_c[1] - my) / mh, 0.74, delta=0.02)
+        self.assertAlmostEqual((FACE.temp[1] - my) / mh, 0.68, delta=0.02)
+        self.assertAlmostEqual((FACE.fuel[1] - my) / mh, 0.68, delta=0.02)
+        # Odo row sits BELOW the speedo (no overlap with the speed window).
+        self.assertGreater(FACE.odo_c[1], FACE.speed_c[1])
+        # Speedo sits BELOW the band ends (OEM puts speed under the printed band).
+        x_end, y_end = tach_arch_xy(0.0)
+        self.assertGreater(FACE.speed_c[1], y_end)
+
+    def test_speed_sits_below_tach_numerals(self) -> None:
+        """OEM photo: speed/odo sit below the 0/9 numerals, not above them."""
+        my, mh = FACE.module[1], FACE.module[3]
+        _, y_num = tach_num_xy(0.0)
+        # Numeral 0 sits at ~59% mh in OEM; speed sits at ~68% mh — clearly below.
+        self.assertGreater(FACE.speed_c[1], y_num)
 
 
 class HeadlessDrawTests(unittest.TestCase):

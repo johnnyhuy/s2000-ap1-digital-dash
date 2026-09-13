@@ -103,12 +103,15 @@ LCD_INSET_X_PCT = 0.010
 LCD_TOP_PCT = 0.055
 LCD_BOTTOM_PCT = 0.76       # LCD fills to the lamp strip
 ARCH_N = 2.0                # parabola (u²)
-# AP1: thin horizontal bars flanking the speed/odo (not vertical stacks, not AP2 arches)
-TEMP_X_PCT, TEMP_Y_PCT, TEMP_W_PCT = 0.080, 0.505, 0.160
-FUEL_X_PCT, FUEL_Y_PCT, FUEL_W_PCT = 0.760, 0.505, 0.160
+# AP1: thin horizontal bars flanking the speed/odo (not vertical stacks, not AP2 arches).
+# OEM puts the speed/odo LCD cluster *under* the printed band — the band ends at
+# ~56% mh and the speed/odo sit at ~68% / ~74%. Earlier values (0.40 / 0.50 /
+# 0.505) were an early guess that left the LCD cluster floating mid-arch.
+TEMP_X_PCT, TEMP_Y_PCT, TEMP_W_PCT = 0.080, 0.680, 0.160
+FUEL_X_PCT, FUEL_Y_PCT, FUEL_W_PCT = 0.760, 0.680, 0.160
 BAR_H_PCT = 0.018           # OEM AP1 ticks are thin horizontal dashes
-SPEED_X_PCT, SPEED_Y_PCT = 0.50, 0.40
-ODO_Y_PCT = 0.50            # directly under the speed (OEM lock)
+SPEED_X_PCT, SPEED_Y_PCT = 0.50, 0.680
+ODO_Y_PCT = 0.74            # directly under the speed, just above the lamp strip
 # AP2 interpretive side-gauges (not a measured plate)
 AP2_SPEED_X_PCT = 0.36
 AP2_ODO_Y_PCT = 0.52

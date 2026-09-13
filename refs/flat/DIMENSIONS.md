@@ -55,10 +55,10 @@ thicker.
 
 | Item | Placement |
 | --- | --- |
-| Speed centre | **(50 %, 40 %)** — **3-digit 7-seg** (ghost `188`); units (`km/h`) to the **right** of the digits |
-| ODO / TRIP | directly under the speed (~50 % y): 6-digit odo + `TRIP A` `xxx.x` (ghost `888888` / `888.8`) |
-| TEMP bar | **horizontal** C→H **left of the speedo** at **(8.0 %, 50.5 %)**, **w = 16 %**, **h = 1.2 %** — **6** thin coolant ticks |
-| FUEL bar | **horizontal** E→F **right of the speedo** at **(76.0 %, 50.5 %)**, same w / h — finer tick ladder |
+| Speed centre | **(50 %, 68 %)** — **3-digit 7-seg** (ghost `188`); units (`km/h`) to the **right** of the digits. Sits BELOW the printed band ends (band ends at ~56 % mh) — OEM Car Spy photo. |
+| ODO / TRIP | directly under the speed (~74 % y): 6-digit odo + `TRIP A` `xxx.x` (ghost `888888` / `888.8`) |
+| TEMP bar | **horizontal** C→H **left of the speedo** at **(8.0 %, 68.0 %)**, **w = 16 %**, **h = 1.2 %** — **6** thin coolant ticks. Bar sits at the speedo centre, not mid-arch. |
+| FUEL bar | **horizontal** E→F **right of the speedo** at **(76.0 %, 68.0 %)**, same w / h — finer tick ladder |
 | TEMP icon | thermometer above **C** |
 | FUEL icon | pump above **F** |
 | Lamp / hardware strip | y ≈ **78 %** (OEM Car Spy, top of SEL/TRIP row) — note: flat lock draws the lamp band at 85 % to give the bezel room |
@@ -111,7 +111,10 @@ this revision:
 | --- | --- | --- |
 | Printed band peak y | `LCD_TOP_PCT` + `TACH_ARCH_DROP` | `0.055 + 14 px` |
 | Printed band end y | `(LCD_TOP_PCT … ARCH_RISE_PCT) × 0.92` | `ARCH_RISE_PCT = 0.60` (lands band ends at ~56 % of mh — iter 0002 position PR) |
-| Tach numerals 0 / 9 | `TACH_NUM_INSET` (54 px) + `end² × 14 px` extra drop | inline |
+| Tach numerals 0 / 9 | `TACH_NUM_INSET` (54 px) + `end² × 14 px` extra drop | inline — **deferred**: OEM puts 0/9 just under band ends (~3 % drop), middle numerals well into the well (~25 % drop) — formula is currently flat (~7 % drop) |
+| Speed centre y | `SPEED_Y_PCT` | `0.68` (iter 0006 — OEM Car Spy puts the speed BELOW the band ends) |
+| ODO row y | `ODO_Y_PCT` | `0.74` (iter 0006 — odo sits just under speed, just above the lamp strip top) |
+| TEMP / FUEL bar y | `TEMP_Y_PCT` / `FUEL_Y_PCT` | `0.68` (iter 0006 — bars flank the speedo at the speed y, not mid-arch) |
 
 ### Iter note — lamp strip top
 
