@@ -119,9 +119,6 @@ AP2_SIDE_W_PCT = 0.27
 AP2_SIDE_H_PCT = 0.17
 AP2_TEMP_SEGS = 12
 AP2_FUEL_SEGS = 14
-TACH_END_Y_PCT = 0.54
-TACH_PEAK_Y_PCT = 0.12
-TACH_INSET_X_PCT = 0.090
 
 # OEM AP1: 6 coolant bars, a finer fuel ladder (photos ~10–16 visible)
 TEMP_SEGS = 6
@@ -156,13 +153,6 @@ class FaceGeom:
     speed_c: tuple[int, int]
     odo_c: tuple[int, int]
     clock_c: tuple[int, int]
-    tach_cx: int
-    tach_cy: int
-    tach_r_outer: int
-    tach_r_inner: int
-    tach_r_num: int
-    tach_start_deg: float
-    tach_span_deg: float
     arch_n: float
     rocker: tuple[int, int, int, int]
     minus_btn: tuple[int, int, int, int]
@@ -236,23 +226,6 @@ def build_face_geom(
         odo_y_pct = ODO_Y_PCT
 
     cx = mx + _pct(mw * speed_x_pct)
-    end_y = my + _pct(mh * TACH_END_Y_PCT)
-    peak_y = my + _pct(mh * TACH_PEAK_Y_PCT)
-    end_inset = _pct(lcd_w * TACH_INSET_X_PCT)
-    x0 = lcd_x + end_inset
-    x1 = lcd_x + lcd_w - end_inset
-    half = (x1 - x0) / 2.0
-    drop = float(end_y - peak_y)
-    tach_r = (half * half + drop * drop) / (2.0 * drop) if drop > 1 else half
-    tach_cy = peak_y + tach_r
-    start_deg = math.degrees(math.atan2(end_y - tach_cy, x0 - cx))
-    end_deg = math.degrees(math.atan2(end_y - tach_cy, x1 - cx))
-    if end_deg < start_deg:
-        end_deg += 360.0
-    span = end_deg - start_deg
-    tach_r_outer = int(round(tach_r))
-    tach_r_inner = tach_r_outer - 52
-    tach_r_num = tach_r_inner - 12
 
     pad = _pct(mw * 0.018)
     btn_d = max(28, _pct(bezel_h * 0.42))
@@ -292,13 +265,6 @@ def build_face_geom(
         speed_c=(cx, speed_y),
         odo_c=odo_c,
         clock_c=clock_c,
-        tach_cx=cx,
-        tach_cy=int(round(tach_cy)),
-        tach_r_outer=tach_r_outer,
-        tach_r_inner=tach_r_inner,
-        tach_r_num=tach_r_num,
-        tach_start_deg=start_deg,
-        tach_span_deg=span,
         arch_n=ARCH_N,
         rocker=rocker,
         minus_btn=minus_btn,
@@ -310,25 +276,12 @@ def build_face_geom(
 
 
 FACE = build_face_geom()
-TACH_CX, TACH_CY = FACE.tach_cx, FACE.tach_cy
-TACH_R_NUM = FACE.tach_r_num
-TACH_R_OUTER = FACE.tach_r_outer
-TACH_R_INNER = FACE.tach_r_inner
-TACH_START_DEG = FACE.tach_start_deg
-TACH_SPAN_DEG = FACE.tach_span_deg
 
 
 def apply_face_style(style: FaceStyle | str) -> FaceGeom:
     """Rebuild the active face. Defaults bind at call time, not import time."""
-    global FACE, TACH_CX, TACH_CY, TACH_R_NUM, TACH_R_OUTER, TACH_R_INNER
-    global TACH_START_DEG, TACH_SPAN_DEG
+    global FACE
     FACE = build_face_geom(style=style)
-    TACH_CX, TACH_CY = FACE.tach_cx, FACE.tach_cy
-    TACH_R_NUM = FACE.tach_r_num
-    TACH_R_OUTER = FACE.tach_r_outer
-    TACH_R_INNER = FACE.tach_r_inner
-    TACH_START_DEG = FACE.tach_start_deg
-    TACH_SPAN_DEG = FACE.tach_span_deg
     return FACE
 
 
@@ -409,19 +362,6 @@ def exp_smooth(current: float, target: float, dt: float, tau: float) -> float:
         return target
     k = 1.0 - math.exp(-dt / tau)
     return current + (target - current) * k
-
-
-def tach_angle(frac: float) -> float:
-    """Radians along the OEM tach arc (0 at 0×1000, 1 at 9×1000)."""
-    return math.radians(TACH_START_DEG + TACH_SPAN_DEG * clamp(frac, 0.0, 1.0))
-
-
-def tach_point(r: float, frac: float) -> tuple[int, int]:
-    a = tach_angle(frac)
-    return (
-        TACH_CX + int(r * math.cos(a)),
-        TACH_CY + int(r * math.sin(a)),
-    )
 
 
 TACH_ARCH_DROP = 14.0
