@@ -110,24 +110,8 @@ this revision:
 | Visual landmark | Driven by | Default value |
 | --- | --- | --- |
 | Printed band peak y | `LCD_TOP_PCT` + `TACH_ARCH_DROP` | `0.055 + 14 px` |
-| Printed band end y | `(LCD_TOP_PCT … ARCH_RISE_PCT) × 0.92` | `ARCH_RISE_PCT = 0.28` (currently renders the band ends at ~28 % — see iter note below) |
+| Printed band end y | `(LCD_TOP_PCT … ARCH_RISE_PCT) × 0.92` | `ARCH_RISE_PCT = 0.60` (lands band ends at ~56 % of mh — iter 0002 position PR) |
 | Tach numerals 0 / 9 | `TACH_NUM_INSET` (54 px) + `end² × 14 px` extra drop | inline |
-
-### Iter note — `TACH_END_Y_PCT` is dead code
-
-`TACH_END_Y_PCT` is still read inside `build_face_geom` to derive the
-radius and start/end degrees for an *unused* circle that none of the
-tach drawing functions touch. Sanity check: changing
-`TACH_END_Y_PCT = 0.30 / 0.54 / 0.64` produces a byte-identical
-`docs/assets/compare/compare_ap1_lit_live.png` (`MD5 b71ddd4d…90b5`).
-It is kept as a documented artefact until the dead-code housekeeping
-PR deletes it.
-
-The **actual** knob that controls band rise is `ARCH_RISE_PCT`. The
-current `0.28` renders band ends at ~28 % of module height — about **−25 pp**
-vs OEM (~56 %). Raising `ARCH_RISE_PCT` to ~`0.56` lands the band ends on
-OEM. That fix belongs in a **position-track PR**, not here — this file
-only documents the lock.
 
 ### Iter note — lamp strip top
 
