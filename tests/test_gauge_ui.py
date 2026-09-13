@@ -192,8 +192,9 @@ class FaceGeomTests(unittest.TestCase):
         px, py = tach_num_xy(0.5)
         self.assertGreater(py, ay)
         self.assertLess(abs(px - ax), 8)
-        # Clear of the printed band and the major ticks that sit on it
-        self.assertGreater(TACH_NUM_INSET, TACH_BAND_OUTER)
+        # Clear of the printed band and the major ticks that sit on it.
+        # Numerals sit at TACH_NUM_INSET + end² × 14 px below the curve.
+        self.assertGreater(TACH_NUM_INSET + 14, TACH_BAND_OUTER)
         self.assertGreater(TACH_NUM_INSET, TACH_TICK_MAJOR[1] + 16)
         # Chevron sits on the printed band, not a dart hanging into the well
         self.assertLess(TACH_NEEDLE_TAIL, TACH_BAND_OUTER)

@@ -78,7 +78,8 @@ BEZEL_BTN = (148, 148, 144)
 BEZEL_BAND = (10, 11, 12)
 BEZEL_BAND_EDGE = (36, 38, 40)
 # Printed band depth along the inward normal; ticks stay inside it.
-TACH_BAND_OUTER = 32.0
+# OEM band fills ~10-12% of module height (~50-60 px on a 752 mh).
+TACH_BAND_OUTER = 56.0
 # Numerals sit in the dark well, below the printed band (OEM photo)
 TACH_NUM_INSET = 54.0
 TACH_TICK_MAJOR = (2.4, 22.0)
