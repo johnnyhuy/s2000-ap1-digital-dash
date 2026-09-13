@@ -95,7 +95,7 @@ MODULE_ASPECT = 2.35
 STEP_W_PCT = 0.044          # rectangular side-notch depth
 NOTCH_TOP_PCT = 0.58        # notch y-range (OEM lock)
 NOTCH_BOT_PCT = 0.72
-ARCH_RISE_PCT = 0.28        # y% = 28 * u² from the module top
+ARCH_RISE_PCT = 0.60        # OEM band ends ~56% of mh; rise = (spring - peak) * 0.92
 LAMP_Y_PCT = 0.805          # hardware strip centre-line
 BEZEL_H_PCT = 0.175
 LCD_INSET_X_PCT = 0.010

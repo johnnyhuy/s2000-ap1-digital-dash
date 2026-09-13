@@ -269,11 +269,30 @@ class FaceGeomTests(unittest.TestCase):
         mx, my, mw, mh = FACE.module
         self.assertAlmostEqual(NOTCH_TOP_PCT, 0.58)
         self.assertAlmostEqual(NOTCH_BOT_PCT, 0.72)
-        self.assertAlmostEqual(ARCH_RISE_PCT, 0.28)
+        self.assertAlmostEqual(ARCH_RISE_PCT, 0.60, delta=0.005)
         self.assertAlmostEqual((FACE.notch_top_y - my) / mh, 0.58, delta=0.015)
         self.assertAlmostEqual((FACE.notch_bot_y - my) / mh, 0.72, delta=0.015)
-        self.assertAlmostEqual((FACE.spring_y - my) / mh, 0.28, delta=0.02)
+        self.assertAlmostEqual((FACE.spring_y - my) / mh, 0.60, delta=0.02)
         self.assertEqual(FACE.hood_peak_y, my)
+
+    def test_band_rise_lands_on_oem(self) -> None:
+        """OEM band ends sit at ~56% of module height (DIMENSIONS.md lock)."""
+        my, mh = FACE.module[1], FACE.module[3]
+        x0, y0 = tach_arch_xy(0.0)
+        x1, y1 = tach_arch_xy(1.0)
+        ends_pct = (y0 - my) / mh
+        self.assertAlmostEqual(ends_pct, 0.56, delta=0.02)
+
+    def test_numeral_sits_below_band_end(self) -> None:
+        """Numerals 0/9 drop below the band ends into the well (OEM lock)."""
+        my, mh = FACE.module[1], FACE.module[3]
+        _, y_band = tach_arch_xy(0.0)
+        _, y_num = tach_num_xy(0.0)
+        # Numerals always sit below the band (inset along inward normal plus extra end² drop).
+        self.assertGreater(y_num, y_band)
+        # And the drop stays bounded — well clear of the speedo centre at 40%.
+        drop_pct = (y_num - my) / mh
+        self.assertLess(drop_pct, 0.70)
 
 
 class HeadlessDrawTests(unittest.TestCase):
